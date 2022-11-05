@@ -1,0 +1,12 @@
+[programs.localnet]
+dap_cool = "DB2EAH9DoDcFtsC8AWCcjtLc2E8Hz1Y9t9X4gsDzbYh2"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "./node_modules/ts-mocha/bin/ts-mocha -t 1000000 tests/*.ts"
