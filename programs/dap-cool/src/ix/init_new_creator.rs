@@ -2,7 +2,7 @@ use anchor_lang::Key;
 use anchor_lang::prelude::{Context, Result};
 use crate::{InitNewCreator, pda};
 use crate::error::CustomErrors;
-use crate::pda::creator::Pinned;
+use crate::pda::handle::Pinned;
 
 pub fn ix(
     ctx: Context<InitNewCreator>,
@@ -21,7 +21,7 @@ pub fn ix(
 }
 
 fn validate_handle(handle: &String) -> Result<()> {
-    match handle.len() > pda::creator::MAX_HANDLE_LENGTH {
+    match handle.len() > pda::handle::MAX_HANDLE_LENGTH {
         true => {
             Err(CustomErrors::HandleTooLong.into())
         }

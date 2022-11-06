@@ -1,2 +1,2 @@
-pub mod creator;
+pub mod handle;
 pub mod authority;

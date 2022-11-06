@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 use mpl_token_metadata::state::{PREFIX, EDITION, EDITION_MARKER_BIT_SIZE};
-use crate::pda::{authority::Authority, creator::Handle};
+use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
     init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection,
 };
@@ -56,7 +56,7 @@ pub struct InitNewCreator<'info> {
     #[account(init,
     seeds = [handle.as_bytes()], bump,
     payer = payer,
-    space = pda::creator::SIZE
+    space = pda::handle::SIZE
     )]
     pub handle_pda: Account<'info, Handle>,
     #[account(mut)]
