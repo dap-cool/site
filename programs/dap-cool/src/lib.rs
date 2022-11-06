@@ -6,6 +6,7 @@ use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
     init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection,
 };
+use crate::pda::creator::Creator;
 
 pub mod pda;
 pub mod ix;
@@ -59,6 +60,12 @@ pub struct InitNewCreator<'info> {
     space = pda::handle::SIZE
     )]
     pub handle_pda: Account<'info, Handle>,
+    #[account(init,
+    seeds = [payer.key().as_ref()], bump,
+    payer = payer,
+    space = pda::creator::SIZE
+    )]
+    pub creator: Account<'info, Creator>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // system program
