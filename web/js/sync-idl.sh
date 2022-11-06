@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 ## idl
-cp ../../target/types/somos_crowd.ts anchor/idl.ts
+cp ../../target/types/dap_cool.ts anchor/idl.ts

@@ -1,5 +1,6 @@
-import {BN, web3} from "@project-serum/anchor";
-import {getAuthorityPda} from "../pda/authority-pda";
+import {AnchorProvider, BN, Program, web3} from "@project-serum/anchor";
+import {Keypair, PublicKey} from "@solana/web3.js";
+import {CollectionAuthority, getAuthorityPda} from "../pda/authority-pda";
 import {deriveCreatorPda} from "../pda/creator-pda";
 import {
     MPL_PREFIX,
@@ -8,20 +9,21 @@ import {
     SPL_TOKEN_PROGRAM_ID,
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID
 } from "../util/constants";
+import {DapCool} from "../idl";
 
 export async function mintNewCopy(
     app,
-    provider,
-    program,
-    handle,
-    index
+    provider: AnchorProvider,
+    program: Program<DapCool>,
+    handle: string,
+    index: number
 ) {
     // derive creator pda
-    const creator = await deriveCreatorPda(program, handle);
+    const creator: PublicKey = await deriveCreatorPda(program, handle);
     // derive authority pda
-    const authority = await getAuthorityPda(program, handle, index);
+    const authority: CollectionAuthority = await getAuthorityPda(program, handle, index);
     // derive metadata
-    let metadata, _;
+    let metadata: PublicKey, _;
     [metadata, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
@@ -31,7 +33,7 @@ export async function mintNewCopy(
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
     // derive master-edition
-    let masterEdition;
+    let masterEdition: PublicKey;
     [masterEdition, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
@@ -42,7 +44,7 @@ export async function mintNewCopy(
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
     // derive master-edition-ata
-    let masterEditionAta;
+    let masterEditionAta: PublicKey;
     [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
         [
             authority.pda.toBuffer(),
@@ -52,9 +54,9 @@ export async function mintNewCopy(
         SPL_ASSOCIATED_TOKEN_PROGRAM_ID
     )
     // derive key-pair for new-edition-mint
-    const newMint = web3.Keypair.generate();
+    const newMint: Keypair = web3.Keypair.generate();
     // derive new-metadata
-    let newMetadata;
+    let newMetadata: PublicKey;
     [newMetadata, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
@@ -64,7 +66,7 @@ export async function mintNewCopy(
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
     // derive new-edition
-    let newEdition;
+    let newEdition: PublicKey;
     [newEdition, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
@@ -76,8 +78,8 @@ export async function mintNewCopy(
     )
     // derive new-edition-mark
     let n = authority.numMinted + 1;
-    const newEditionMarkLiteral = (new BN.BN(n)).div(new BN.BN(248)).toString();
-    let newEditionMark;
+    const newEditionMarkLiteral = (new BN(n)).div(new BN(248)).toString();
+    let newEditionMark: PublicKey;
     [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
@@ -89,7 +91,7 @@ export async function mintNewCopy(
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
     // derive new-edition-ata
-    let newEditionAta;
+    let newEditionAta: PublicKey;
     [newEditionAta, _] = await web3.PublicKey.findProgramAddress(
         [
             provider.wallet.publicKey.toBuffer(),
@@ -101,7 +103,7 @@ export async function mintNewCopy(
     // invoke rpc
     console.log("minting new copy");
     await program.methods
-        .mintNewCopy(index)
+        .mintNewCopy(index as any)
         .accounts(
             {
                 creator: creator,
@@ -125,7 +127,7 @@ export async function mintNewCopy(
         ).signers([newMint])
         .rpc();
     // derive collection metadata
-    let collectionMetadata;
+    let collectionMetadata: PublicKey;
     [collectionMetadata, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
@@ -135,7 +137,7 @@ export async function mintNewCopy(
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
     // derive collection master-edition
-    let collectionMasterEdition;
+    let collectionMasterEdition: PublicKey;
     [collectionMasterEdition, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
@@ -178,21 +180,21 @@ export async function mintNewCopy(
 }
 
 async function addNewCopyToCollection(
-    provider,
-    program,
-    index,
-    creator,
-    authority,
-    mint,
-    collection,
-    collectionMetadata,
-    collectionMasterEdition,
-    newMint,
-    newMetadata
-) {
+    provider: AnchorProvider,
+    program: Program<DapCool>,
+    index: number,
+    creator: PublicKey,
+    authority: PublicKey,
+    mint: PublicKey,
+    collection: PublicKey,
+    collectionMetadata: PublicKey,
+    collectionMasterEdition: PublicKey,
+    newMint: PublicKey,
+    newMetadata: PublicKey
+): Promise<void> {
     // invoke rpc
     await program.methods
-        .addNewCopyToCollection(index)
+        .addNewCopyToCollection(index as any)
         .accounts(
             {
                 creator: creator,

@@ -1,12 +1,12 @@
 import {PublicKey} from "@solana/web3.js";
-import {AnchorProvider, BN, Program} from "@project-serum/anchor";
-import {SomosCrowd} from "../idl";
+import {BN, Program} from "@project-serum/anchor";
+import {DapCool} from "../idl";
 
-export interface Authority {
+export interface CollectionAuthority {
     // meta
     name: string
     symbol: string
-    index: string
+    index: number
     // for other pda derivations
     mint: PublicKey
     collection: PublicKey
@@ -15,7 +15,11 @@ export interface Authority {
     pda: PublicKey
 }
 
-export async function getAuthorityPda(program: Program<SomosCrowd>, handle: string, index: number): Promise<Authority> {
+export async function getAuthorityPda(
+    program: Program<DapCool>,
+    handle: string,
+    index: number
+): Promise<CollectionAuthority> {
     const pda: PublicKey = await deriveAuthorityPda(program, handle, index);
     const authority = await program.account.authority.fetch(pda);
     console.log(authority);
@@ -30,11 +34,11 @@ export async function getAuthorityPda(program: Program<SomosCrowd>, handle: stri
         numMinted: authority.numMinted,
         // pda for program invocation
         pda: pda
-    } as Authority
+    } as CollectionAuthority
 }
 
 export async function deriveAuthorityPda(
-    program: Program<SomosCrowd>,
+    program: Program<DapCool>,
     handle: string,
     index: number
 ): Promise<PublicKey> {

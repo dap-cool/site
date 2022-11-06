@@ -1,9 +1,22 @@
-import {web3} from "@project-serum/anchor";
+import {PublicKey} from "@solana/web3.js";
+import {Program} from "@project-serum/anchor";
+import {DapCool} from "../idl";
 
-export async function deriveCreatorPda(program, handle) {
+export interface Creator {
+    handle: string
+    authority: PublicKey
+    numCollections: number
+    pinned: Pinned
+}
+
+export interface Pinned {
+    collections: number[]
+}
+
+export async function deriveCreatorPda(program: Program<DapCool>, handle: string): Promise<PublicKey> {
     // derive pda
     let pda, _;
-    [pda, _] = await web3.PublicKey.findProgramAddress(
+    [pda, _] = await PublicKey.findProgramAddress(
         [
             Buffer.from(handle)
         ],
@@ -12,15 +25,25 @@ export async function deriveCreatorPda(program, handle) {
     return pda
 }
 
-export async function getCreatorPda(program, pda) {
-    return await program.account.creator.fetch(pda);
+export async function getCreatorPda(program: Program<DapCool>, pda: PublicKey): Promise<Creator> {
+    const fetched = await program.account.creator.fetch(pda);
+    return {
+        handle: fetched.handle,
+        authority: fetched.authority,
+        numCollections: fetched.numCollections,
+        pinned: fetched.pinned
+    } as Creator
 }
 
-export async function assertCreatorPdaDoesNotExistAlready(app, program, handle) {
+export async function assertCreatorPdaDoesNotExistAlready(
+    app,
+    program: Program<DapCool>,
+    handle: string
+): Promise<PublicKey | null> {
     // derive pda
     const pda = await deriveCreatorPda(program, handle);
     // fetch pda
-    let creator;
+    let creator: PublicKey | null;
     try {
         await getCreatorPda(program, pda);
         const msg = "handle exists already: " + handle;
@@ -42,19 +65,32 @@ export async function assertCreatorPdaDoesNotExistAlready(app, program, handle) 
     return creator
 }
 
-export async function assertCreatorPdaDoesExistAlreadyForCreator(app, program, handle) {
+export async function assertCreatorPdaDoesExistAlreadyForCreator(
+    app,
+    program: Program<DapCool>,
+    handle: string
+): Promise<Creator | null> {
     return await assertCreatorPdaDoesExistAlready(app, program, handle, "creator-handle-dne")
 }
 
-export async function assertCreatorPdaDoesExistAlreadyForCollector(app, program, handle) {
+export async function assertCreatorPdaDoesExistAlreadyForCollector(
+    app,
+    program: Program<DapCool>,
+    handle: string
+): Promise<Creator | null> {
     return await assertCreatorPdaDoesExistAlready(app, program, handle, "collector-handle-dne")
 }
 
-async function assertCreatorPdaDoesExistAlready(app, program, handle, listener) {
+async function assertCreatorPdaDoesExistAlready(
+    app,
+    program: Program<DapCool>,
+    handle: string,
+    listener: string
+): Promise<Creator | null> {
     // derive pda
     const pda = await deriveCreatorPda(program, handle);
     // fetch pda
-    let creator;
+    let creator: Creator | null;
     try {
         creator = await getCreatorPda(program, pda);
         const msg = "found handle: " + handle;
@@ -75,19 +111,19 @@ async function assertCreatorPdaDoesExistAlready(app, program, handle, listener) 
     return creator
 }
 
-export function validateHandleForNewCreator(app, handle) {
+export function validateHandleForNewCreator(app, handle: string): string | null {
     return validateHandle(app, handle, "new-creator-handle-invalid")
 }
 
-export function validateHandleForExistingCreator(app, handle) {
+export function validateHandleForExistingCreator(app, handle: string): string | null {
     return validateHandle(app, handle, "existing-creator-handle-invalid")
 }
 
-export function validateHandleForCollector(app, handle) {
+export function validateHandleForCollector(app, handle: string): string | null {
     return validateHandle(app, handle, "collector-handle-invalid")
 }
 
-function validateHandle(app, handle, listener) {
+function validateHandle(app, handle: string, listener: string): string | null {
     if (isValidHandle(handle)) {
         return handle
     } else {
@@ -105,6 +141,6 @@ function validateHandle(app, handle, listener) {
     }
 }
 
-function isValidHandle(handle) {
+function isValidHandle(handle: string): boolean {
     return (handle.length <= 16)
 }

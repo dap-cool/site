@@ -1,6 +1,5 @@
-import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
+import {Creator, deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
 import {deriveAuthorityPda} from "../pda/authority-pda";
-import {BN, web3} from "@project-serum/anchor";
 import {getCreatorCollections} from "../pda/get-creator-collections";
 import {
     MPL_PREFIX,
@@ -10,20 +9,31 @@ import {
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {buildMetaData, provision, readLogo, uploadFile} from "../../shdw/shdw";
+import {AnchorProvider, BN, Program} from "@project-serum/anchor";
+import {Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
+import {ShdwDrive} from "@shadow-drive/sdk";
+import {DapCool} from "../idl";
 
-export async function creatNft(app, provider, program, handle, name, symbol) {
+export async function creatNft(
+    app,
+    provider: AnchorProvider,
+    program: Program<DapCool>,
+    handle: string,
+    name: string,
+    symbol: string
+) {
     try {
         // get creator
-        const creatorPda = await deriveCreatorPda(program, handle);
-        const creator = await getCreatorPda(program, creatorPda);
+        const creatorPda: PublicKey = await deriveCreatorPda(program, handle);
+        const creator: Creator = await getCreatorPda(program, creatorPda);
         // derive authority pda
-        const authorityIndex = creator.numCollections + 1;
-        const authorityPda = await deriveAuthorityPda(program, handle, authorityIndex);
+        const authorityIndex: number = creator.numCollections + 1;
+        const authorityPda: PublicKey = await deriveAuthorityPda(program, handle, authorityIndex);
         // derive key-pair for mint
-        const mint = web3.Keypair.generate();
+        const mint = Keypair.generate();
         // derive metadata
         let metadata, _;
-        [metadata, _] = await web3.PublicKey.findProgramAddress(
+        [metadata, _] = await PublicKey.findProgramAddress(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -33,7 +43,7 @@ export async function creatNft(app, provider, program, handle, name, symbol) {
         )
         // derive master-edition
         let masterEdition;
-        [masterEdition, _] = await web3.PublicKey.findProgramAddress(
+        [masterEdition, _] = await PublicKey.findProgramAddress(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -44,7 +54,7 @@ export async function creatNft(app, provider, program, handle, name, symbol) {
         )
         // derive master-edition-ata
         let masterEditionAta;
-        [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
+        [masterEditionAta, _] = await PublicKey.findProgramAddress(
             [
                 authorityPda.toBuffer(),
                 SPL_TOKEN_PROGRAM_ID.toBuffer(),
@@ -53,7 +63,7 @@ export async function creatNft(app, provider, program, handle, name, symbol) {
             SPL_ASSOCIATED_TOKEN_PROGRAM_ID
         )
         // upload metadata
-        const metadataUrl = await uploadMetadata(
+        const metadataUrl: string = await uploadMetadata(
             provider.connection,
             provider.wallet,
             handle,
@@ -64,9 +74,9 @@ export async function creatNft(app, provider, program, handle, name, symbol) {
         // invoke rpc
         await program.methods
             .createNft(
-                name,
-                symbol,
-                metadataUrl,
+                name as any,
+                symbol as any,
+                metadataUrl as any,
                 new BN(2) // TODO; supply
             )
             .accounts(
@@ -81,8 +91,8 @@ export async function creatNft(app, provider, program, handle, name, symbol) {
                     tokenProgram: SPL_TOKEN_PROGRAM_ID,
                     associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
                     metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
-                    systemProgram: web3.SystemProgram.programId,
-                    rent: web3.SYSVAR_RENT_PUBKEY,
+                    systemProgram: SystemProgram.programId,
+                    rent: SYSVAR_RENT_PUBKEY,
                 }
             )
             .signers([mint])
@@ -121,27 +131,40 @@ export async function creatNft(app, provider, program, handle, name, symbol) {
     }
 }
 
-async function uploadMetadata(connection, uploader, handle, index, name, symbol) {
+async function uploadMetadata(
+    connection: Connection,
+    uploader: any,
+    handle: string,
+    index: number,
+    name: string,
+    symbol: string
+): Promise<string> {
     // read logo from input
-    const logo = await readLogo();
+    const logo: File = readLogo();
     // provision space
-    const provisioned = await provision(connection, uploader, logo.size);
+    const provisioned: { drive: ShdwDrive; account: PublicKey } = await provision(connection, uploader, logo.size);
     // upload logo
-    const shdwUrl = await uploadFile(logo, provisioned.drive, provisioned.account);
-    const logoUrl = shdwUrl + logo.name;
+    const shdwUrl: string = await uploadFile(logo, provisioned.drive, provisioned.account);
+    const logoUrl: string = shdwUrl + logo.name;
     // build metadata
-    const metadata = buildMetaData(handle, index, name, symbol, "description", logoUrl);
+    const metadata: File = buildMetaData(handle, index, name, symbol, "description", logoUrl);
     // upload metadata
     await uploadFile(metadata, provisioned.drive, provisioned.account);
     return (shdwUrl + "meta.json")
 }
 
-async function createCollection(provider, program, creator, authority, mint) {
+async function createCollection(
+    provider: AnchorProvider,
+    program: Program<DapCool>,
+    creator: PublicKey,
+    authority: PublicKey,
+    mint: PublicKey
+) {
     // derive key-pair for collection
-    const collection = web3.Keypair.generate();
+    const collection = Keypair.generate();
     // derive collection metadata
     let collectionMetadata, _;
-    [collectionMetadata, _] = await web3.PublicKey.findProgramAddress(
+    [collectionMetadata, _] = await PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -151,7 +174,7 @@ async function createCollection(provider, program, creator, authority, mint) {
     )
     // derive collection master-edition
     let collectionMasterEdition;
-    [collectionMasterEdition, _] = await web3.PublicKey.findProgramAddress(
+    [collectionMasterEdition, _] = await PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -162,7 +185,7 @@ async function createCollection(provider, program, creator, authority, mint) {
     )
     // derive collection master-edition-ata
     let collectionMasterEditionAta;
-    [collectionMasterEditionAta, _] = await web3.PublicKey.findProgramAddress(
+    [collectionMasterEditionAta, _] = await PublicKey.findProgramAddress(
         [
             authority.toBuffer(),
             SPL_TOKEN_PROGRAM_ID.toBuffer(),
@@ -186,8 +209,8 @@ async function createCollection(provider, program, creator, authority, mint) {
                 tokenProgram: SPL_TOKEN_PROGRAM_ID,
                 associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
                 metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
-                systemProgram: web3.SystemProgram.programId,
-                rent: web3.SYSVAR_RENT_PUBKEY,
+                systemProgram: SystemProgram.programId,
+                rent: SYSVAR_RENT_PUBKEY,
             }
         )
         .signers([collection])

@@ -1,39 +1,51 @@
-import {web3} from "@project-serum/anchor";
 import {ShdwDrive} from "@shadow-drive/sdk";
+import {Connection, PublicKey} from "@solana/web3.js";
 import {version} from "./config";
 
-export async function provision(connection, uploader, sizeInBytes) {
+export interface CollectionMetadata {
+    name: string
+    symbol: string
+    description: string
+    image: string // url
+    external_url: string
+}
+
+export async function provision(
+    connection: Connection,
+    uploader: any,
+    sizeInBytes: number
+): Promise<{ drive: ShdwDrive; account: PublicKey }> {
     // build drive client
     console.log("build shdw client with finalized commitment");
     // build connection with finalized commitment for initial account creation
-    const finalizedConnection = new web3.Connection(connection.rpcEndpoint, "finalized");
-    const drive = await new ShdwDrive(finalizedConnection, uploader).init();
+    const finalizedConnection = new Connection(connection.rpcEndpoint, "finalized");
+    const drive: ShdwDrive = await new ShdwDrive(finalizedConnection, uploader).init();
     // create storage account
     console.log("create shdw storage account");
     const size = (((sizeInBytes / 1000000) + 2).toString()).split(".")[0] + "MB";
     console.log(size);
     const createStorageResponse = await drive.createStorageAccount("dap-cool", size, version)
-    const account = new web3.PublicKey(createStorageResponse.shdw_bucket);
+    const account: PublicKey = new PublicKey(createStorageResponse.shdw_bucket);
     return {drive, account}
 }
 
-export async function markAsImmutable(drive, account) {
+export async function markAsImmutable(drive: ShdwDrive, account: PublicKey): Promise<void> {
     console.log("mark account as immutable");
     // time out for 1 second to give RPC time to resolve account
     await new Promise(r => setTimeout(r, 1000));
     await drive.makeStorageImmutable(account, version);
 }
 
-export async function uploadFile(file, drive, account) {
+export async function uploadFile(file: File, drive: ShdwDrive, account: PublicKey): Promise<string> {
     console.log("upload file to shdw drive");
     const url = (await drive.uploadFile(account, file, version)).finalized_locations[0];
     return url.replace(file.name, "");
 }
 
-export async function readLogo() {
-    const imgSelector = document.getElementById(
+export function readLogo(): File {
+    const imgSelector: HTMLInputElement = document.getElementById(
         "dap-cool-collection-logo-selector"
-    );
+    ) as HTMLInputElement;
     console.log(imgSelector);
     const fileList = imgSelector.files;
     let file;
@@ -50,10 +62,17 @@ export async function readLogo() {
     } else {
         console.log("could not find logo")
     }
-    return file
+    return file as File
 }
 
-export function buildMetaData(handle, index, name, symbol, description, imageUrl) {
+export function buildMetaData(
+    handle: string,
+    index: number,
+    name: string,
+    symbol: string,
+    description: string,
+    imageUrl: string
+): File {
     const url = "https://dap.cool/#/" + handle + "/" + index;
     const meta = {
         name: name,
@@ -61,7 +80,7 @@ export function buildMetaData(handle, index, name, symbol, description, imageUrl
         description: description,
         image: imageUrl,
         external_url: url
-    };
+    } as CollectionMetadata;
     const json = JSON.stringify(meta);
     const textEncoder = new TextEncoder();
     const bytes = textEncoder.encode(json);

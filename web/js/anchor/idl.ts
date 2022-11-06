@@ -1,6 +1,6 @@
-export type SomosCrowd = {
+export type DapCool = {
   "version": "1.0.0",
-  "name": "somos_crowd",
+  "name": "dap_cool",
   "instructions": [
     {
       "name": "initNewCreator",
@@ -447,9 +447,9 @@ export type SomosCrowd = {
   ]
 };
 
-export const IDL: SomosCrowd = {
+export const IDL: DapCool = {
   "version": "1.0.0",
-  "name": "somos_crowd",
+  "name": "dap_cool",
   "instructions": [
     {
       "name": "initNewCreator",
