@@ -8,15 +8,15 @@ pub fn ix(
     ctx: Context<InitNewCreator>,
     handle: String,
 ) -> Result<()> {
-    let creator = &mut ctx.accounts.creator;
+    let handle_pda = &mut ctx.accounts.handle_pda;
     // authority
-    creator.authority = ctx.accounts.payer.key();
+    handle_pda.authority = ctx.accounts.payer.key();
     // handle
     validate_handle(&handle)?;
-    creator.handle = handle;
+    handle_pda.handle = handle;
     // collections
-    creator.num_collections = 0;
-    creator.pinned = Pinned { collections: [0; 10] };
+    handle_pda.num_collections = 0;
+    handle_pda.pinned = Pinned { collections: [0; 10] };
     Ok(())
 }
 

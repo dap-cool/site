@@ -18,7 +18,7 @@ const PINNED_SIZE: usize = 10;
 
 
 #[account]
-pub struct Creator {
+pub struct Handle {
     pub handle: String,
     pub authority: Pubkey, // TODO; [as NFT, assert]
     pub num_collections: u8,

@@ -12,7 +12,7 @@ pub fn ix(ctx: Context<CreateCollection>) -> Result<()> {
     let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
     // build signer seeds
     let seeds = &[
-        ctx.accounts.creator.handle.as_bytes(), &[ctx.accounts.creator.num_collections],
+        ctx.accounts.handle.handle.as_bytes(), &[ctx.accounts.handle.num_collections],
         &[authority_bump]
     ];
     let signer_seeds = &[&seeds[..]];

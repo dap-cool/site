@@ -10,7 +10,7 @@ pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
     let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
     // build signer seeds
     let seeds = &[
-        ctx.accounts.creator.handle.as_bytes(), &[n],
+        ctx.accounts.handle.handle.as_bytes(), &[n],
         &[authority_bump]
     ];
     let signer_seeds = &[&seeds[..]];

@@ -16,10 +16,10 @@ pub fn ix(
     // unwrap authority bump
     let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
     // increment collection
-    let increment = ctx.accounts.creator.num_collections + 1;
+    let increment = ctx.accounts.handle.num_collections + 1;
     // build signer seeds
     let seeds = &[
-        ctx.accounts.creator.handle.as_bytes(), &[increment],
+        ctx.accounts.handle.handle.as_bytes(), &[increment],
         &[authority_bump]
     ];
     let signer_seeds = &[&seeds[..]];
@@ -128,7 +128,7 @@ pub fn ix(
     authority.symbol = symbol; // already validated by metaplex
     authority.uri = uri; // already validated by metaplex
     // increment collection
-    let creator = &mut ctx.accounts.creator;
-    creator.num_collections = increment;
+    let handle = &mut ctx.accounts.handle;
+    handle.num_collections = increment;
     Ok(())
 }
