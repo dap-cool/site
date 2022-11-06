@@ -1,6 +1,7 @@
-module Sub.Listener.Listener exposing (Listener(..), WithMore, decode, decode0)
+module Sub.Listener.Listener exposing (Listener(..), decode, decode0)
 
 import Json.Decode as Decode
+import Model.Global as Global exposing (Global)
 import Model.Model exposing (Model)
 import Model.State as Model
 import Msg.Msg exposing (Msg)
@@ -14,12 +15,6 @@ type Listener
     | Collect ToCollector
 
 
-type alias WithMore =
-    { listener : Listener
-    , more : Json
-    }
-
-
 decode0 : String -> Result String (Maybe Listener)
 decode0 string =
     let
@@ -30,15 +25,15 @@ decode0 string =
     Util.decode string decoder (\a -> a)
 
 
-decode : Model -> Json -> (String -> Result String a) -> (a -> Model) -> ( Model, Cmd Msg )
+decode : Model -> Json -> (String -> Result String a) -> (Global -> a -> Model) -> ( Model, Cmd Msg )
 decode model json moreDecoder update =
-    case decodeMore json of
+    case ( Global.decode json, decodeMore json ) of
         -- more found
-        Ok moreJson ->
+        ( Ok global, Ok moreJson ) ->
             -- decode
             case moreDecoder moreJson of
                 Ok decoded ->
-                    ( update decoded
+                    ( update global decoded
                     , Cmd.none
                     )
 
@@ -48,9 +43,21 @@ decode model json moreDecoder update =
                     , Cmd.none
                     )
 
-        -- error from decoder
-        Err string ->
+        -- error from global
+        ( Err string, Ok _ ) ->
             ( { model | state = Model.Error string }
+            , Cmd.none
+            )
+
+        -- error from decoder
+        ( Ok _, Err string ) ->
+            ( { model | state = Model.Error string }
+            , Cmd.none
+            )
+
+        -- error from both
+        ( Err string0, Err string1 ) ->
+            ( { model | state = Model.Error <| String.join " " [ string0, "AND", string1 ] }
             , Cmd.none
             )
 

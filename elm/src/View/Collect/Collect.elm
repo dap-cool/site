@@ -4,6 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class, placeholder, style, type_)
 import Html.Events exposing (onClick, onInput)
 import Model.Collector.Collector exposing (Collector(..))
+import Model.Global exposing (Global)
 import Model.Handle as Handle
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))
@@ -11,8 +12,8 @@ import View.Generic.Collection.Collector.Collector
 import View.Generic.Wallet
 
 
-body : Collector -> Html Msg
-body collector =
+body : Global -> Collector -> Html Msg
+body global collector =
     let
         html =
             case collector of
@@ -31,7 +32,7 @@ body collector =
                                         [ Html.button
                                             [ class "is-button-1"
                                             , onClick <|
-                                                FromCollector <|
+                                                FromCollector global <|
                                                     CollectorMsg.HandleForm <|
                                                         Handle.Confirm string
                                             ]
@@ -55,7 +56,7 @@ body collector =
                                 , placeholder "🔍 Find Creators"
                                 , onInput <|
                                     \s ->
-                                        FromCollector <|
+                                        FromCollector global <|
                                             CollectorMsg.HandleForm <|
                                                 Handle.Typing s
                                 ]
@@ -100,7 +101,7 @@ body collector =
                                 [ Html.button
                                     [ class "is-button-1"
                                     , onClick <|
-                                        FromCollector <|
+                                        FromCollector global <|
                                             CollectorMsg.HandleForm <|
                                                 Handle.Typing ""
                                     ]
@@ -132,7 +133,7 @@ body collector =
                                 [ Html.button
                                     [ class "is-button-1"
                                     , onClick <|
-                                        FromCollector <|
+                                        FromCollector global <|
                                             CollectorMsg.HandleForm <|
                                                 Handle.Typing ""
                                     ]
@@ -163,6 +164,7 @@ body collector =
                             [ Html.text "collections ⬇️"
                             ]
                         , View.Generic.Collection.Collector.Collector.viewMany
+                            global
                             withCollections.handle
                             withCollections.collections
                         ]
@@ -186,12 +188,13 @@ body collector =
                             [ Html.text "collection selected ⬇️"
                             ]
                         , View.Generic.Collection.Collector.Collector.view
+                            global
                             withCollection.handle
                             withCollection.collection
                         , Html.button
                             [ class "is-button-1"
                             , onClick <|
-                                FromCollector <|
+                                FromCollector global <|
                                     CollectorMsg.PurchaseCollection
                                         withCollection.handle
                                         withCollection.collection.index
@@ -233,6 +236,7 @@ body collector =
                         , Html.div
                             []
                             [ View.Generic.Collection.Collector.Collector.view
+                                global
                                 withCollection.handle
                                 withCollection.collection
                             ]

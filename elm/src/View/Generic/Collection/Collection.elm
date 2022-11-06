@@ -3,38 +3,39 @@ module View.Generic.Collection.Collection exposing (view, viewMany)
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Model.Collection exposing (Collection)
+import Model.Global exposing (Global)
 import Model.Handle exposing (Handle)
 import Msg.Msg exposing (Msg(..))
 
 
-view : Handle -> Collection -> Html Msg
-view handle collection =
+view : Global -> Handle -> Collection -> Html Msg
+view global handle collection =
     let
-        nop : a -> b -> Html msg
-        nop _ _ =
+        nop : Global -> a -> b -> Html msg
+        nop _ _ _ =
             Html.div
                 []
                 []
     in
-    view_ handle collection nop
+    view_ global handle collection nop
 
 
-viewMany : Handle -> List Collection -> (Handle -> Collection -> Html Msg) -> Html Msg
-viewMany handle collections f =
+viewMany : Global -> Handle -> List Collection -> (Global -> Handle -> Collection -> Html Msg) -> Html Msg
+viewMany global handle collections f =
     Html.div
         []
     <|
         List.map
-            (\c -> view_ handle c f)
+            (\c -> view_ global handle c f)
             collections
 
 
-view_ : Handle -> Collection -> (Handle -> Collection -> Html Msg) -> Html Msg
-view_ handle collection select =
+view_ : Global -> Handle -> Collection -> (Global -> Handle -> Collection -> Html Msg) -> Html Msg
+view_ global handle collection select =
     Html.div
         [ class "has-border-2 px-2 py-2"
         ]
-        [ select handle collection
+        [ select global handle collection
         , Html.div
             [ class "has-border-2 px-2 py-2 mb-2"
             ]

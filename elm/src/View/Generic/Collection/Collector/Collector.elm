@@ -4,29 +4,30 @@ import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Model.Collection exposing (Collection)
 import Model.Collector.Collector as Collector
+import Model.Global exposing (Global)
 import Model.Handle exposing (Handle)
 import Model.State as State exposing (State(..))
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collection
 
 
-view : Handle -> Collection -> Html Msg
-view handle collection =
-    View.Generic.Collection.Collection.view handle collection
+view : Global -> Handle -> Collection -> Html Msg
+view global handle collection =
+    View.Generic.Collection.Collection.view global handle collection
 
 
-viewMany : Handle -> List Collection -> Html Msg
-viewMany handle collections =
-    View.Generic.Collection.Collection.viewMany handle collections select
+viewMany : Global -> Handle -> List Collection -> Html Msg
+viewMany global handle collections =
+    View.Generic.Collection.Collection.viewMany global handle collections select
 
 
-select : Handle -> Collection -> Html Msg
-select handle collection =
+select : Global -> Handle -> Collection -> Html Msg
+select global handle collection =
     Html.div
         []
         [ Html.a
             [ class "is-button-1"
-            , State.href <| Collect <| Collector.MaybeExistingCollection handle collection.index
+            , State.href <| Collect global <| Collector.MaybeExistingCollection handle collection.index
             ]
             [ Html.text "Select this"
             ]

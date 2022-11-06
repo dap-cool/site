@@ -1,4 +1,4 @@
-module Model.Wallet exposing (Wallet, decode, encode, slice)
+module Model.Wallet exposing (Wallet, decode, decoder, encode, slice)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -35,10 +35,10 @@ type alias WalletObject =
 
 decode : String -> Result String Wallet
 decode string =
-    let
-        decoder : Decode.Decoder WalletObject
-        decoder =
-            Decode.map WalletObject
-                (Decode.field "wallet" Decode.string)
-    in
     Util.decode string decoder (\a -> a.wallet)
+
+
+decoder : Decode.Decoder WalletObject
+decoder =
+    Decode.map WalletObject
+        (Decode.field "wallet" Decode.string)

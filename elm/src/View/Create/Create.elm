@@ -8,6 +8,7 @@ import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.New.New as New
+import Model.Global exposing (Global)
 import Model.Handle as Handle
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
@@ -18,8 +19,8 @@ import View.Generic.Collection.Creator.Creator
 import View.Generic.Wallet
 
 
-body : Creator -> Html Msg
-body creator =
+body : Global -> Creator -> Html Msg
+body global creator =
     let
         html =
             case creator of
@@ -113,7 +114,7 @@ body creator =
                             , Html.button
                                 [ class "is-button-1"
                                 , onClick <|
-                                    FromCreator <|
+                                    FromCreator global <|
                                         CreatorMsg.Existing
                                             ExistingMsg.StartHandleForm
                                 ]
@@ -124,7 +125,7 @@ body creator =
                                 """
                             , Html.button
                                 [ class "is-button-1"
-                                , onClick <| FromCreator <| CreatorMsg.New <| NewMsg.StartHandleForm
+                                , onClick <| FromCreator global <| CreatorMsg.New <| NewMsg.StartHandleForm
                                 ]
                                 [ Html.text "new profile"
                                 ]
@@ -150,7 +151,7 @@ body creator =
                                             , placeholder "Handle"
                                             , onInput <|
                                                 \s ->
-                                                    FromCreator <|
+                                                    FromCreator global <|
                                                         CreatorMsg.New <|
                                                             NewMsg.HandleForm <|
                                                                 Handle.Typing s
@@ -183,7 +184,7 @@ body creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator <|
+                                                        FromCreator global <|
                                                             CreatorMsg.New <|
                                                                 NewMsg.HandleForm <|
                                                                     Handle.Confirm string
@@ -213,7 +214,7 @@ body creator =
                                             , placeholder "Handle"
                                             , onInput <|
                                                 \s ->
-                                                    FromCreator <|
+                                                    FromCreator global <|
                                                         CreatorMsg.New <|
                                                             NewMsg.HandleForm <|
                                                                 Handle.Typing s
@@ -263,7 +264,7 @@ body creator =
                                         [ Html.button
                                             [ class "is-button-1"
                                             , onClick <|
-                                                FromCreator <|
+                                                FromCreator global <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
                                                             Handle.Typing ""
@@ -296,7 +297,7 @@ body creator =
                                         [ Html.button
                                             [ class "is-button-1"
                                             , onClick <|
-                                                FromCreator <|
+                                                FromCreator global <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
                                                             Handle.Typing ""
@@ -328,7 +329,7 @@ body creator =
                                             , placeholder "Handle"
                                             , onInput <|
                                                 \s ->
-                                                    FromCreator <|
+                                                    FromCreator global <|
                                                         CreatorMsg.Existing <|
                                                             ExistingMsg.HandleForm <|
                                                                 Handle.Typing s
@@ -363,7 +364,7 @@ body creator =
                                                         [ Html.button
                                                             [ class "is-button-1"
                                                             , onClick <|
-                                                                FromCreator <|
+                                                                FromCreator global <|
                                                                     CreatorMsg.Existing <|
                                                                         ExistingMsg.HandleForm <|
                                                                             Handle.Confirm string
@@ -393,7 +394,7 @@ body creator =
                                                     , placeholder "Handle"
                                                     , onInput <|
                                                         \s ->
-                                                            FromCreator <|
+                                                            FromCreator global <|
                                                                 CreatorMsg.Existing <|
                                                                     ExistingMsg.HandleForm <|
                                                                         Handle.Typing s
@@ -443,7 +444,7 @@ body creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator <|
+                                                        FromCreator global <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
                                                                     Handle.Typing ""
@@ -476,7 +477,7 @@ body creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator <|
+                                                        FromCreator global <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
                                                                     Handle.Typing ""
@@ -510,7 +511,7 @@ body creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator <|
+                                                        FromCreator global <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.HandleForm <|
                                                                     Handle.Typing ""
@@ -547,7 +548,7 @@ body creator =
                                                     [ Html.button
                                                         [ class "is-button-1"
                                                         , onClick <|
-                                                            FromCreator <|
+                                                            FromCreator global <|
                                                                 CreatorMsg.Existing <|
                                                                     ExistingMsg.StartCreatingNewCollection
                                                                         wallet
@@ -557,6 +558,7 @@ body creator =
                                                         ]
                                                     ]
                                                 , View.Generic.Collection.Creator.Creator.viewMany
+                                                    global
                                                     wallet
                                                     withCollections.handle
                                                     withCollections.collections
@@ -583,7 +585,7 @@ body creator =
                                                             , ".png"
                                                             ]
                                                     , onClick <|
-                                                        FromCreator <|
+                                                        FromCreator global <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.NewCollectionForm
                                                                     wallet
@@ -618,7 +620,7 @@ body creator =
                                                             , placeholder "Name your new collection"
                                                             , onInput <|
                                                                 \s ->
-                                                                    FromCreator <|
+                                                                    FromCreator global <|
                                                                         CreatorMsg.Existing <|
                                                                             ExistingMsg.NewCollectionForm
                                                                                 wallet
@@ -654,7 +656,7 @@ body creator =
                                                             , placeholder "Symbol"
                                                             , onInput <|
                                                                 \s ->
-                                                                    FromCreator <|
+                                                                    FromCreator global <|
                                                                         CreatorMsg.Existing <|
                                                                             ExistingMsg.NewCollectionForm
                                                                                 wallet
@@ -692,7 +694,7 @@ body creator =
                                                         [ Html.button
                                                             [ class "is-button-1"
                                                             , onClick <|
-                                                                FromCreator <|
+                                                                FromCreator global <|
                                                                     CreatorMsg.Existing <|
                                                                         ExistingMsg.CreateNewCollection
                                                                             wallet
@@ -727,7 +729,7 @@ body creator =
                                         ]
                                         [ View.Generic.Wallet.view wallet
                                         , header
-                                        , View.Generic.Collection.Creator.Creator.view handle collection
+                                        , View.Generic.Collection.Creator.Creator.view global handle collection
                                         ]
 
                 MaybeExisting string ->
@@ -746,7 +748,7 @@ body creator =
                             [ Html.button
                                 [ class "is-button-1"
                                 , onClick <|
-                                    FromCreator <|
+                                    FromCreator global <|
                                         CreatorMsg.Existing <|
                                             ExistingMsg.HandleForm <|
                                                 Handle.Confirm string

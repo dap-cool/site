@@ -1,4 +1,4 @@
-module Model.Handle exposing (Form(..), Handle, WithWallet, decode, decodeWithWallet, encode, normalize)
+module Model.Handle exposing (Form(..), Handle, WithWallet, decode, decodeWithWallet, encode, normalize, witWalletDecoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -44,14 +44,14 @@ decode string =
 
 decodeWithWallet : String -> Result String WithWallet
 decodeWithWallet string =
-    let
-        decoder : Decode.Decoder WithWallet
-        decoder =
-            Decode.map2 WithWallet
-                (Decode.field "handle" Decode.string)
-                (Decode.field "wallet" Decode.string)
-    in
-    Util.decode string decoder identity
+    Util.decode string witWalletDecoder identity
+
+
+witWalletDecoder : Decode.Decoder WithWallet
+witWalletDecoder =
+    Decode.map2 WithWallet
+        (Decode.field "handle" Decode.string)
+        (Decode.field "wallet" Decode.string)
 
 
 normalize : String -> String

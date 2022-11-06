@@ -2,6 +2,7 @@ module Msg.Msg exposing (Msg(..), resetViewport)
 
 import Browser
 import Browser.Dom as Dom
+import Model.Global exposing (Global)
 import Msg.Collector.Collector exposing (FromCollector)
 import Msg.Creator.Creator exposing (FromCreator)
 import Msg.Js exposing (FromJs)
@@ -16,9 +17,9 @@ type
     | UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
       -- creator
-    | FromCreator FromCreator
+    | FromCreator Global FromCreator
       -- collector
-    | FromCollector FromCollector
+    | FromCollector Global FromCollector
       -- js ports
     | FromJs FromJs
 

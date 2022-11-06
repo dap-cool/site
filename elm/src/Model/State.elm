@@ -4,13 +4,14 @@ import Html
 import Html.Attributes
 import Model.Collector.Collector as Collector exposing (Collector)
 import Model.Creator.Creator as Creator exposing (Creator)
+import Model.Global exposing (Global(..))
 import Url
 import Url.Parser as UrlParser exposing ((</>))
 
 
 type State
-    = Create Creator
-    | Collect Collector
+    = Create Global Creator
+    | Collect Global Collector
     | Error String
 
 
@@ -19,24 +20,24 @@ urlParser =
     UrlParser.oneOf
         -- collector
         [ UrlParser.map
-            (Collect <| Collector.TypingHandle "")
+            (Collect NoWalletYet (Collector.TypingHandle ""))
             UrlParser.top
         , UrlParser.map
-            (Collect (Collector.TypingHandle ""))
+            (Collect NoWalletYet (Collector.TypingHandle ""))
             (UrlParser.s "creator")
         , UrlParser.map
-            (\handle -> Collect (Collector.MaybeExistingCreator handle))
+            (\handle -> Collect NoWalletYet (Collector.MaybeExistingCreator handle))
             (UrlParser.s "creator" </> UrlParser.string)
         , UrlParser.map
-            (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
+            (\handle index -> Collect NoWalletYet (Collector.MaybeExistingCollection handle index))
             (UrlParser.s "creator" </> UrlParser.string </> UrlParser.int)
 
         -- creator
         , UrlParser.map
-            (Create Creator.Top)
+            (Create NoWalletYet Creator.Top)
             (UrlParser.s "admin")
         , UrlParser.map
-            (\handle -> Create (Creator.MaybeExisting handle))
+            (\handle -> Create NoWalletYet (Creator.MaybeExisting handle))
             (UrlParser.s "admin" </> UrlParser.string)
         ]
 
@@ -61,10 +62,10 @@ parse url =
 path : State -> String
 path state =
     case state of
-        Create _ ->
+        Create _ _ ->
             "#/admin"
 
-        Collect collector ->
+        Collect _ collector ->
             case collector of
                 Collector.MaybeExistingCreator string ->
                     String.concat

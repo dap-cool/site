@@ -4,6 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Model.Collection exposing (Collection)
+import Model.Global exposing (Global)
 import Model.Handle exposing (Handle)
 import Model.Wallet exposing (Wallet)
 import Msg.Creator.Creator exposing (FromCreator(..))
@@ -12,30 +13,29 @@ import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collection
 
 
-view : Handle -> Collection -> Html Msg
-view handle collection =
-    View.Generic.Collection.Collection.view handle collection
+view : Global -> Handle -> Collection -> Html Msg
+view global handle collection =
+    View.Generic.Collection.Collection.view global handle collection
 
 
-viewMany : Wallet -> Handle -> List Collection -> Html Msg
-viewMany wallet handle collections =
+viewMany : Global -> Wallet -> Handle -> List Collection -> Html Msg
+viewMany global wallet handle collections =
     let
-        f : Handle -> Collection -> Html Msg
+        f : Global -> Handle -> Collection -> Html Msg
         f =
             select wallet
     in
-    View.Generic.Collection.Collection.viewMany handle collections f
+    View.Generic.Collection.Collection.viewMany global handle collections f
 
 
-select : Wallet -> Handle -> Collection -> Html Msg
-select wallet handle collection =
+select : Wallet -> Global -> Handle -> Collection -> Html Msg
+select wallet global handle collection =
     Html.div
         []
         [ Html.button
-            -- TODO; href
             [ class "is-button-1"
             , style "width" "100%"
-            , onClick <| FromCreator <| Existing <| SelectCollection wallet handle collection
+            , onClick <| FromCreator global <| Existing <| SelectCollection wallet handle collection
             ]
             [ Html.text "Select"
             ]
