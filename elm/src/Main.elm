@@ -7,8 +7,9 @@ import Browser.Navigation as Nav
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.AlmostNewCollection as AlmostCollection
 import Model.Collector.Collector as Collector
+import Model.Collector.WithCollection as WithCollection
+import Model.Collector.WithCollections as WithCollections
 import Model.Creator.Creator as Creator
-import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.Existing.NewCollection as NewCollection
@@ -17,8 +18,6 @@ import Model.Global as Global
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))
-import Model.WithCollection as WithCollection
-import Model.WithCollections as WithCollections
 import Msg.Collector.Collector as FromCollector
 import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExistingCreator
@@ -74,24 +73,26 @@ update msg model =
                     { model | state = state, url = url }
             in
             case state of
-                Collect _ (Collector.MaybeExistingCreator handle) ->
+                Collect global (Collector.MaybeExistingCreator handle) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
                             Sender.encode <|
                                 { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
+                                , global = global
                                 , more = Handle.encode handle
                                 }
                         , resetViewport
                         ]
                     )
 
-                Collect _ (Collector.MaybeExistingCollection handle index) ->
+                Collect global (Collector.MaybeExistingCollection handle index) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
                             Sender.encode <|
                                 { sender = Sender.Collect <| FromCollector.SelectCollection handle index
+                                , global = global
                                 , more = AlmostExistingCollection.encode { handle = handle, index = index }
                                 }
                         , resetViewport
@@ -142,61 +143,42 @@ update msg model =
                                       }
                                     , sender <|
                                         Sender.encode <|
-                                            { sender = Sender.Create from, more = Handle.encode handle }
+                                            { sender = Sender.Create from
+                                            , global = global
+                                            , more = Handle.encode handle
+                                            }
                                     )
 
                 FromCreator.Existing existing ->
                     case existing of
-                        FromExistingCreator.StartHandleForm ->
+                        FromExistingCreator.ConfirmHandle handle ->
                             ( { model
                                 | state =
                                     Create global <|
                                         Creator.Existing <|
-                                            ExistingCreator.HandleForm <|
-                                                ExistingHandleFormStatus.TypingHandle ""
+                                            ExistingCreator.AuthorizingFromUrl
+                                                ExistingHandleFormStatus.WaitingForHandleConfirmation
                               }
-                            , Cmd.none
+                            , sender <|
+                                Sender.encode <|
+                                    { sender = Sender.Create from
+                                    , global = global
+                                    , more = Handle.encode handle
+                                    }
                             )
 
-                        FromExistingCreator.HandleForm handleForm ->
-                            case handleForm of
-                                Handle.Typing string ->
-                                    ( { model
-                                        | state =
-                                            Create global <|
-                                                Creator.Existing <|
-                                                    ExistingCreator.HandleForm <|
-                                                        ExistingHandleFormStatus.TypingHandle <|
-                                                            Handle.normalize string
-                                      }
-                                    , Cmd.none
-                                    )
-
-                                Handle.Confirm handle ->
-                                    ( { model
-                                        | state =
-                                            Create global <|
-                                                Creator.Existing <|
-                                                    ExistingCreator.HandleForm
-                                                        ExistingHandleFormStatus.WaitingForHandleConfirmation
-                                      }
-                                    , sender <|
-                                        Sender.encode <|
-                                            { sender = Sender.Create from, more = Handle.encode handle }
-                                    )
-
-                        FromExistingCreator.StartCreatingNewCollection wallet handle ->
+                        FromExistingCreator.StartCreatingNewCollection ->
                             ( { model
                                 | state =
                                     Create global <|
                                         Creator.Existing <|
-                                            ExistingCreator.Authorized <|
-                                                Authorized.CreatingNewCollection wallet handle NewCollection.default
+                                            ExistingCreator.CreatingNewCollection
+                                                NewCollection.default
                               }
                             , Cmd.none
                             )
 
-                        FromExistingCreator.NewCollectionForm wallet handle newCollectionForm ->
+                        FromExistingCreator.NewCollectionForm newCollectionForm ->
                             case newCollectionForm of
                                 NewCollectionForm.Name stringForm newCollection ->
                                     let
@@ -207,10 +189,7 @@ update msg model =
                                         | state =
                                             Create global <|
                                                 Creator.Existing <|
-                                                    ExistingCreator.Authorized <|
-                                                        Authorized.CreatingNewCollection
-                                                            wallet
-                                                            handle
+                                                    ExistingCreator.CreatingNewCollection
                                                             bumpNewCollection
                                       }
                                     , Cmd.none
@@ -225,10 +204,7 @@ update msg model =
                                         | state =
                                             Create global <|
                                                 Creator.Existing <|
-                                                    ExistingCreator.Authorized <|
-                                                        Authorized.CreatingNewCollection
-                                                            wallet
-                                                            handle
+                                                    ExistingCreator.CreatingNewCollection
                                                             bumpNewCollection
                                       }
                                     , Cmd.none
@@ -240,22 +216,22 @@ update msg model =
                                       -- prepare image form events
                                     )
 
-                        FromExistingCreator.CreateNewCollection wallet almostCollection ->
+                        FromExistingCreator.CreateNewCollection almostCollection ->
                             ( model
                             , sender <|
                                 Sender.encode <|
-                                    { sender = Sender.Create from, more = AlmostCollection.encode almostCollection }
+                                    { sender = Sender.Create from
+                                    , global = global
+                                    , more = AlmostCollection.encode almostCollection
+                                    }
                             )
 
-                        FromExistingCreator.SelectCollection wallet handle collection ->
+                        FromExistingCreator.SelectCollection collection ->
                             ( { model
                                 | state =
                                     Create global <|
                                         Creator.Existing <|
-                                            ExistingCreator.Authorized <|
-                                                Authorized.SelectedCollection
-                                                    wallet
-                                                    handle
+                                            ExistingCreator.SelectedCollection
                                                     collection
                               }
                             , Cmd.none
@@ -274,7 +250,10 @@ update msg model =
                             ( { model | state = Collect global <| Collector.WaitingForHandleConfirmation }
                             , sender <|
                                 Sender.encode <|
-                                    { sender = Sender.Collect from, more = Handle.encode string }
+                                    { sender = Sender.Collect from
+                                    , global = global
+                                    , more = Handle.encode string
+                                    }
                             )
 
                 FromCollector.SelectCollection _ _ ->
@@ -287,6 +266,7 @@ update msg model =
                     , sender <|
                         Sender.encode <|
                             { sender = Sender.Collect from
+                            , global = global
                             , more = AlmostExistingCollection.encode { handle = handle, index = int }
                             }
                     )
@@ -338,17 +318,13 @@ update msg model =
 
                                                         ToNewCreator.NewHandleSuccess ->
                                                             let
+                                                                -- TODO; Listener.decode0 grabs global
                                                                 f global handleWithWallet =
                                                                     { model
                                                                         | state =
                                                                             Create global <|
                                                                                 Creator.Existing <|
-                                                                                    ExistingCreator.Authorized <|
-                                                                                        Authorized.Top
-                                                                                            { handle = handleWithWallet.handle
-                                                                                            , wallet = Just handleWithWallet.wallet
-                                                                                            , collections = []
-                                                                                            }
+                                                                                    ExistingCreator.Top []
                                                                     }
                                                             in
                                                             Listener.decode model json Handle.decodeWithWallet f

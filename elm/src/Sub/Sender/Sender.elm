@@ -1,6 +1,7 @@
 module Sub.Sender.Sender exposing (Sender(..), WithMore, encode, encode0)
 
 import Json.Encode as Encode
+import Model.Global as Global exposing (Global)
 import Msg.Collector.Collector as CollectorMsg exposing (FromCollector)
 import Msg.Creator.Creator as CreatorMsg exposing (FromCreator)
 
@@ -12,6 +13,7 @@ type Sender
 
 type alias WithMore =
     { sender : Sender
+    , global : Global
     , more : Json
     }
 
@@ -22,6 +24,7 @@ encode withMore =
         encoder =
             Encode.object
                 [ ( "sender", Encode.string <| toString withMore.sender )
+                , ( "global", Encode.string <| Global.encode withMore.global )
                 , ( "more", Encode.string withMore.more )
                 ]
     in

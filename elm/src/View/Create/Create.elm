@@ -4,11 +4,10 @@ import Html exposing (Html)
 import Html.Attributes exposing (accept, class, href, id, placeholder, src, target, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Creator.Creator exposing (Creator(..))
-import Model.Creator.Existing.Authorized as Authorized
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.New.New as New
-import Model.Global exposing (Global)
+import Model.Global as Global exposing (Global)
 import Model.Handle as Handle
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
@@ -112,11 +111,7 @@ body global creator =
                                 """Login as
                                 """
                             , Html.button
-                                [ class "is-button-1"
-                                , onClick <|
-                                    FromCreator global <|
-                                        CreatorMsg.Existing
-                                            ExistingMsg.StartHandleForm
+                                [ class "is-button-1" -- TODO
                                 ]
                                 [ Html.text "existing creator"
                                 ]
@@ -311,78 +306,77 @@ body global creator =
                                 ]
 
                 Existing existingCreator ->
-                    case existingCreator of
-                        Existing.Top ->
+                    case (global, existingCreator) of
+                        (Global.HasWalletAndHandle withWallet, Existing.Top collections) ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ header
+                                [ View.Generic.Wallet.view withWallet.wallet
+                                , header
                                 , Html.div
-                                    [ class "field"
+                                    []
+                                    [ Html.text <|
+                                        String.concat
+                                            [ "authorized as:"
+                                            , " "
+                                            , withWallet.handle
+                                            ]
                                     ]
-                                    [ Html.p
-                                        [ class "control has-icons-left"
+                                , Html.div
+                                    []
+                                    [ Html.button
+                                        [ class "is-button-1"
+                                        , onClick <|
+                                            FromCreator global <|
+                                                CreatorMsg.Existing <|
+                                                    ExistingMsg.StartCreatingNewCollection
                                         ]
+                                        [ Html.text "create new collection"
+                                        ]
+                                    ]
+                                , View.Generic.Collection.Creator.Creator.viewMany
+                                    global
+                                    withWallet.handle
+                                    collections
+                                ]
+
+                        (Global.HasWalletAndHandle withWallet, Existing.CreatingNewCollection newCollection) ->
+                            let
+                                imageForm =
+                                    Html.div
+                                        []
                                         [ Html.input
-                                            [ class "input"
-                                            , type_ "text"
-                                            , placeholder "Handle"
-                                            , onInput <|
-                                                \s ->
-                                                    FromCreator global <|
-                                                        CreatorMsg.Existing <|
-                                                            ExistingMsg.HandleForm <|
-                                                                Handle.Typing s
+                                            [ id "dap-cool-collection-logo-selector"
+                                            , type_ "file"
+                                            , accept <|
+                                                String.join
+                                                    ", "
+                                                    [ ".jpg"
+                                                    , ".jpeg"
+                                                    , ".png"
+                                                    ]
+                                            , onClick <|
+                                                FromCreator global <|
+                                                    CreatorMsg.Existing <|
+                                                        ExistingMsg.NewCollectionForm
+                                                            NewCollectionForm.Image
                                             ]
                                             []
-                                        , Html.span
-                                            [ class "icon is-left"
-                                            ]
-                                            [ Html.i
-                                                [ class "fas fa-at"
+                                        , Html.div
+                                            []
+                                            [ Html.img
+                                                [ src "images/upload/default-pfp.jpg"
+                                                , width 500
+                                                , id "dap-cool-collection-logo"
                                                 ]
                                                 []
                                             ]
                                         ]
-                                    ]
-                                ]
 
-                        Existing.HandleForm handleFormStatus ->
-                            case handleFormStatus of
-                                ExistingHandleFormStatus.TypingHandle string ->
-                                    let
-                                        select =
-                                            case string of
-                                                "" ->
-                                                    Html.div
-                                                        []
-                                                        []
-
-                                                _ ->
-                                                    Html.div
-                                                        []
-                                                        [ Html.button
-                                                            [ class "is-button-1"
-                                                            , onClick <|
-                                                                FromCreator global <|
-                                                                    CreatorMsg.Existing <|
-                                                                        ExistingMsg.HandleForm <|
-                                                                            Handle.Confirm string
-                                                            ]
-                                                            [ Html.text <|
-                                                                String.concat
-                                                                    [ "proceed with handle as:"
-                                                                    , " "
-                                                                    , string
-                                                                    ]
-                                                            ]
-                                                        ]
-                                    in
+                                nameForm =
                                     Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ header
-                                        , Html.div
+                                        []
+                                        [ Html.div
                                             [ class "field"
                                             ]
                                             [ Html.p
@@ -391,376 +385,191 @@ body global creator =
                                                 [ Html.input
                                                     [ class "input"
                                                     , type_ "text"
-                                                    , placeholder "Handle"
+                                                    , placeholder "Name your new collection"
                                                     , onInput <|
                                                         \s ->
                                                             FromCreator global <|
                                                                 CreatorMsg.Existing <|
-                                                                    ExistingMsg.HandleForm <|
-                                                                        Handle.Typing s
+                                                                    ExistingMsg.NewCollectionForm <|
+                                                                        NewCollectionForm.Name s newCollection
                                                     ]
                                                     []
                                                 , Html.span
                                                     [ class "icon is-left"
                                                     ]
                                                     [ Html.i
-                                                        [ class "fas fa-at"
+                                                        [ class "fas fa-file-signature"
                                                         ]
                                                         []
                                                     ]
                                                 ]
                                             ]
-                                        , select
                                         ]
 
-                                ExistingHandleFormStatus.WaitingForHandleConfirmation ->
+                                symbolFrom =
                                     Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ header
-                                        , Html.div
-                                            [ class "is-loading"
+                                        []
+                                        [ Html.div
+                                            [ class "field"
                                             ]
-                                            []
-                                        ]
-
-                                ExistingHandleFormStatus.HandleInvalid string ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ header
-                                        , Html.div
-                                            [ class "has-border-2 px-2 py-2"
-                                            ]
-                                            [ Html.text <|
-                                                String.concat
-                                                    [ "input handle found to be invalid:"
-                                                    , " "
-                                                    , string
-                                                    ]
-                                            , Html.div
-                                                [ class "pt-1"
+                                            [ Html.p
+                                                [ class "control has-icons-left"
                                                 ]
-                                                [ Html.button
-                                                    [ class "is-button-1"
-                                                    , onClick <|
-                                                        FromCreator global <|
-                                                            CreatorMsg.Existing <|
-                                                                ExistingMsg.HandleForm <|
-                                                                    Handle.Typing ""
-                                                    ]
-                                                    [ Html.text
-                                                        """try again
-                                                        """
-                                                    ]
-                                                ]
-                                            ]
-                                        ]
-
-                                ExistingHandleFormStatus.HandleDoesNotExist string ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ header
-                                        , Html.div
-                                            [ class "has-border-2 px-2 py-2"
-                                            ]
-                                            [ Html.text <|
-                                                String.concat
-                                                    [ "input handle does-not-exist:"
-                                                    , " "
-                                                    , string
-                                                    ]
-                                            , Html.div
-                                                [ class "pt-1"
-                                                ]
-                                                [ Html.button
-                                                    [ class "is-button-1"
-                                                    , onClick <|
-                                                        FromCreator global <|
-                                                            CreatorMsg.Existing <|
-                                                                ExistingMsg.HandleForm <|
-                                                                    Handle.Typing ""
-                                                    ]
-                                                    [ Html.text
-                                                        """try again
-                                                        """
-                                                    ]
-                                                ]
-                                            ]
-                                        ]
-
-                                ExistingHandleFormStatus.UnAuthorized wallet handle ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ View.Generic.Wallet.view wallet
-                                        , header
-                                        , Html.div
-                                            [ class "has-border-2 px-2 py-2"
-                                            ]
-                                            [ Html.text <|
-                                                String.concat
-                                                    [ "connected wallet is not authorized to manage handle:"
-                                                    , " "
-                                                    , handle
-                                                    ]
-                                            , Html.div
-                                                [ class "pt-1"
-                                                ]
-                                                [ Html.button
-                                                    [ class "is-button-1"
-                                                    , onClick <|
-                                                        FromCreator global <|
-                                                            CreatorMsg.Existing <|
-                                                                ExistingMsg.HandleForm <|
-                                                                    Handle.Typing ""
-                                                    ]
-                                                    [ Html.text
-                                                        """try again
-                                                        """
-                                                    ]
-                                                ]
-                                            ]
-                                        ]
-
-                        Existing.Authorized authorized ->
-                            case authorized of
-                                Authorized.Top withCollections ->
-                                    case withCollections.wallet of
-                                        Just wallet ->
-                                            Html.div
-                                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                                ]
-                                                [ View.Generic.Wallet.maybeView withCollections.wallet
-                                                , header
-                                                , Html.div
-                                                    []
-                                                    [ Html.text <|
-                                                        String.concat
-                                                            [ "authorized as:"
-                                                            , " "
-                                                            , withCollections.handle
-                                                            ]
-                                                    ]
-                                                , Html.div
-                                                    []
-                                                    [ Html.button
-                                                        [ class "is-button-1"
-                                                        , onClick <|
+                                                [ Html.input
+                                                    [ class "input"
+                                                    , type_ "text"
+                                                    , placeholder "Symbol"
+                                                    , onInput <|
+                                                        \s ->
                                                             FromCreator global <|
                                                                 CreatorMsg.Existing <|
-                                                                    ExistingMsg.StartCreatingNewCollection
-                                                                        wallet
-                                                                        withCollections.handle
-                                                        ]
-                                                        [ Html.text "create new collection"
-                                                        ]
+                                                                    ExistingMsg.NewCollectionForm <|
+                                                                        NewCollectionForm.Symbol
+                                                                            (String.toUpper s)
+                                                                            newCollection
                                                     ]
-                                                , View.Generic.Collection.Creator.Creator.viewMany
-                                                    global
-                                                    wallet
-                                                    withCollections.handle
-                                                    withCollections.collections
+                                                    []
+                                                , Html.span
+                                                    [ class "icon is-left"
+                                                    ]
+                                                    [ Html.i
+                                                        [ class "fas fa-file-signature"
+                                                        ]
+                                                        []
+                                                    ]
                                                 ]
+                                            ]
+                                        ]
 
-                                        Nothing ->
-                                            Html.div
-                                                []
-                                                []
-
-                                Authorized.CreatingNewCollection wallet handle newCollection ->
+                                create =
                                     let
-                                        imageForm =
+                                        e1 =
+                                            String.isEmpty newCollection.name
+
+                                        e2 =
+                                            String.isEmpty newCollection.symbol
+                                    in
+                                    case ( e1, e2 ) of
+                                        ( False, False ) ->
                                             Html.div
                                                 []
-                                                [ Html.input
-                                                    [ id "dap-cool-collection-logo-selector"
-                                                    , type_ "file"
-                                                    , accept <|
-                                                        String.join
-                                                            ", "
-                                                            [ ".jpg"
-                                                            , ".jpeg"
-                                                            , ".png"
-                                                            ]
+                                                [ Html.button
+                                                    [ class "is-button-1"
                                                     , onClick <|
                                                         FromCreator global <|
                                                             CreatorMsg.Existing <|
-                                                                ExistingMsg.NewCollectionForm
-                                                                    wallet
-                                                                    handle
-                                                                <|
-                                                                    NewCollectionForm.Image
+                                                                ExistingMsg.CreateNewCollection
+                                                                    { name = newCollection.name
+                                                                    , symbol = newCollection.symbol
+                                                                    }
                                                     ]
-                                                    []
-                                                , Html.div
-                                                    []
-                                                    [ Html.img
-                                                        [ src "images/upload/default-pfp.jpg"
-                                                        , width 500
-                                                        , id "dap-cool-collection-logo"
-                                                        ]
-                                                        []
+                                                    [ Html.text "create"
                                                     ]
                                                 ]
 
-                                        nameForm =
+                                        _ ->
                                             Html.div
                                                 []
-                                                [ Html.div
-                                                    [ class "field"
-                                                    ]
-                                                    [ Html.p
-                                                        [ class "control has-icons-left"
-                                                        ]
-                                                        [ Html.input
-                                                            [ class "input"
-                                                            , type_ "text"
-                                                            , placeholder "Name your new collection"
-                                                            , onInput <|
-                                                                \s ->
-                                                                    FromCreator global <|
-                                                                        CreatorMsg.Existing <|
-                                                                            ExistingMsg.NewCollectionForm
-                                                                                wallet
-                                                                                handle
-                                                                            <|
-                                                                                NewCollectionForm.Name s newCollection
-                                                            ]
-                                                            []
-                                                        , Html.span
-                                                            [ class "icon is-left"
-                                                            ]
-                                                            [ Html.i
-                                                                [ class "fas fa-file-signature"
-                                                                ]
-                                                                []
-                                                            ]
-                                                        ]
-                                                    ]
-                                                ]
-
-                                        symbolFrom =
-                                            Html.div
                                                 []
-                                                [ Html.div
-                                                    [ class "field"
-                                                    ]
-                                                    [ Html.p
-                                                        [ class "control has-icons-left"
-                                                        ]
-                                                        [ Html.input
-                                                            [ class "input"
-                                                            , type_ "text"
-                                                            , placeholder "Symbol"
-                                                            , onInput <|
-                                                                \s ->
-                                                                    FromCreator global <|
-                                                                        CreatorMsg.Existing <|
-                                                                            ExistingMsg.NewCollectionForm
-                                                                                wallet
-                                                                                handle
-                                                                            <|
-                                                                                NewCollectionForm.Symbol
-                                                                                    (String.toUpper s)
-                                                                                    newCollection
-                                                            ]
-                                                            []
-                                                        , Html.span
-                                                            [ class "icon is-left"
-                                                            ]
-                                                            [ Html.i
-                                                                [ class "fas fa-file-signature"
-                                                                ]
-                                                                []
-                                                            ]
-                                                        ]
-                                                    ]
-                                                ]
+                            in
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view withWallet.wallet
+                                , header
+                                , imageForm
+                                , nameForm
+                                , symbolFrom
+                                , create
+                                ]
 
-                                        create =
-                                            let
-                                                e1 =
-                                                    String.isEmpty newCollection.name
+                        (Global.HasWalletAndHandle withWallet, Existing.SelectedCollection collection) ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view withWallet.wallet
+                                , header
+                                , View.Generic.Collection.Creator.Creator.view global withWallet.handle collection
+                                ]
 
-                                                e2 =
-                                                    String.isEmpty newCollection.symbol
-                                            in
-                                            case ( e1, e2 ) of
-                                                ( False, False ) ->
-                                                    Html.div
-                                                        []
-                                                        [ Html.button
-                                                            [ class "is-button-1"
-                                                            , onClick <|
-                                                                FromCreator global <|
-                                                                    CreatorMsg.Existing <|
-                                                                        ExistingMsg.CreateNewCollection
-                                                                            wallet
-                                                                            { handle = handle
-                                                                            , name = newCollection.name
-                                                                            , symbol = newCollection.symbol
-                                                                            }
-                                                            ]
-                                                            [ Html.text "create"
-                                                            ]
-                                                        ]
+                        (Global.NoWalletYet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.WaitingForHandleConfirmation) ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ header
+                                , Html.div
+                                    [ class "is-loading"
+                                    ]
+                                    []
+                                ]
 
-                                                _ ->
-                                                    Html.div
-                                                        []
-                                                        []
-                                    in
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ View.Generic.Wallet.view wallet
-                                        , header
-                                        , imageForm
-                                        , nameForm
-                                        , symbolFrom
-                                        , create
-                                        ]
+                        (Global.NoWalletYet, Existing.AuthorizingFromUrl (ExistingHandleFormStatus.HandleInvalid string)) ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ header
+                                , Html.div
+                                    [ class "has-border-2 px-2 py-2"
+                                    ]
+                                    [ Html.text <|
+                                        String.concat
+                                            [ "input handle found to be invalid:"
+                                            , " "
+                                            , string
+                                            ]
+                                    ]
+                                ]
 
-                                Authorized.SelectedCollection wallet handle collection ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ View.Generic.Wallet.view wallet
-                                        , header
-                                        , View.Generic.Collection.Creator.Creator.view global handle collection
-                                        ]
+                        (Global.NoWalletYet, Existing.AuthorizingFromUrl (ExistingHandleFormStatus.HandleDoesNotExist string)) ->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ header
+                                , Html.div
+                                    [ class "has-border-2 px-2 py-2"
+                                    ]
+                                    [ Html.text <|
+                                        String.concat
+                                            [ "input handle does-not-exist:"
+                                            , " "
+                                            , string
+                                            ]
+                                    ]
+                                ]
 
-                MaybeExisting string ->
+                        (Global.HasWalletAndHandle withWallet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.UnAuthorized)->
+                            Html.div
+                                [ class "has-border-2 px-2 pt-2 pb-6"
+                                ]
+                                [ View.Generic.Wallet.view withWallet.wallet
+                                , header
+                                , Html.div
+                                    [ class "has-border-2 px-2 py-2"
+                                    ]
+                                    [ Html.text <|
+                                        String.concat
+                                            [ "connected wallet is not authorized to manage handle:"
+                                            , " "
+                                            , withWallet.handle
+                                            ]
+                                    ]
+                                ]
+
+                        _ ->
+                            Html.div
+                                []
+                                [ Html.text <| Global.encode global
+                                ]
+
+
+                MaybeExisting _ ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ header
-                        , Html.div
-                            []
-                            [ Html.text
-                                """maybe existing
-                                """
+                        [ Html.div
+                            [ class "is-loading"
                             ]
-                        , Html.div
                             []
-                            [ Html.button
-                                [ class "is-button-1"
-                                , onClick <|
-                                    FromCreator global <|
-                                        CreatorMsg.Existing <|
-                                            ExistingMsg.HandleForm <|
-                                                Handle.Confirm string
-                                ]
-                                [ Html.text <|
-                                    String.concat
-                                        [ "authorize handle:"
-                                        , " "
-                                        , string
-                                        ]
-                                ]
-                            ]
                         ]
     in
     Html.div

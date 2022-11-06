@@ -1,4 +1,4 @@
-module Model.Collection exposing (Collection, decode, decoder)
+module Model.Collection exposing (Collection, decode, decodeList, decoder)
 
 import Json.Decode as Decode
 import Util.Decode as Util
@@ -13,7 +13,12 @@ type alias Collection =
 
 decode : String -> Result String Collection
 decode string =
-    Util.decode string decoder (\a -> a)
+    Util.decode string decoder identity
+
+
+decodeList : String -> Result String (List Collection)
+decodeList string =
+    Util.decode string (Decode.list decoder) identity
 
 
 decoder : Decode.Decoder Collection

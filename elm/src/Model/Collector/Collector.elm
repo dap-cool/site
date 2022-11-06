@@ -1,7 +1,7 @@
 module Model.Collector.Collector exposing (Collector(..))
 
-import Model.WithCollection exposing (WithCollection)
-import Model.WithCollections exposing (WithCollections)
+import Model.Collector.WithCollection exposing (WithCollection)
+import Model.Collector.WithCollections exposing (WithCollections)
 
 
 type

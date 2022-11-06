@@ -2,34 +2,26 @@ module Msg.Creator.Existing.Existing exposing (Existing(..), toString)
 
 import Model.AlmostNewCollection exposing (AlmostNewCollection)
 import Model.Collection exposing (Collection)
-import Model.Handle as Handle exposing (Handle)
-import Model.Wallet exposing (Wallet)
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (NewCollectionForm)
 
 
 type Existing
-    = StartHandleForm
-    | HandleForm Handle.Form
+    = ConfirmHandle String
       -- new collection
-    | StartCreatingNewCollection Wallet Handle
-    | NewCollectionForm Wallet Handle NewCollectionForm
-    | CreateNewCollection Wallet AlmostNewCollection
+    | StartCreatingNewCollection
+    | NewCollectionForm NewCollectionForm
+    | CreateNewCollection AlmostNewCollection
       -- existing collection
-    | SelectCollection Wallet Handle Collection
+    | SelectCollection Collection
 
 
 toString : Existing -> String
 toString existing =
     case existing of
-        HandleForm handleForm ->
-            case handleForm of
-                Handle.Confirm _ ->
-                    "existing-creator-confirm-handle"
+        ConfirmHandle _ ->
+            "existing-creator-confirm-handle"
 
-                _ ->
-                    "no-op"
-
-        NewCollectionForm _ _ form ->
+        NewCollectionForm form ->
             case form of
                 NewCollectionForm.Image ->
                     "creator-prepare-image-form"
@@ -37,7 +29,7 @@ toString existing =
                 _ ->
                     "no-op"
 
-        CreateNewCollection _ _ ->
+        CreateNewCollection _ ->
             "creator-create-new-collection"
 
         _ ->

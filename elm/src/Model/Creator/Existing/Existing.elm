@@ -1,10 +1,13 @@
 module Model.Creator.Existing.Existing exposing (Existing(..))
 
-import Model.Creator.Existing.Authorized exposing (Authorized)
+import Model.Collection exposing (Collection)
 import Model.Creator.Existing.HandleFormStatus exposing (HandleFormStatus)
+import Model.Creator.Existing.NewCollection exposing (NewCollection)
 
 
 type Existing
-    = Top
-    | HandleForm HandleFormStatus
-    | Authorized Authorized
+    = Top (List Collection)
+    | CreatingNewCollection NewCollection
+    | SelectedCollection Collection
+    -- authorizing from url
+    | AuthorizingFromUrl HandleFormStatus
