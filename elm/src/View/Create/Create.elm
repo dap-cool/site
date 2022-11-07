@@ -306,8 +306,8 @@ body global creator =
                                 ]
 
                 Existing existingCreator ->
-                    case (global, existingCreator) of
-                        (Global.HasWalletAndHandle withWallet, Existing.Top collections) ->
+                    case ( global, existingCreator ) of
+                        ( Global.HasWalletAndHandle withWallet, Existing.Top collections ) ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
@@ -340,7 +340,7 @@ body global creator =
                                     collections
                                 ]
 
-                        (Global.HasWalletAndHandle withWallet, Existing.CreatingNewCollection newCollection) ->
+                        ( Global.HasWalletAndHandle withWallet, Existing.CreatingNewCollection newCollection ) ->
                             let
                                 imageForm =
                                     Html.div
@@ -483,7 +483,7 @@ body global creator =
                                 , create
                                 ]
 
-                        (Global.HasWalletAndHandle withWallet, Existing.SelectedCollection collection) ->
+                        ( Global.HasWalletAndHandle withWallet, Existing.SelectedCollection collection ) ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
@@ -492,7 +492,7 @@ body global creator =
                                 , View.Generic.Collection.Creator.Creator.view global withWallet.handle collection
                                 ]
 
-                        (Global.NoWalletYet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.WaitingForHandleConfirmation) ->
+                        ( Global.NoWalletYet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.WaitingForHandleConfirmation ) ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
@@ -503,7 +503,7 @@ body global creator =
                                     []
                                 ]
 
-                        (Global.NoWalletYet, Existing.AuthorizingFromUrl (ExistingHandleFormStatus.HandleInvalid string)) ->
+                        ( Global.NoWalletYet, Existing.AuthorizingFromUrl (ExistingHandleFormStatus.HandleInvalid string) ) ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
@@ -520,7 +520,7 @@ body global creator =
                                     ]
                                 ]
 
-                        (Global.NoWalletYet, Existing.AuthorizingFromUrl (ExistingHandleFormStatus.HandleDoesNotExist string)) ->
+                        ( Global.NoWalletYet, Existing.AuthorizingFromUrl (ExistingHandleFormStatus.HandleDoesNotExist string) ) ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
@@ -537,7 +537,7 @@ body global creator =
                                     ]
                                 ]
 
-                        (Global.HasWalletAndHandle withWallet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.UnAuthorized)->
+                        ( Global.HasWalletAndHandle withWallet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.UnAuthorized ) ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
@@ -560,7 +560,6 @@ body global creator =
                                 []
                                 [ Html.text <| Global.encode global
                                 ]
-
 
                 MaybeExisting _ ->
                     Html.div

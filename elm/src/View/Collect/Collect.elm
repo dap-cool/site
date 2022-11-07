@@ -9,7 +9,6 @@ import Model.Handle as Handle
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
-import View.Generic.Wallet
 
 
 body : Global -> Collector -> Html Msg
@@ -218,8 +217,7 @@ body global collector =
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ View.Generic.Wallet.maybeView withCollection.wallet
-                        , header
+                        [ header
                         , Html.div
                             []
                             [ Html.text <|

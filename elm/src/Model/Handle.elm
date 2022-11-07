@@ -1,4 +1,4 @@
-module Model.Handle exposing (Form(..), Handle, WithWallet, decode, decodeWithWallet, encode, normalize, witWalletDecoder, encodeWithWallet)
+module Model.Handle exposing (Form(..), Handle, WithWallet, decode, decodeWithWallet, encode, encodeWithWallet, normalize, witWalletDecoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -25,13 +25,14 @@ encode handle =
     in
     Encode.encode 0 encoder
 
+
 encodeWithWallet : WithWallet -> String
 encodeWithWallet withWallet =
     let
         encoder =
             Encode.object
-                [ ("handle", Encode.string withWallet.handle)
-                , ("wallet", Encode.string withWallet.wallet)
+                [ ( "handle", Encode.string withWallet.handle )
+                , ( "wallet", Encode.string withWallet.wallet )
                 ]
     in
     Encode.encode 0 encoder

@@ -9,5 +9,5 @@ type Existing
     = Top (List Collection)
     | CreatingNewCollection NewCollection
     | SelectedCollection Collection
-    -- authorizing from url
+      -- authorizing from url
     | AuthorizingFromUrl HandleFormStatus

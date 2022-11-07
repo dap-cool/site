@@ -35,7 +35,7 @@ decoder0 =
                             "no-wallet-yet" ->
                                 Decode.succeed NoWalletYet
 
-                            "no-wallet-yet" ->
+                            "wallet-missing" ->
                                 Decode.succeed WalletMissing
 
                             _ ->
@@ -49,6 +49,7 @@ decoder0 =
                 Handle.witWalletDecoder
             ]
 
+
 encode : Global -> String
 encode global =
     let
@@ -58,16 +59,15 @@ encode global =
                     "no-wallet-yet"
 
                 WalletMissing ->
-                    "no-wallet-yet"
+                    "wallet-missing"
 
                 HasWallet wallet ->
                     Wallet.encode wallet
 
                 HasWalletAndHandle withWallet ->
                     Handle.encodeWithWallet withWallet
-
     in
     Encode.encode 0 <|
         Encode.object
-            [ ("global", Encode.string more)
+            [ ( "global", Encode.string more )
             ]

@@ -1,7 +1,7 @@
 module Sub.Listener.Listener exposing (Listener(..), decode, decode0)
 
 import Json.Decode as Decode
-import Model.Global as Global exposing (Global)
+import Model.Global as Global
 import Model.Model exposing (Model)
 import Model.State as Model
 import Msg.Msg exposing (Msg)
@@ -15,25 +15,35 @@ type Listener
     | Collect ToCollector
 
 
-decode0 : String -> Result String (Maybe Listener)
+decode0 : String -> Result String ( Global.Global, Maybe Listener )
 decode0 string =
     let
         decoder : Decode.Decoder (Maybe Listener)
         decoder =
             Decode.field "listener" <| Decode.map fromString Decode.string
     in
-    Util.decode string decoder (\a -> a)
+    case Util.decode string decoder (\a -> a) of
+        Ok maybeListener ->
+            case Global.decode string of
+                Ok global ->
+                    Ok ( global, maybeListener )
+
+                Err error ->
+                    Err error
+
+        Err error ->
+            Err error
 
 
-decode : Model -> Json -> (String -> Result String a) -> (Global -> a -> Model) -> ( Model, Cmd Msg )
+decode : Model -> Json -> (String -> Result String a) -> (a -> Model) -> ( Model, Cmd Msg )
 decode model json moreDecoder update =
-    case ( Global.decode json, decodeMore json ) of
+    case decodeMore json of
         -- more found
-        ( Ok global, Ok moreJson ) ->
+        Ok moreJson ->
             -- decode
             case moreDecoder moreJson of
                 Ok decoded ->
-                    ( update global decoded
+                    ( update decoded
                     , Cmd.none
                     )
 
@@ -43,21 +53,9 @@ decode model json moreDecoder update =
                     , Cmd.none
                     )
 
-        -- error from global
-        ( Err string, Ok _ ) ->
-            ( { model | state = Model.Error string }
-            , Cmd.none
-            )
-
         -- error from decoder
-        ( Ok _, Err string ) ->
+        Err string ->
             ( { model | state = Model.Error string }
-            , Cmd.none
-            )
-
-        -- error from both
-        ( Err string0, Err string1 ) ->
-            ( { model | state = Model.Error <| String.join " " [ string0, "AND", string1 ] }
             , Cmd.none
             )
 

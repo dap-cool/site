@@ -34,20 +34,22 @@ init _ url key =
             }
     in
     case state of
-        Collect _ (Collector.MaybeExistingCreator handle) ->
+        Collect global (Collector.MaybeExistingCreator handle) ->
             ( model
             , sender <|
                 Sender.encode <|
                     { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
+                    , global = global
                     , more = Handle.encode handle
                     }
             )
 
-        Collect _ (Collector.MaybeExistingCollection handle index) ->
+        Collect global (Collector.MaybeExistingCollection handle index) ->
             ( model
             , sender <|
                 Sender.encode <|
                     { sender = Sender.Collect <| FromCollector.SelectCollection handle index
+                    , global = global
                     , more = AlmostExistingCollection.encode { handle = handle, index = index }
                     }
             )
