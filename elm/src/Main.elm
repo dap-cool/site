@@ -100,6 +100,20 @@ update msg model =
                         ]
                     )
 
+                Create global (Creator.MaybeExisting handle) ->
+                    ( bump
+                    , Cmd.batch
+                        [ sender <|
+                            Sender.encode <|
+                                { sender = Sender.Create <| FromCreator.Existing
+                                    <| FromExistingCreator.ConfirmHandle handle
+                                , global = global
+                                , more = Handle.encode handle
+                                }
+                        , resetViewport
+                        ]
+                    )
+
                 _ ->
                     ( bump
                     , resetViewport

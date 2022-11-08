@@ -52,20 +52,15 @@ decoder0 =
 
 encoder : Global -> Encode.Value
 encoder global =
-    let
-        more : String
-        more =
-            case global of
-                NoWalletYet ->
-                    "no-wallet-yet"
+    case global of
+        NoWalletYet ->
+            Encode.string "no-wallet-yet"
 
-                WalletMissing ->
-                    "wallet-missing"
+        WalletMissing ->
+            Encode.string "wallet-missing"
 
-                HasWallet wallet ->
-                    Wallet.encode wallet
+        HasWallet wallet ->
+            Wallet.encoder wallet
 
-                HasWalletAndHandle withWallet ->
-                    Handle.encodeWithWallet withWallet
-    in
-    Encode.string more
+        HasWalletAndHandle withWallet ->
+            Handle.withWalletEncoder withWallet

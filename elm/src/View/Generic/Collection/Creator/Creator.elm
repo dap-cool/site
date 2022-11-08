@@ -12,6 +12,8 @@ import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collection
 
 
+-- TODO: 11111111111111111111111111111111
+--  if .collection is undefined expose method to create collection
 view : Global -> Handle -> Collection -> Html Msg
 view global handle collection =
     View.Generic.Collection.Collection.view global handle collection

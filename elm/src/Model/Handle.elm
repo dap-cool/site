@@ -1,4 +1,4 @@
-module Model.Handle exposing (Form(..), Handle, WithWallet, decode, decodeWithWallet, encode, encodeWithWallet, normalize, witWalletDecoder)
+module Model.Handle exposing (Form(..), Handle, WithWallet, decode, encode, normalize, witWalletDecoder, withWalletEncoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -26,22 +26,18 @@ encode handle =
     Encode.encode 0 encoder
 
 
-encodeWithWallet : WithWallet -> String
-encodeWithWallet withWallet =
-    let
-        encoder =
-            Encode.object
-                [ ( "handle", Encode.string withWallet.handle )
-                , ( "wallet", Encode.string withWallet.wallet )
-                ]
-    in
-    Encode.encode 0 encoder
-
-
 type alias WithWallet =
     { handle : String
     , wallet : Wallet
     }
+
+
+withWalletEncoder : WithWallet -> Encode.Value
+withWalletEncoder withWallet =
+    Encode.object
+        [ ( "handle", Encode.string withWallet.handle )
+        , ( "wallet", Encode.string withWallet.wallet )
+        ]
 
 
 decode : String -> Result String Handle

@@ -29,7 +29,11 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateNewHandle(app, more.handle);
+            const validated = validateNewHandle(
+                app,
+                parsed.global,
+                more.handle
+            );
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
@@ -55,13 +59,18 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateExistingHandle(app, more.handle);
+            const validated = validateExistingHandle(
+                app,
+                parsed.global,
+                more.handle
+            );
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCreator(
                     app,
+                    parsed.global,
                     ephemeralPP.program,
                     validated
                 );
@@ -133,17 +142,12 @@ export async function main(app, json) {
             const pp = getPP(phantom);
             // parse more json
             const more = JSON.parse(parsed.more);
-            console.log(parsed.global);
-            const global = JSON.parse(parsed.global);
-            console.log(global);
-            console.log(global.handle);
-            console.log(parsed.global.handle);
             // invoke rpc
             await creatNft(
                 app,
                 pp.provider,
                 pp.program,
-                global.handle,
+                parsed.global.handle,
                 more.name,
                 more.symbol
             );
@@ -152,13 +156,18 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateHandleForCollector(app, more.handle);
+            const validated = validateHandleForCollector(
+                app,
+                parsed.global,
+                more.handle
+            );
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
+                    parsed.global,
                     ephemeralPP.program,
                     validated
                 );
@@ -186,13 +195,18 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateHandleForCollector(app, more.handle);
+            const validated = validateHandleForCollector(
+                app,
+                parsed.global,
+                more.handle
+            );
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
+                    parsed.global,
                     ephemeralPP.program,
                     validated
                 );
