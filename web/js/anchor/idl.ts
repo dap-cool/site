@@ -6,6 +6,11 @@ export type DapCool = {
       "name": "initNewCreator",
       "accounts": [
         {
+          "name": "handlePda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "creator",
           "isMut": true,
           "isSigner": false
@@ -32,7 +37,7 @@ export type DapCool = {
       "name": "createNft",
       "accounts": [
         {
-          "name": "creator",
+          "name": "handle",
           "isMut": true,
           "isSigner": false
         },
@@ -115,7 +120,7 @@ export type DapCool = {
       "name": "createCollection",
       "accounts": [
         {
-          "name": "creator",
+          "name": "handle",
           "isMut": false,
           "isSigner": false
         },
@@ -186,7 +191,7 @@ export type DapCool = {
       "name": "mintNewCopy",
       "accounts": [
         {
-          "name": "creator",
+          "name": "handle",
           "isMut": false,
           "isSigner": false
         },
@@ -282,7 +287,7 @@ export type DapCool = {
       "name": "addNewCopyToCollection",
       "accounts": [
         {
-          "name": "creator",
+          "name": "handle",
           "isMut": false,
           "isSigner": false
         },
@@ -394,6 +399,22 @@ export type DapCool = {
     },
     {
       "name": "creator",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "handle",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "handle",
       "type": {
         "kind": "struct",
         "fields": [
@@ -455,6 +476,11 @@ export const IDL: DapCool = {
       "name": "initNewCreator",
       "accounts": [
         {
+          "name": "handlePda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "creator",
           "isMut": true,
           "isSigner": false
@@ -481,7 +507,7 @@ export const IDL: DapCool = {
       "name": "createNft",
       "accounts": [
         {
-          "name": "creator",
+          "name": "handle",
           "isMut": true,
           "isSigner": false
         },
@@ -564,7 +590,7 @@ export const IDL: DapCool = {
       "name": "createCollection",
       "accounts": [
         {
-          "name": "creator",
+          "name": "handle",
           "isMut": false,
           "isSigner": false
         },
@@ -635,7 +661,7 @@ export const IDL: DapCool = {
       "name": "mintNewCopy",
       "accounts": [
         {
-          "name": "creator",
+          "name": "handle",
           "isMut": false,
           "isSigner": false
         },
@@ -731,7 +757,7 @@ export const IDL: DapCool = {
       "name": "addNewCopyToCollection",
       "accounts": [
         {
-          "name": "creator",
+          "name": "handle",
           "isMut": false,
           "isSigner": false
         },
@@ -843,6 +869,22 @@ export const IDL: DapCool = {
     },
     {
       "name": "creator",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "handle",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "handle",
       "type": {
         "kind": "struct",
         "fields": [

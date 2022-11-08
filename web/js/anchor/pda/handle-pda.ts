@@ -2,7 +2,7 @@ import {PublicKey} from "@solana/web3.js";
 import {Program} from "@project-serum/anchor";
 import {DapCool} from "../idl";
 
-export interface Creator {
+export interface Handle {
     handle: string
     authority: PublicKey
     numCollections: number
@@ -13,7 +13,7 @@ export interface Pinned {
     collections: number[]
 }
 
-export async function deriveCreatorPda(program: Program<DapCool>, handle: string): Promise<PublicKey> {
+export async function deriveHandlePda(program: Program<DapCool>, handle: string): Promise<PublicKey> {
     // derive pda
     let pda, _;
     [pda, _] = await PublicKey.findProgramAddress(
@@ -25,27 +25,27 @@ export async function deriveCreatorPda(program: Program<DapCool>, handle: string
     return pda
 }
 
-export async function getCreatorPda(program: Program<DapCool>, pda: PublicKey): Promise<Creator> {
-    const fetched = await program.account.creator.fetch(pda);
+export async function getHandlePda(program: Program<DapCool>, pda: PublicKey): Promise<Handle> {
+    const fetched = await program.account.handle.fetch(pda);
     return {
         handle: fetched.handle,
         authority: fetched.authority,
         numCollections: fetched.numCollections,
         pinned: fetched.pinned
-    } as Creator
+    } as Handle
 }
 
-export async function assertCreatorPdaDoesNotExistAlready(
+export async function assertHandlePdaDoesNotExistAlready(
     app,
     program: Program<DapCool>,
     handle: string
 ): Promise<PublicKey | null> {
     // derive pda
-    const pda = await deriveCreatorPda(program, handle);
+    const pda = await deriveHandlePda(program, handle);
     // fetch pda
-    let creator: PublicKey | null;
+    let handlePda: PublicKey | null;
     try {
-        await getCreatorPda(program, pda);
+        await getHandlePda(program, pda);
         const msg = "handle exists already: " + handle;
         console.log(msg);
         app.ports.success.send(
@@ -56,43 +56,43 @@ export async function assertCreatorPdaDoesNotExistAlready(
                 }
             )
         );
-        creator = null;
+        handlePda = null;
     } catch (error) {
         const msg = "handle is still available: " + handle;
         console.log(msg);
-        creator = pda;
+        handlePda = pda;
     }
-    return creator
+    return handlePda
 }
 
-export async function assertCreatorPdaDoesExistAlreadyForCreator(
+export async function assertHandlePdaDoesExistAlreadyForCreator(
     app,
     program: Program<DapCool>,
     handle: string
-): Promise<Creator | null> {
-    return await assertCreatorPdaDoesExistAlready(app, program, handle, "creator-handle-dne")
+): Promise<Handle | null> {
+    return await assertHandlePdaDoesExistAlready(app, program, handle, "creator-handle-dne")
 }
 
-export async function assertCreatorPdaDoesExistAlreadyForCollector(
+export async function assertHandlePdaDoesExistAlreadyForCollector(
     app,
     program: Program<DapCool>,
     handle: string
-): Promise<Creator | null> {
-    return await assertCreatorPdaDoesExistAlready(app, program, handle, "collector-handle-dne")
+): Promise<Handle | null> {
+    return await assertHandlePdaDoesExistAlready(app, program, handle, "collector-handle-dne")
 }
 
-async function assertCreatorPdaDoesExistAlready(
+async function assertHandlePdaDoesExistAlready(
     app,
     program: Program<DapCool>,
     handle: string,
     listener: string
-): Promise<Creator | null> {
+): Promise<Handle | null> {
     // derive pda
-    const pda = await deriveCreatorPda(program, handle);
+    const pda = await deriveHandlePda(program, handle);
     // fetch pda
-    let creator: Creator | null;
+    let handlePda: Handle | null;
     try {
-        creator = await getCreatorPda(program, pda);
+        handlePda = await getHandlePda(program, pda);
         const msg = "found handle: " + handle;
         console.log(msg);
     } catch (error) {
@@ -106,16 +106,16 @@ async function assertCreatorPdaDoesExistAlready(
                 }
             )
         );
-        creator = null;
+        handlePda = null;
     }
-    return creator
+    return handlePda
 }
 
-export function validateHandleForNewCreator(app, handle: string): string | null {
+export function validateNewHandle(app, handle: string): string | null {
     return validateHandle(app, handle, "new-creator-handle-invalid")
 }
 
-export function validateHandleForExistingCreator(app, handle: string): string | null {
+export function validateExistingHandle(app, handle: string): string | null {
     return validateHandle(app, handle, "existing-creator-handle-invalid")
 }
 

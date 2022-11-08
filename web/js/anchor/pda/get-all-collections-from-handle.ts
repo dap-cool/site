@@ -1,18 +1,18 @@
 import {Program} from "@project-serum/anchor";
 import {CollectionAuthority, getAuthorityPda} from "./authority-pda";
 import {DapCool} from "../idl";
-import {Creator} from "./creator-pda";
+import {Handle} from "./handle-pda";
 
-export async function getCreatorCollections(
+export async function getAllCollectionsFromHandle(
     program: Program<DapCool>,
-    creator: Creator
+    handle: Handle
 ): Promise<CollectionAuthority[]> {
     // build array of collections
     return await Promise.all(
-        Array.from(new Array(creator.numCollections), async (_, index) => {
+        Array.from(new Array(handle.numCollections), async (_, index) => {
                 // fetch authority for each collection
                 const increment = index + 1;
-                return await getAuthorityPda(program, creator.handle, increment);
+                return await getAuthorityPda(program, handle.handle, increment);
             }
         )
     )

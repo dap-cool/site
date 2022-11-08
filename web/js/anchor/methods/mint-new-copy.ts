@@ -1,7 +1,7 @@
 import {AnchorProvider, BN, Program, web3} from "@project-serum/anchor";
 import {Keypair, PublicKey} from "@solana/web3.js";
 import {CollectionAuthority, getAuthorityPda} from "../pda/authority-pda";
-import {deriveCreatorPda} from "../pda/creator-pda";
+import {deriveHandlePda} from "../pda/handle-pda";
 import {
     MPL_PREFIX,
     MPL_EDITION,
@@ -13,13 +13,14 @@ import {DapCool} from "../idl";
 
 export async function mintNewCopy(
     app,
+    global,
     provider: AnchorProvider,
     program: Program<DapCool>,
     handle: string,
     index: number
 ) {
-    // derive creator pda
-    const creator: PublicKey = await deriveCreatorPda(program, handle);
+    // derive handle pda
+    const handlePda: PublicKey = await deriveHandlePda(program, handle);
     // derive authority pda
     const authority: CollectionAuthority = await getAuthorityPda(program, handle, index);
     // derive metadata
@@ -106,7 +107,7 @@ export async function mintNewCopy(
         .mintNewCopy(index as any)
         .accounts(
             {
-                creator: creator,
+                handle: handlePda,
                 authority: authority.pda,
                 mint: authority.mint,
                 metadata: metadata,
@@ -153,7 +154,7 @@ export async function mintNewCopy(
         provider,
         program,
         index,
-        creator,
+        handlePda,
         authority.pda,
         authority.mint,
         authority.collection,
@@ -167,9 +168,9 @@ export async function mintNewCopy(
         JSON.stringify(
             {
                 listener: "collector-collection-purchased",
+                global: global,
                 more: JSON.stringify(
                     {
-                        wallet: provider.wallet.publicKey.toString(),
                         handle: handle,
                         collection: authority
                     }
@@ -183,7 +184,7 @@ async function addNewCopyToCollection(
     provider: AnchorProvider,
     program: Program<DapCool>,
     index: number,
-    creator: PublicKey,
+    handle: PublicKey,
     authority: PublicKey,
     mint: PublicKey,
     collection: PublicKey,
@@ -197,7 +198,7 @@ async function addNewCopyToCollection(
         .addNewCopyToCollection(index as any)
         .accounts(
             {
-                creator: creator,
+                handle: handle,
                 authority: authority,
                 mint: mint,
                 collection: collection,

@@ -24,7 +24,7 @@ encode withMore =
         encoder =
             Encode.object
                 [ ( "sender", Encode.string <| toString withMore.sender )
-                , ( "global", Encode.string <| Global.encode withMore.global )
+                , ( "global", Global.encoder withMore.global )
                 , ( "more", Encode.string withMore.more )
                 ]
     in

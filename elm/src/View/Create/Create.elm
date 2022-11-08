@@ -3,6 +3,7 @@ module View.Create.Create exposing (body)
 import Html exposing (Html)
 import Html.Attributes exposing (accept, class, href, id, placeholder, src, target, type_, width)
 import Html.Events exposing (onClick, onInput)
+import Json.Encode
 import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
@@ -558,7 +559,7 @@ body global creator =
                         _ ->
                             Html.div
                                 []
-                                [ Html.text <| Global.encode global
+                                [ Html.text <| Json.Encode.encode 0 <| Global.encoder global
                                 ]
 
                 MaybeExisting _ ->

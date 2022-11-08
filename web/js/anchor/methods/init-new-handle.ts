@@ -2,13 +2,21 @@ import {PublicKey, SystemProgram} from "@solana/web3.js";
 import {AnchorProvider, Program} from "@project-serum/anchor";
 import {DapCool} from "../idl";
 
-export async function initNewCreator(
+export async function initNewHandle(
     app,
     provider: AnchorProvider,
     program: Program<DapCool>,
     handle: string,
-    pda: PublicKey
+    handlePda: PublicKey
 ) {
+    // derive creator pda
+    let creatorPda: PublicKey, _;
+    [creatorPda, _] = await PublicKey.findProgramAddress(
+        [
+            provider.wallet.publicKey.toBuffer()
+        ],
+        program.programId
+    );
     // invoke rpc
     await program.methods
         .initNewCreator(
@@ -16,7 +24,8 @@ export async function initNewCreator(
         )
         .accounts(
             {
-                creator: pda,
+                handlePda: handlePda,
+                creator: creatorPda,
                 payer: provider.wallet.publicKey,
                 systemProgram: SystemProgram.programId,
             }
@@ -27,12 +36,10 @@ export async function initNewCreator(
         JSON.stringify(
             {
                 listener: "creator-new-handle-success",
-                more: JSON.stringify(
-                    {
-                        handle: handle,
-                        wallet: provider.wallet.publicKey.toString()
-                    }
-                )
+                global: {
+                    handle: handle,
+                    wallet: provider.wallet.publicKey.toString()
+                }
             }
         )
     );

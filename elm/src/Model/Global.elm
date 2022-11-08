@@ -1,4 +1,4 @@
-module Model.Global exposing (Global(..), decode, default, encode)
+module Model.Global exposing (Global(..), decode, default, encoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -42,17 +42,18 @@ decoder0 =
                                 Decode.fail "Must be wallet present"
                     )
             , Decode.map
-                (\wallet -> HasWallet wallet.wallet)
-                Wallet.decoder
-            , Decode.map
                 (\withWallet -> HasWalletAndHandle withWallet)
                 Handle.witWalletDecoder
+            , Decode.map
+                (\wallet -> HasWallet wallet.wallet)
+                Wallet.decoder
             ]
 
 
-encode : Global -> String
-encode global =
+encoder : Global -> Encode.Value
+encoder global =
     let
+        more : String
         more =
             case global of
                 NoWalletYet ->
@@ -67,7 +68,4 @@ encode global =
                 HasWalletAndHandle withWallet ->
                     Handle.encodeWithWallet withWallet
     in
-    Encode.encode 0 <|
-        Encode.object
-            [ ( "global", Encode.string more )
-            ]
+    Encode.string more

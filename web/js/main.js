@@ -1,15 +1,15 @@
 import {getPhantom} from "./phantom";
 import {getEphemeralPP, getPP} from "./anchor/util/context";
 import {
-    validateHandleForNewCreator,
-    validateHandleForExistingCreator,
+    validateNewHandle,
+    validateExistingHandle,
     validateHandleForCollector,
-    assertCreatorPdaDoesNotExistAlready,
-    assertCreatorPdaDoesExistAlreadyForCreator,
-    assertCreatorPdaDoesExistAlreadyForCollector
-} from "./anchor/pda/creator-pda";
-import {getCreatorCollections} from "./anchor/pda/get-creator-collections";
-import {initNewCreator} from "./anchor/methods/init-new-creator";
+    assertHandlePdaDoesNotExistAlready,
+    assertHandlePdaDoesExistAlreadyForCollector,
+    assertHandlePdaDoesExistAlreadyForCreator
+} from "./anchor/pda/handle-pda";
+import {getAllCollectionsFromHandle} from "./anchor/pda/get-all-collections-from-handle";
+import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {creatNft} from "./anchor/methods/create-nft";
 import {getAuthorityPda} from "./anchor/pda/authority-pda";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
@@ -29,24 +29,25 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateHandleForNewCreator(app, more.handle);
+            const validated = validateNewHandle(app, more.handle);
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
-                // assert creator pda does-not-exist
-                const creator = await assertCreatorPdaDoesNotExistAlready(
+                // assert handle pda does-not-exist
+                const handle = await assertHandlePdaDoesNotExistAlready(
                     app,
                     ephemeralPP.program,
                     validated
                 );
-                // create pda
-                if (creator) {
+                // initialize handle
+                if (handle) {
                     // get phantom
                     phantom = await getPhantom(app);
                     // get provider & program
                     const pp = getPP(phantom);
-                    // invoke init-new-creator
-                    await initNewCreator(app, pp.provider, pp.program, validated, creator);
+                    // invoke init-new-handle
+                    // TODO; check for creator-pda
+                    await initNewHandle(app, pp.provider, pp.program, validated, handle);
                 }
             }
             // or existing creator confirm handle
@@ -54,37 +55,37 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle
-            const validated = validateHandleForExistingCreator(app, more.handle);
+            const validated = validateExistingHandle(app, more.handle);
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
-                // asert creator pda exists
-                const creator = await assertCreatorPdaDoesExistAlreadyForCreator(
+                // asert handle pda exists
+                const handle = await assertHandlePdaDoesExistAlreadyForCreator(
                     app,
                     ephemeralPP.program,
                     validated
                 );
                 // authorize pda
-                if (creator) {
+                if (handle) {
                     // get phantom
                     phantom = await getPhantom(app);
                     // get provider & program
                     const pp = getPP(phantom);
                     // assert authority is current user
                     const current = pp.provider.wallet.publicKey.toString();
-                    if (creator.authority.toString() === current) {
+                    if (handle.authority.toString() === current) {
                         // get collections
-                        const collections = await getCreatorCollections(pp.program, creator);
+                        const collections = await getAllCollectionsFromHandle(pp.program, handle);
                         app.ports.success.send(
                             JSON.stringify(
                                 {
                                     listener: "creator-authorized",
+                                    global: {
+                                        handle: validated,
+                                        wallet: current,
+                                    },
                                     more: JSON.stringify(
-                                        {
-                                            handle: validated,
-                                            wallet: current,
-                                            collections: collections
-                                        }
+                                        collections
                                     )
                                 }
                             )
@@ -95,12 +96,10 @@ export async function main(app, json) {
                             JSON.stringify(
                                 {
                                     listener: "creator-handle-unauthorized",
-                                    more: JSON.stringify(
-                                        {
-                                            handle: validated,
-                                            wallet: current
-                                        }
-                                    )
+                                    global: {
+                                        handle: validated,
+                                        wallet: current,
+                                    }
                                 }
                             )
                         );
@@ -134,12 +133,17 @@ export async function main(app, json) {
             const pp = getPP(phantom);
             // parse more json
             const more = JSON.parse(parsed.more);
+            console.log(parsed.global);
+            const global = JSON.parse(parsed.global);
+            console.log(global);
+            console.log(global.handle);
+            console.log(parsed.global.handle);
             // invoke rpc
             await creatNft(
                 app,
                 pp.provider,
                 pp.program,
-                more.handle,
+                global.handle,
                 more.name,
                 more.symbol
             );
@@ -152,19 +156,20 @@ export async function main(app, json) {
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
-                // asert creator pda exists
-                const creator = await assertCreatorPdaDoesExistAlreadyForCollector(
+                // asert handle pda exists
+                const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
                     ephemeralPP.program,
                     validated
                 );
-                if (creator) {
+                if (handle) {
                     // get collections
-                    const collections = await getCreatorCollections(ephemeralPP.program, creator);
+                    const collections = await getAllCollectionsFromHandle(ephemeralPP.program, handle);
                     app.ports.success.send(
                         JSON.stringify(
                             {
                                 listener: "collector-handle-found",
+                                global: parsed.global,
                                 more: JSON.stringify(
                                     {
                                         handle: validated,
@@ -185,19 +190,20 @@ export async function main(app, json) {
             if (validated) {
                 // get ephemeral provider & program
                 const ephemeralPP = getEphemeralPP();
-                // asert creator pda exists
-                const creator = await assertCreatorPdaDoesExistAlreadyForCollector(
+                // asert handle pda exists
+                const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
                     ephemeralPP.program,
                     validated
                 );
-                if (creator) {
+                if (handle) {
                     // get collection
                     const collection = await getAuthorityPda(ephemeralPP.program, validated, more.index);
                     app.ports.success.send(
                         JSON.stringify(
                             {
                                 listener: "collector-collection-found",
+                                global: parsed.global,
                                 more: JSON.stringify(
                                     {
                                         handle: validated,
@@ -220,6 +226,7 @@ export async function main(app, json) {
             // invoke rpc
             await mintNewCopy(
                 app,
+                parsed.global,
                 pp.provider,
                 pp.program,
                 more.handle,
