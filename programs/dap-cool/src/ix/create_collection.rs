@@ -7,12 +7,12 @@ use mpl_token_metadata::instruction::{
 use mpl_token_metadata::state::CollectionDetails;
 use crate::{CreateCollection, pda};
 
-pub fn ix(ctx: Context<CreateCollection>) -> Result<()> {
+pub fn ix(ctx: Context<CreateCollection>, n: u8) -> Result<()> {
     // unwrap authority bump
     let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
     // build signer seeds
     let seeds = &[
-        ctx.accounts.handle.handle.as_bytes(), &[ctx.accounts.handle.num_collections],
+        ctx.accounts.handle.handle.as_bytes(), &[n],
         &[authority_bump]
     ];
     let signer_seeds = &[&seeds[..]];

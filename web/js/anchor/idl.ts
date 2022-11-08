@@ -185,7 +185,12 @@ export type DapCool = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "n",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "mintNewCopy",
@@ -655,7 +660,12 @@ export const IDL: DapCool = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "n",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "mintNewCopy",

@@ -105,8 +105,10 @@ update msg model =
                     , Cmd.batch
                         [ sender <|
                             Sender.encode <|
-                                { sender = Sender.Create <| FromCreator.Existing
-                                    <| FromExistingCreator.ConfirmHandle handle
+                                { sender =
+                                    Sender.Create <|
+                                        FromCreator.Existing <|
+                                            FromExistingCreator.ConfirmHandle handle
                                 , global = global
                                 , more = Handle.encode handle
                                 }
@@ -233,11 +235,23 @@ update msg model =
 
                         FromExistingCreator.CreateNewCollection almostCollection ->
                             ( model
+                              -- todo; waiting
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
                                     , global = global
                                     , more = AlmostCollection.encode almostCollection
+                                    }
+                            )
+
+                        FromExistingCreator.MarkNewCollection int ->
+                            ( model
+                              -- todo; waiting
+                            , sender <|
+                                Sender.encode <|
+                                    { sender = Sender.Create from
+                                    , global = global
+                                    , more = Collection.encode int
                                     }
                             )
 

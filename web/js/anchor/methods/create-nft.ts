@@ -99,7 +99,7 @@ export async function creatNft(
     console.log("mint", mint.publicKey.toString());
     // invoke create-collection
     await createCollection(
-        provider, program, handlePda, authorityPda, mint.publicKey
+        provider, program, handlePda, authorityPda, mint.publicKey, authorityIndex
     );
     // fetch all collections
     const freshHandle = await getHandlePda(program, handlePda);
@@ -143,12 +143,13 @@ async function uploadMetadata(
     return (shdwUrl + "meta.json")
 }
 
-async function createCollection(
+export async function createCollection(
     provider: AnchorProvider,
     program: Program<DapCool>,
     handle: PublicKey,
     authority: PublicKey,
-    mint: PublicKey
+    mint: PublicKey,
+    index: number
 ) {
     // derive key-pair for collection
     const collection = Keypair.generate();
@@ -185,7 +186,7 @@ async function createCollection(
     )
     // invoke rpc
     await program.methods
-        .createCollection()
+        .createCollection(index as any)
         .accounts(
             {
                 handle: handle,

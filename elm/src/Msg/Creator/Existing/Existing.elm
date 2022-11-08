@@ -11,6 +11,7 @@ type Existing
     | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
     | CreateNewCollection AlmostNewCollection
+    | MarkNewCollection Int -- hanging NFT that must've failed 2nd ix
       -- existing collection
     | SelectCollection Collection
 
@@ -31,6 +32,9 @@ toString existing =
 
         CreateNewCollection _ ->
             "creator-create-new-collection"
+
+        MarkNewCollection _ ->
+            "creator-mark-new-collection"
 
         _ ->
             "no-op"

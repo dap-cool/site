@@ -6,12 +6,12 @@ import {
     validateHandleForCollector,
     assertHandlePdaDoesNotExistAlready,
     assertHandlePdaDoesExistAlreadyForCollector,
-    assertHandlePdaDoesExistAlreadyForCreator
+    assertHandlePdaDoesExistAlreadyForCreator, deriveHandlePda, getHandlePda
 } from "./anchor/pda/handle-pda";
 import {getAllCollectionsFromHandle} from "./anchor/pda/get-all-collections-from-handle";
-import {initNewHandle} from "./anchor/methods/init-new-handle";
-import {creatNft} from "./anchor/methods/create-nft";
 import {getAuthorityPda} from "./anchor/pda/authority-pda";
+import {initNewHandle} from "./anchor/methods/init-new-handle";
+import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 
 // init phantom
@@ -150,6 +150,32 @@ export async function main(app, json) {
                 parsed.global.handle,
                 more.name,
                 more.symbol
+            );
+            // or creator mark new collection
+        } else if (sender === "creator-mark-new-collection") {
+            // get provider & program
+            const pp = getPP(phantom);
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            // derive & fetch handle pda
+            const handlePda = await deriveHandlePda(pp.program, parsed.global.handle);
+            const handleObj = await getHandlePda(pp.program, handlePda);
+            // fetch authority pda
+            const authority = await getAuthorityPda(pp.program, parsed.global.handle, more.index);
+            await createCollection(pp.provider, pp.program, handlePda, authority.pda, authority.mint, more.index);
+            // send success to elm
+            const collections = await getAllCollectionsFromHandle(pp.program, handleObj);
+            console.log(collections);
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-authorized",
+                        global: parsed.global,
+                        more: JSON.stringify(
+                            collections
+                        )
+                    }
+                )
             );
             // or collector search collector
         } else if (sender === "collector-search-handle") {

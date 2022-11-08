@@ -35,8 +35,8 @@ pub mod dap_cool {
         create_nft::ix(ctx, name, symbol, uri, size)
     }
 
-    pub fn create_collection(ctx: Context<CreateCollection>) -> Result<()> {
-        create_collection::ix(ctx)
+    pub fn create_collection(ctx: Context<CreateCollection>, n: u8) -> Result<()> {
+        create_collection::ix(ctx, n)
     }
 
     pub fn mint_new_copy(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
@@ -134,13 +134,14 @@ pub struct CreateNFT<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(n: u8)]
 pub struct CreateCollection<'info> {
     #[account(seeds = [handle.handle.as_bytes()], bump,
     constraint = handle.authority == payer.key()
     )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut,
-    seeds = [handle.handle.as_bytes(), & [handle.num_collections]], bump
+    seeds = [handle.handle.as_bytes(), & [n]], bump
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,

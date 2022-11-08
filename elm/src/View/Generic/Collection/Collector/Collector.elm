@@ -10,9 +10,13 @@ import Model.State as State exposing (State(..))
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collection
 
+
+
 -- TODO: 11111111111111111111111111111111
 --  if .collection is undefined expose method to add to collection
 --  add .belongs-to field in pda
+
+
 view : Global -> Handle -> Collection -> Html Msg
 view global handle collection =
     View.Generic.Collection.Collection.view global handle collection

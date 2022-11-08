@@ -4,6 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (accept, class, href, id, placeholder, src, target, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode
+import Model.Collection as Collection
 import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
@@ -485,12 +486,42 @@ body global creator =
                                 ]
 
                         ( Global.HasWalletAndHandle withWallet, Existing.SelectedCollection collection ) ->
+                            let
+                                button =
+                                    case Collection.isEmpty collection of
+                                        True ->
+                                            Html.div
+                                                []
+                                                [ Html.text
+                                                    """This NFT still needs to be marked as an on-chain collection
+                                                    before we can start listing the primary sale.
+                                                    """
+                                                , Html.div
+                                                    []
+                                                    [ Html.button
+                                                        [ class "is-button-1"
+                                                        , onClick <|
+                                                            FromCreator global <|
+                                                                CreatorMsg.Existing <|
+                                                                    ExistingMsg.MarkNewCollection collection.index
+                                                        ]
+                                                        [ Html.text "mark collection"
+                                                        ]
+                                                    ]
+                                                ]
+
+                                        False ->
+                                            Html.div
+                                                []
+                                                []
+                            in
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
                                 [ View.Generic.Wallet.view withWallet.wallet
                                 , header
                                 , View.Generic.Collection.Creator.Creator.view global withWallet.handle collection
+                                , button
                                 ]
 
                         ( Global.NoWalletYet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.WaitingForHandleConfirmation ) ->
