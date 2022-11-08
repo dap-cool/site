@@ -19,4 +19,4 @@ default = []
 anchor-lang = "0.25.0"
 anchor-spl = "0.25.0"
 spl-associated-token-account = "1.0.5"
-mpl-token-metadata = { version = "1.5.0", features = ["no-entrypoint"] }
+mpl-token-metadata = { version = "1.6.1", features = ["no-entrypoint"] }

@@ -12,7 +12,7 @@ pub mod pda;
 pub mod ix;
 pub mod error;
 
-declare_id!("DB2EAH9DoDcFtsC8AWCcjtLc2E8Hz1Y9t9X4gsDzbYh2");
+declare_id!("J5CrETfFZvMZNmuir7tDV7icY4tKrZ9iTSEeS7Tk8Bcp");
 
 #[program]
 pub mod dap_cool {
@@ -87,6 +87,7 @@ pub struct CreateNFT<'info> {
     pub authority: Box<Account<'info, Authority>>,
     #[account(init,
     mint::authority = authority,
+    mint::freeze_authority = authority,
     mint::decimals = 0,
     payer = payer
     )]
