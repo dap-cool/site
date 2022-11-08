@@ -150,6 +150,7 @@ pub struct CreateCollection<'info> {
     pub mint: Account<'info, Mint>,
     #[account(init,
     mint::authority = authority,
+    mint::freeze_authority = authority,
     mint::decimals = 0,
     payer = payer
     )]
