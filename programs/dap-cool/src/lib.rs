@@ -242,6 +242,7 @@ pub struct MintNewCopy<'info> {
     // TODO: check if mut needed
     #[account(init,
     mint::authority = authority,
+    mint::freeze_authority = authority,
     mint::decimals = 0,
     payer = payer
     )]
