@@ -2,11 +2,16 @@ module View.Header exposing (view)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class)
+import Model.Creator.Creator as Creator
+import Model.Creator.New.New as NewCreator
+import Model.Global exposing (Global(..))
+import Model.State as State exposing (State(..))
 import Msg.Msg exposing (Msg(..))
+import String as Wallet
 
 
-view : Html Msg
-view =
+view : Global -> Html Msg
+view global =
     Html.nav
         [ class "is-navbar level is-mobile is-size-4"
         ]
@@ -48,5 +53,76 @@ view =
                         ]
                     ]
                 ]
+            , Html.div
+                [ class "level-item"
+                ]
+                [ viewGlobal global
+                ]
             ]
         ]
+
+
+viewGlobal : Global -> Html Msg
+viewGlobal global =
+    case global of
+        NoWalletYet ->
+            Html.div
+                []
+                [ Html.text "no-wallet-yet"
+                ]
+
+        WalletMissing ->
+            Html.div
+                []
+                [ Html.text "no-wallet-installed"
+                ]
+
+        HasWallet wallet ->
+            Html.div
+                []
+                [ Html.div
+                    []
+                    [ Html.text <|
+                        String.concat
+                            [ "wallet:"
+                            , " "
+                            , Wallet.trim wallet
+                            ]
+                    ]
+                , Html.div
+                    []
+                    [ Html.text
+                        """no-handle-yet
+                        """
+                    , Html.div
+                        []
+                        [ Html.a
+                            [ State.href <| Create NoWalletYet (Creator.New NewCreator.Top)
+                            ]
+                            [ Html.text "create-handle-now"
+                            ]
+                        ]
+                    ]
+                ]
+
+        HasWalletAndHandle withWallet ->
+            Html.div
+                []
+                [ Html.div
+                    []
+                    [ Html.text <|
+                        String.concat
+                            [ "wallet:"
+                            , " "
+                            , Wallet.trim withWallet.wallet
+                            ]
+                    ]
+                , Html.div
+                    []
+                    [ Html.a
+                        [ State.href <| Create NoWalletYet (Creator.MaybeExisting withWallet.handle)
+                        ]
+                        [ Html.text withWallet.handle
+                        ]
+                    ]
+                ]

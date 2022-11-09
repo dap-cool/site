@@ -4,6 +4,7 @@ import Html
 import Html.Attributes
 import Model.Collector.Collector as Collector exposing (Collector)
 import Model.Creator.Creator as Creator exposing (Creator)
+import Model.Creator.New.New as NewCreator
 import Model.Global exposing (Global(..))
 import Url
 import Url.Parser as UrlParser exposing ((</>))
@@ -39,6 +40,9 @@ urlParser =
         , UrlParser.map
             (\handle -> Create NoWalletYet (Creator.MaybeExisting handle))
             (UrlParser.s "admin" </> UrlParser.string)
+        , UrlParser.map
+            (Create NoWalletYet (Creator.New NewCreator.Top))
+            (UrlParser.s "new")
         ]
 
 
@@ -62,14 +66,30 @@ parse url =
 path : State -> String
 path state =
     case state of
-        Create _ _ ->
-            "#/admin"
+        Create _ creator ->
+            case creator of
+                Creator.Top ->
+                    "#/admin"
+
+                Creator.New NewCreator.Top ->
+                    "#/new"
+
+                Creator.MaybeExisting string ->
+                    String.concat
+                        [ "#/admin"
+                        , "/"
+                        , string
+                        ]
+
+                _ ->
+                    path (Create NoWalletYet Creator.Top)
 
         Collect _ collector ->
             case collector of
                 Collector.MaybeExistingCreator string ->
                     String.concat
                         [ "#/creator"
+                        , "/"
                         , string
                         ]
 

@@ -9,14 +9,14 @@ import View.Header
 
 
 view : Global -> Html Msg -> Html Msg
-view _ body =
+view global body =
     Html.section
         [ class "hero is-fullheight has-black is-family-primary"
         ]
         [ Html.div
             [ class "hero-head"
             ]
-            [ View.Header.view
+            [ View.Header.view global
             ]
         , Html.div
             [ class "hero-body"
