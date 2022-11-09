@@ -163,9 +163,13 @@ export async function main(app, json) {
             // fetch authority pda
             const authority = await getAuthorityPda(pp.program, parsed.global.handle, more.index);
             await createCollection(pp.provider, pp.program, handlePda, authority.pda, authority.mint, more.index);
-            // send success to elm
+            // fetch collections
             const collections = await getAllCollectionsFromHandle(pp.program, handleObj);
             console.log(collections);
+            // derive new global
+
+
+            // send success to elm
             app.ports.success.send(
                 JSON.stringify(
                     {

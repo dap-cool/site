@@ -1,6 +1,7 @@
 import {PublicKey, SystemProgram} from "@solana/web3.js";
 import {AnchorProvider, Program} from "@project-serum/anchor";
 import {DapCool} from "../idl";
+import {deriveCreatorPda} from "../pda/creator-pda";
 
 export async function initNewHandle(
     app,
@@ -10,13 +11,7 @@ export async function initNewHandle(
     handlePda: PublicKey
 ) {
     // derive creator pda
-    let creatorPda: PublicKey, _;
-    [creatorPda, _] = await PublicKey.findProgramAddress(
-        [
-            provider.wallet.publicKey.toBuffer()
-        ],
-        program.programId
-    );
+    const creatorPda = await deriveCreatorPda(provider, program);
     // invoke rpc
     await program.methods
         .initNewCreator(
