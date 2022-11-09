@@ -71,10 +71,15 @@ update msg model =
 
                 bump : Model
                 bump =
-                    { model | state = state, url = url }
+                    case ( model.state, state ) of
+                        ( Valid global _, Valid _ local ) ->
+                            { model | state = Valid global local, url = url }
+
+                        _ ->
+                            { model | state = state, url = url }
             in
-            case state of
-                Collect global (Collector.MaybeExistingCreator handle) ->
+            case bump.state of
+                Valid global (State.Collect (Collector.MaybeExistingCreator handle)) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
@@ -87,7 +92,7 @@ update msg model =
                         ]
                     )
 
-                Collect global (Collector.MaybeExistingCollection handle index) ->
+                Valid global (State.Collect (Collector.MaybeExistingCollection handle index)) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
@@ -100,7 +105,7 @@ update msg model =
                         ]
                     )
 
-                Create global (Creator.MaybeExisting handle) ->
+                Valid global (State.Create (Creator.MaybeExisting handle)) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
@@ -134,7 +139,13 @@ update msg model =
                 FromCreator.New new ->
                     case new of
                         FromNewCreator.StartHandleForm ->
-                            ( { model | state = Create global <| Creator.New <| NewCreator.TypingHandle "" }
+                            ( { model
+                                | state =
+                                    Valid global <|
+                                        State.Create <|
+                                            Creator.New <|
+                                                NewCreator.TypingHandle ""
+                              }
                             , Cmd.none
                             )
 
@@ -143,10 +154,11 @@ update msg model =
                                 Handle.Typing string ->
                                     ( { model
                                         | state =
-                                            Create global <|
-                                                Creator.New <|
-                                                    NewCreator.TypingHandle <|
-                                                        Handle.normalize string
+                                            Valid global <|
+                                                State.Create <|
+                                                    Creator.New <|
+                                                        NewCreator.TypingHandle <|
+                                                            Handle.normalize string
                                       }
                                     , Cmd.none
                                     )
@@ -154,9 +166,10 @@ update msg model =
                                 Handle.Confirm handle ->
                                     ( { model
                                         | state =
-                                            Create global <|
-                                                Creator.New <|
-                                                    NewCreator.WaitingForHandleConfirmation
+                                            Valid global <|
+                                                State.Create <|
+                                                    Creator.New <|
+                                                        NewCreator.WaitingForHandleConfirmation
                                       }
                                     , sender <|
                                         Sender.encode <|
@@ -171,10 +184,11 @@ update msg model =
                         FromExistingCreator.ConfirmHandle handle ->
                             ( { model
                                 | state =
-                                    Create global <|
-                                        Creator.Existing <|
-                                            ExistingCreator.AuthorizingFromUrl
-                                                ExistingHandleFormStatus.WaitingForHandleConfirmation
+                                    Valid global <|
+                                        State.Create <|
+                                            Creator.Existing <|
+                                                ExistingCreator.AuthorizingFromUrl
+                                                    ExistingHandleFormStatus.WaitingForHandleConfirmation
                               }
                             , sender <|
                                 Sender.encode <|
@@ -187,10 +201,11 @@ update msg model =
                         FromExistingCreator.StartCreatingNewCollection ->
                             ( { model
                                 | state =
-                                    Create global <|
-                                        Creator.Existing <|
-                                            ExistingCreator.CreatingNewCollection
-                                                NewCollection.default
+                                    Valid global <|
+                                        State.Create <|
+                                            Creator.Existing <|
+                                                ExistingCreator.CreatingNewCollection
+                                                    NewCollection.default
                               }
                             , Cmd.none
                             )
@@ -204,10 +219,11 @@ update msg model =
                                     in
                                     ( { model
                                         | state =
-                                            Create global <|
-                                                Creator.Existing <|
-                                                    ExistingCreator.CreatingNewCollection
-                                                        bumpNewCollection
+                                            Valid global <|
+                                                State.Create <|
+                                                    Creator.Existing <|
+                                                        ExistingCreator.CreatingNewCollection
+                                                            bumpNewCollection
                                       }
                                     , Cmd.none
                                     )
@@ -219,10 +235,11 @@ update msg model =
                                     in
                                     ( { model
                                         | state =
-                                            Create global <|
-                                                Creator.Existing <|
-                                                    ExistingCreator.CreatingNewCollection
-                                                        bumpNewCollection
+                                            Valid global <|
+                                                State.Create <|
+                                                    Creator.Existing <|
+                                                        ExistingCreator.CreatingNewCollection
+                                                            bumpNewCollection
                                       }
                                     , Cmd.none
                                     )
@@ -258,10 +275,11 @@ update msg model =
                         FromExistingCreator.SelectCollection collection ->
                             ( { model
                                 | state =
-                                    Create global <|
-                                        Creator.Existing <|
-                                            ExistingCreator.SelectedCollection
-                                                collection
+                                    Valid global <|
+                                        State.Create <|
+                                            Creator.Existing <|
+                                                ExistingCreator.SelectedCollection
+                                                    collection
                               }
                             , Cmd.none
                             )
@@ -271,12 +289,18 @@ update msg model =
                 FromCollector.HandleForm form ->
                     case form of
                         Handle.Typing string ->
-                            ( { model | state = Collect global <| Collector.TypingHandle <| Handle.normalize string }
+                            ( { model
+                                | state =
+                                    Valid global <|
+                                        State.Collect <|
+                                            Collector.TypingHandle <|
+                                                Handle.normalize string
+                              }
                             , Cmd.none
                             )
 
                         Handle.Confirm string ->
-                            ( { model | state = Collect global <| Collector.WaitingForHandleConfirmation }
+                            ( { model | state = Valid global <| State.Collect <| Collector.WaitingForHandleConfirmation }
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Collect from
@@ -291,7 +315,7 @@ update msg model =
                     )
 
                 FromCollector.PurchaseCollection handle int ->
-                    ( { model | state = Collect global <| Collector.WaitingForPurchase }
+                    ( { model | state = Valid global <| State.Collect <| Collector.WaitingForPurchase }
                     , sender <|
                         Sender.encode <|
                             { sender = Sender.Collect from
@@ -312,13 +336,13 @@ update msg model =
                             case global of
                                 Global.WalletMissing ->
                                     case model.state of
-                                        Create _ creator ->
-                                            ( { model | state = Create global creator }
+                                        Valid _ (State.Create creator) ->
+                                            ( { model | state = Valid global <| State.Create creator }
                                             , Cmd.none
                                             )
 
-                                        Collect _ collector ->
-                                            ( { model | state = Collect global collector }
+                                        Valid _ (State.Collect collector) ->
+                                            ( { model | state = Valid global <| State.Collect collector }
                                             , Cmd.none
                                             )
 
@@ -345,9 +369,10 @@ update msg model =
                                                                         f handle =
                                                                             { model
                                                                                 | state =
-                                                                                    Create global <|
-                                                                                        Creator.New <|
-                                                                                            NewCreator.HandleInvalid handle
+                                                                                    Valid global <|
+                                                                                        State.Create <|
+                                                                                            Creator.New <|
+                                                                                                NewCreator.HandleInvalid handle
                                                                             }
                                                                     in
                                                                     Listener.decode model json Handle.decode f
@@ -357,10 +382,11 @@ update msg model =
                                                                         f handle =
                                                                             { model
                                                                                 | state =
-                                                                                    Create global <|
-                                                                                        Creator.New <|
-                                                                                            NewCreator.HandleAlreadyExists
-                                                                                                handle
+                                                                                    Valid global <|
+                                                                                        State.Create <|
+                                                                                            Creator.New <|
+                                                                                                NewCreator.HandleAlreadyExists
+                                                                                                    handle
                                                                             }
                                                                     in
                                                                     Listener.decode model json Handle.decode f
@@ -368,9 +394,10 @@ update msg model =
                                                                 ToNewCreator.NewHandleSuccess ->
                                                                     ( { model
                                                                         | state =
-                                                                            Create global <|
-                                                                                Creator.Existing <|
-                                                                                    ExistingCreator.Top []
+                                                                            Valid global <|
+                                                                                State.Create <|
+                                                                                    Creator.Existing <|
+                                                                                        ExistingCreator.Top []
                                                                       }
                                                                     , Cmd.none
                                                                     )
@@ -384,11 +411,12 @@ update msg model =
                                                                                 f handle =
                                                                                     { model
                                                                                         | state =
-                                                                                            Create global <|
-                                                                                                Creator.Existing <|
-                                                                                                    ExistingCreator.AuthorizingFromUrl <|
-                                                                                                        ExistingHandleFormStatus.HandleInvalid
-                                                                                                            handle
+                                                                                            Valid global <|
+                                                                                                State.Create <|
+                                                                                                    Creator.Existing <|
+                                                                                                        ExistingCreator.AuthorizingFromUrl <|
+                                                                                                            ExistingHandleFormStatus.HandleInvalid
+                                                                                                                handle
                                                                                     }
                                                                             in
                                                                             Listener.decode model json Handle.decode f
@@ -398,11 +426,12 @@ update msg model =
                                                                                 f handle =
                                                                                     { model
                                                                                         | state =
-                                                                                            Create global <|
-                                                                                                Creator.Existing <|
-                                                                                                    ExistingCreator.AuthorizingFromUrl <|
-                                                                                                        ExistingHandleFormStatus.HandleDoesNotExist
-                                                                                                            handle
+                                                                                            Valid global <|
+                                                                                                State.Create <|
+                                                                                                    Creator.Existing <|
+                                                                                                        ExistingCreator.AuthorizingFromUrl <|
+                                                                                                            ExistingHandleFormStatus.HandleDoesNotExist
+                                                                                                                handle
                                                                                     }
                                                                             in
                                                                             Listener.decode model json Handle.decode f
@@ -410,10 +439,11 @@ update msg model =
                                                                         ToExistingCreator.UnAuthorized ->
                                                                             ( { model
                                                                                 | state =
-                                                                                    Create global <|
-                                                                                        Creator.Existing <|
-                                                                                            ExistingCreator.AuthorizingFromUrl <|
-                                                                                                ExistingHandleFormStatus.UnAuthorized
+                                                                                    Valid global <|
+                                                                                        State.Create <|
+                                                                                            Creator.Existing <|
+                                                                                                ExistingCreator.AuthorizingFromUrl <|
+                                                                                                    ExistingHandleFormStatus.UnAuthorized
                                                                               }
                                                                             , Cmd.none
                                                                             )
@@ -423,10 +453,11 @@ update msg model =
                                                                         f collections =
                                                                             { model
                                                                                 | state =
-                                                                                    Create global <|
-                                                                                        Creator.Existing <|
-                                                                                            ExistingCreator.Top <|
-                                                                                                collections
+                                                                                    Valid global <|
+                                                                                        State.Create <|
+                                                                                            Creator.Existing <|
+                                                                                                ExistingCreator.Top <|
+                                                                                                    collections
                                                                             }
                                                                     in
                                                                     Listener.decode model json Collection.decodeList f
@@ -440,8 +471,9 @@ update msg model =
                                                                 f handle =
                                                                     { model
                                                                         | state =
-                                                                            Collect global <|
-                                                                                Collector.HandleInvalid handle
+                                                                            Valid global <|
+                                                                                State.Collect <|
+                                                                                    Collector.HandleInvalid handle
                                                                     }
                                                             in
                                                             Listener.decode model json Handle.decode f
@@ -451,8 +483,9 @@ update msg model =
                                                                 f handle =
                                                                     { model
                                                                         | state =
-                                                                            Collect global <|
-                                                                                Collector.HandleDoesNotExist handle
+                                                                            Valid global <|
+                                                                                State.Collect <|
+                                                                                    Collector.HandleDoesNotExist handle
                                                                     }
                                                             in
                                                             Listener.decode model json Handle.decode f
@@ -462,8 +495,9 @@ update msg model =
                                                                 f withCollections =
                                                                     { model
                                                                         | state =
-                                                                            Collect global <|
-                                                                                Collector.SelectedCreator withCollections
+                                                                            Valid global <|
+                                                                                State.Collect <|
+                                                                                    Collector.SelectedCreator withCollections
                                                                     }
                                                             in
                                                             Listener.decode model json WithCollections.decode f
@@ -473,8 +507,9 @@ update msg model =
                                                                 f withCollection =
                                                                     { model
                                                                         | state =
-                                                                            Collect global <|
-                                                                                Collector.SelectedCollection withCollection
+                                                                            Valid global <|
+                                                                                State.Collect <|
+                                                                                    Collector.SelectedCollection withCollection
                                                                     }
                                                             in
                                                             Listener.decode model json WithCollection.decode f
@@ -484,8 +519,9 @@ update msg model =
                                                                 f withCollection =
                                                                     { model
                                                                         | state =
-                                                                            Collect global <|
-                                                                                Collector.PurchaseSuccess withCollection
+                                                                            Valid global <|
+                                                                                State.Collect <|
+                                                                                    Collector.PurchaseSuccess withCollection
                                                                     }
                                                             in
                                                             Listener.decode model json WithCollection.decode f
@@ -526,10 +562,10 @@ view model =
     let
         html =
             case model.state of
-                Create global creator ->
+                Valid global (State.Create creator) ->
                     View.Hero.view global <| View.Create.Create.body global creator
 
-                Collect global collector ->
+                Valid global (State.Collect collector) ->
                     View.Hero.view global <| View.Collect.Collect.body global collector
 
                 Error error ->

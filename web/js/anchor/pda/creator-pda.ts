@@ -11,7 +11,7 @@ export async function getCreatorPda(program: Program<DapCool>, pda: PublicKey): 
     const fetched = await program.account.creator.fetch(pda);
     return {
         authority: fetched.authority,
-        handle: fetched.handle
+        handle: fetched.handle as PublicKey
     }
 }
 

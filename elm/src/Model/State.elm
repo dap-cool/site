@@ -1,4 +1,4 @@
-module Model.State exposing (State(..), href, parse)
+module Model.State exposing (Local(..), State(..), href, parse)
 
 import Html
 import Html.Attributes
@@ -11,9 +11,13 @@ import Url.Parser as UrlParser exposing ((</>))
 
 
 type State
-    = Create Global Creator
-    | Collect Global Collector
+    = Valid Global Local
     | Error String
+
+
+type Local
+    = Create Creator
+    | Collect Collector
 
 
 urlParser : UrlParser.Parser (State -> c) c
@@ -21,27 +25,27 @@ urlParser =
     UrlParser.oneOf
         -- collector
         [ UrlParser.map
-            (Collect NoWalletYet (Collector.TypingHandle ""))
+            (Valid NoWalletYet <| Collect (Collector.TypingHandle ""))
             UrlParser.top
         , UrlParser.map
-            (Collect NoWalletYet (Collector.TypingHandle ""))
+            (Valid NoWalletYet <| Collect (Collector.TypingHandle ""))
             (UrlParser.s "creator")
         , UrlParser.map
-            (\handle -> Collect NoWalletYet (Collector.MaybeExistingCreator handle))
+            (\handle -> Valid NoWalletYet <| Collect (Collector.MaybeExistingCreator handle))
             (UrlParser.s "creator" </> UrlParser.string)
         , UrlParser.map
-            (\handle index -> Collect NoWalletYet (Collector.MaybeExistingCollection handle index))
+            (\handle index -> Valid NoWalletYet <| Collect (Collector.MaybeExistingCollection handle index))
             (UrlParser.s "creator" </> UrlParser.string </> UrlParser.int)
 
         -- creator
         , UrlParser.map
-            (Create NoWalletYet Creator.Top)
+            (Valid NoWalletYet <| Create Creator.Top)
             (UrlParser.s "admin")
         , UrlParser.map
-            (\handle -> Create NoWalletYet (Creator.MaybeExisting handle))
+            (\handle -> Valid NoWalletYet <| Create (Creator.MaybeExisting handle))
             (UrlParser.s "admin" </> UrlParser.string)
         , UrlParser.map
-            (Create NoWalletYet (Creator.New NewCreator.Top))
+            (Valid NoWalletYet <| Create (Creator.New NewCreator.Top))
             (UrlParser.s "new")
         ]
 
@@ -66,7 +70,7 @@ parse url =
 path : State -> String
 path state =
     case state of
-        Create _ creator ->
+        Valid _ (Create creator) ->
             case creator of
                 Creator.Top ->
                     "#/admin"
@@ -82,9 +86,9 @@ path state =
                         ]
 
                 _ ->
-                    path (Create NoWalletYet Creator.Top)
+                    path (Valid NoWalletYet <| Create Creator.Top)
 
-        Collect _ collector ->
+        Valid _ (Collect collector) ->
             case collector of
                 Collector.MaybeExistingCreator string ->
                     String.concat

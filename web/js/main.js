@@ -166,9 +166,6 @@ export async function main(app, json) {
             // fetch collections
             const collections = await getAllCollectionsFromHandle(pp.program, handleObj);
             console.log(collections);
-            // derive new global
-
-
             // send success to elm
             app.ports.success.send(
                 JSON.stringify(

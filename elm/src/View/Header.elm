@@ -97,7 +97,7 @@ viewGlobal global =
                     , Html.div
                         []
                         [ Html.a
-                            [ State.href <| Create NoWalletYet (Creator.New NewCreator.Top)
+                            [ State.href <| Valid NoWalletYet <| State.Create (Creator.New NewCreator.Top)
                             ]
                             [ Html.text "create-handle-now"
                             ]
@@ -120,7 +120,7 @@ viewGlobal global =
                 , Html.div
                     []
                     [ Html.a
-                        [ State.href <| Create NoWalletYet (Creator.MaybeExisting withWallet.handle)
+                        [ State.href <| Valid NoWalletYet <| State.Create (Creator.MaybeExisting withWallet.handle)
                         ]
                         [ Html.text withWallet.handle
                         ]

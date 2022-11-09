@@ -37,7 +37,7 @@ init _ url key =
             }
     in
     case state of
-        Collect global (Collector.MaybeExistingCreator handle) ->
+        Valid global (State.Collect (Collector.MaybeExistingCreator handle)) ->
             ( model
             , sender <|
                 Sender.encode <|
@@ -47,7 +47,7 @@ init _ url key =
                     }
             )
 
-        Collect global (Collector.MaybeExistingCollection handle index) ->
+        Valid global (State.Collect (Collector.MaybeExistingCollection handle index)) ->
             ( model
             , sender <|
                 Sender.encode <|
@@ -57,7 +57,7 @@ init _ url key =
                     }
             )
 
-        Create global (Creator.MaybeExisting handle) ->
+        Valid global (State.Create (Creator.MaybeExisting handle)) ->
             ( model
             , sender <|
                 Sender.encode <|

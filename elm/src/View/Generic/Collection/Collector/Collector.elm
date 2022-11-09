@@ -33,7 +33,7 @@ select global handle collection =
         []
         [ Html.a
             [ class "is-button-1"
-            , State.href <| Collect global <| Collector.MaybeExistingCollection handle collection.index
+            , State.href <| Valid global <| State.Collect <| Collector.MaybeExistingCollection handle collection.index
             ]
             [ Html.text "Select this"
             ]
