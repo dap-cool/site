@@ -9,6 +9,7 @@ pub fn ix(
     handle: String,
 ) -> Result<()> {
     let handle_pda = &mut ctx.accounts.handle_pda;
+    let creator = &mut ctx.accounts.creator;
     // authority
     handle_pda.authority = ctx.accounts.payer.key();
     // handle
@@ -17,6 +18,9 @@ pub fn ix(
     // collections
     handle_pda.num_collections = 0;
     handle_pda.pinned = Pinned { collections: [0; 10] };
+    // creator
+    creator.authority = ctx.accounts.payer.key();
+    creator.handle = handle_pda.key();
     Ok(())
 }
 

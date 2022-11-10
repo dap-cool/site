@@ -7,6 +7,6 @@ const HANDLE_SIZE: usize = 32 * 3;
 
 #[account]
 pub struct Creator {
-    authority: Pubkey,
-    handle: Pubkey
+    pub authority: Pubkey,
+    pub handle: Pubkey
 }
