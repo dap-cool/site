@@ -5,6 +5,7 @@ import Browser.Dom as Dom
 import Model.Global exposing (Global)
 import Msg.Collector.Collector exposing (FromCollector)
 import Msg.Creator.Creator exposing (FromCreator)
+import Msg.Global as FromGlobal
 import Msg.Js exposing (FromJs)
 import Task
 import Url
@@ -17,7 +18,7 @@ type
     | UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
       -- wallet
-    | Connect
+    | Global FromGlobal.Global
       -- creator
     | FromCreator Global FromCreator
       -- collector

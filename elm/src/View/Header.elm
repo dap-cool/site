@@ -7,6 +7,7 @@ import Model.Creator.Creator as Creator
 import Model.Creator.New.New as NewCreator
 import Model.Global exposing (Global(..))
 import Model.State as State exposing (State(..))
+import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
 import String as Wallet
 
@@ -41,12 +42,7 @@ view global =
                     ]
                     [ Html.span
                         []
-                        [ Html.button
-                            [ class "is-light-text-container-4 mr-2"
-                            , onClick Msg.Connect
-                            ]
-                            [ Html.text "Connect Wallet"
-                            ]
+                        [ viewWallet global
                         ]
                     , Html.span
                         [ class "icon"
@@ -65,6 +61,37 @@ view global =
                 ]
             ]
         ]
+
+viewWallet : Global -> Html Msg
+viewWallet global =
+    case global of
+        NoWalletYet ->
+            Html.button
+                [ class "is-light-text-container-4 mr-2"
+                , onClick <| Msg.Global FromGlobal.Connect
+                ]
+                [ Html.text "Connect Wallet"
+                ]
+
+        WalletMissing ->
+            Html.div
+                []
+                []
+
+
+        Connecting ->
+            Html.div
+                [ class "is-loading"
+                ]
+                []
+
+        _ ->
+            Html.button
+                [ class "is-light-text-container-4 mr-2"
+                , onClick <| Msg.Global FromGlobal.Disconnect
+                ]
+                [ Html.text "Disconnect Wallet"
+                ]
 
 
 viewGlobal : Global -> Html Msg

@@ -4,12 +4,13 @@ import Json.Encode as Encode
 import Model.Global as Global exposing (Global)
 import Msg.Collector.Collector as CollectorMsg exposing (FromCollector)
 import Msg.Creator.Creator as CreatorMsg exposing (FromCreator)
+import Msg.Global as FromGlobal
 
 
 type Sender
     = Create FromCreator
     | Collect FromCollector
-    | Global
+    | Global FromGlobal.Global
 
 
 type alias WithMore =
@@ -52,8 +53,8 @@ toString role =
         Collect fromCollector ->
             CollectorMsg.toString fromCollector
 
-        Global ->
-            "connect"
+        Global fromGlobal ->
+            FromGlobal.toString fromGlobal
 
 
 type alias Json =

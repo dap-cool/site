@@ -1,4 +1,4 @@
-import {getPhantom} from "./phantom";
+import {getPhantom, getPhantomProvider} from "./phantom";
 import {getEphemeralPP, getPP} from "./anchor/util/context";
 import {
     validateNewHandle,
@@ -29,39 +29,52 @@ export async function main(app, json) {
         if (sender === "connect") {
             // get phantom
             phantom = await getPhantom(app);
-            // get provider & program
-            const pp = getPP(phantom);
-            // derive creator pda
-            const creatorPda = await deriveCreatorPda(pp.provider, pp.program);
-            try {
-                const creator = await getCreatorPda(pp.program, creatorPda);
-                const handle = await getHandlePda(pp.program, creator.handle);
-                // send success to elm
-                app.ports.success.send(
-                    JSON.stringify(
-                        {
-                            listener: "global-connect",
-                            global: {
-                                handle: handle.handle.toString(),
-                                wallet: pp.provider.wallet.publicKey.toString(),
+            if (phantom) {
+                // get provider & program
+                const pp = getPP(phantom);
+                // derive creator pda
+                const creatorPda = await deriveCreatorPda(pp.provider, pp.program);
+                try {
+                    const creator = await getCreatorPda(pp.program, creatorPda);
+                    const handle = await getHandlePda(pp.program, creator.handle);
+                    // send success to elm
+                    app.ports.success.send(
+                        JSON.stringify(
+                            {
+                                listener: "global-connect",
+                                global: {
+                                    handle: handle.handle.toString(),
+                                    wallet: pp.provider.wallet.publicKey.toString(),
+                                }
                             }
-                        }
-                    )
-                );
-            } catch (error) {
-                console.log("could not find creator on-chain");
-                // send success to elm
-                app.ports.success.send(
-                    JSON.stringify(
-                        {
-                            listener: "global-connect",
-                            global: {
-                                wallet: pp.provider.wallet.publicKey.toString()
+                        )
+                    );
+                } catch (error) {
+                    console.log("could not find creator on-chain");
+                    // send success to elm
+                    app.ports.success.send(
+                        JSON.stringify(
+                            {
+                                listener: "global-connect",
+                                global: {
+                                    wallet: pp.provider.wallet.publicKey.toString()
+                                }
                             }
-                        }
-                    )
-                );
+                        )
+                    );
+                }
             }
+            // or listen for disconnect
+        } else if (sender === "disconnect") {
+            phantom.windowSolana.disconnect();
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "global-connect",
+                        global: "no-wallet-yet"
+                    }
+                )
+            );
             // or new creator confirm handle
         } else if (sender === "new-creator-confirm-handle") {
             // parse more json
@@ -85,11 +98,13 @@ export async function main(app, json) {
                 if (handle) {
                     // get phantom
                     phantom = await getPhantom(app);
-                    // get provider & program
-                    const pp = getPP(phantom);
-                    // invoke init-new-handle
-                    // TODO; check for creator-pda
-                    await initNewHandle(app, pp.provider, pp.program, validated, handle);
+                    if (phantom) {
+                        // get provider & program
+                        const pp = getPP(phantom);
+                        // invoke init-new-handle
+                        // TODO; check for creator-pda
+                        await initNewHandle(app, pp.provider, pp.program, validated, handle);
+                    }
                 }
             }
             // or existing creator confirm handle
@@ -116,40 +131,42 @@ export async function main(app, json) {
                 if (handle) {
                     // get phantom
                     phantom = await getPhantom(app);
-                    // get provider & program
-                    const pp = getPP(phantom);
-                    // assert authority is current user
-                    const current = pp.provider.wallet.publicKey.toString();
-                    if (handle.authority.toString() === current) {
-                        // get collections
-                        const collections = await getAllCollectionsFromHandle(pp.program, handle);
-                        app.ports.success.send(
-                            JSON.stringify(
-                                {
-                                    listener: "creator-authorized",
-                                    global: {
-                                        handle: validated,
-                                        wallet: current,
-                                    },
-                                    more: JSON.stringify(
-                                        collections
-                                    )
-                                }
-                            )
-                        );
-                    } else {
-                        console.log("user unauthorized");
-                        app.ports.success.send(
-                            JSON.stringify(
-                                {
-                                    listener: "creator-handle-unauthorized",
-                                    global: {
-                                        handle: validated,
-                                        wallet: current,
+                    if (phantom) {
+                        // get provider & program
+                        const pp = getPP(phantom);
+                        // assert authority is current user
+                        const current = pp.provider.wallet.publicKey.toString();
+                        if (handle.authority.toString() === current) {
+                            // get collections
+                            const collections = await getAllCollectionsFromHandle(pp.program, handle);
+                            app.ports.success.send(
+                                JSON.stringify(
+                                    {
+                                        listener: "creator-authorized",
+                                        global: {
+                                            handle: validated,
+                                            wallet: current,
+                                        },
+                                        more: JSON.stringify(
+                                            collections
+                                        )
                                     }
-                                }
-                            )
-                        );
+                                )
+                            );
+                        } else {
+                            console.log("user unauthorized");
+                            app.ports.success.send(
+                                JSON.stringify(
+                                    {
+                                        listener: "creator-handle-unauthorized",
+                                        global: {
+                                            handle: validated,
+                                            wallet: current,
+                                        }
+                                    }
+                                )
+                            );
+                        }
                     }
                 }
             }
@@ -298,19 +315,21 @@ export async function main(app, json) {
         } else if (sender === "collector-purchase-collection") {
             // get phantom
             phantom = await getPhantom(app);
-            // get provider & program
-            const pp = getPP(phantom);
-            // parse more json
-            const more = JSON.parse(parsed.more);
-            // invoke rpc
-            await mintNewCopy(
-                app,
-                parsed.global,
-                pp.provider,
-                pp.program,
-                more.handle,
-                more.index
-            )
+            if (phantom) {
+                // get provider & program
+                const pp = getPP(phantom);
+                // parse more json
+                const more = JSON.parse(parsed.more);
+                // invoke rpc
+                await mintNewCopy(
+                    app,
+                    parsed.global,
+                    pp.provider,
+                    pp.program,
+                    more.handle,
+                    more.index
+                )
+            }
             // or throw error
         } else {
             const msg = "invalid role sent to js: " + sender;

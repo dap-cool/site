@@ -544,11 +544,11 @@ update msg model =
                     , Cmd.none
                     )
 
-        Connect ->
+        Global fromGlobal ->
             case model.state of
                 Valid _ local ->
                     ( { model | state = Valid Global.Connecting local }
-                    , sender <| Sender.encode0 Sender.Global
+                    , sender <| Sender.encode0 <| Sender.Global fromGlobal
                     )
 
                 Error _ ->

@@ -10,7 +10,7 @@ import Util.Decode as Util
 type Global
     = NoWalletYet
     | WalletMissing -- no browser extension found
-    | Connecting
+    | Connecting -- or disconnecting
     | HasWallet Wallet
     | HasWalletAndHandle Handle.WithWallet
 
