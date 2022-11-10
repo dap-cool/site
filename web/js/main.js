@@ -27,7 +27,7 @@ export async function main(app, json) {
             console.log("wallet changed");
             // fetch state if previously connected
             if (phantom) {
-                // get provider & program
+                phantom = await getPhantom(app);
                 const pp = getPP(phantom);
                 await getCreatorAndHandle(
                     app,
@@ -58,6 +58,7 @@ export async function main(app, json) {
             // or listen for disconnect
         } else if (sender === "disconnect") {
             phantom.windowSolana.disconnect();
+            phantom = null;
             app.ports.success.send(
                 JSON.stringify(
                     {
