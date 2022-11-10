@@ -10,6 +10,7 @@ import Util.Decode as Util
 type Global
     = NoWalletYet
     | WalletMissing -- no browser extension found
+    | Connecting
     | HasWallet Wallet
     | HasWalletAndHandle Handle.WithWallet
 
@@ -58,6 +59,9 @@ encoder global =
 
         WalletMissing ->
             Encode.string "wallet-missing"
+
+        Connecting ->
+            Encode.string "connecting"
 
         HasWallet wallet ->
             Wallet.encoder wallet

@@ -2,11 +2,12 @@ module View.Header exposing (view)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class)
+import Html.Events exposing (onClick)
 import Model.Creator.Creator as Creator
 import Model.Creator.New.New as NewCreator
 import Model.Global exposing (Global(..))
 import Model.State as State exposing (State(..))
-import Msg.Msg exposing (Msg(..))
+import Msg.Msg as Msg exposing (Msg(..))
 import String as Wallet
 
 
@@ -39,9 +40,13 @@ view global =
                     [ class "icon-text"
                     ]
                     [ Html.span
-                        [ class "is-light-text-container-4 mr-2"
-                        ]
-                        [ Html.text "Connect Wallet"
+                        []
+                        [ Html.button
+                            [ class "is-light-text-container-4 mr-2"
+                            , onClick Msg.Connect
+                            ]
+                            [ Html.text "Connect Wallet"
+                            ]
                         ]
                     , Html.span
                         [ class "icon"
@@ -76,6 +81,12 @@ viewGlobal global =
                 []
                 [ Html.text "no-wallet-installed"
                 ]
+
+        Connecting ->
+            Html.div
+                [ class "is-loading-tiny"
+                ]
+                []
 
         HasWallet wallet ->
             Html.div

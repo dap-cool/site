@@ -13,6 +13,7 @@ import {getAuthorityPda} from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
+import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 
 // init phantom
 let phantom = null;
@@ -24,8 +25,45 @@ export async function main(app, json) {
         const parsed = JSON.parse(json);
         // match on sender role
         const sender = parsed.sender;
-        // new creator confirm handle
-        if (sender === "new-creator-confirm-handle") {
+        // listen for connect
+        if (sender === "connect") {
+            // get phantom
+            phantom = await getPhantom(app);
+            // get provider & program
+            const pp = getPP(phantom);
+            // derive creator pda
+            const creatorPda = await deriveCreatorPda(pp.provider, pp.program);
+            try {
+                const creator = await getCreatorPda(pp.program, creatorPda);
+                const handle = await getHandlePda(pp.program, creator.handle);
+                // send success to elm
+                app.ports.success.send(
+                    JSON.stringify(
+                        {
+                            listener: "global-connect",
+                            global: {
+                                handle: handle.handle.toString(),
+                                wallet: pp.provider.wallet.publicKey.toString(),
+                            }
+                        }
+                    )
+                );
+            } catch (error) {
+                console.log("could not find creator on-chain");
+                // send success to elm
+                app.ports.success.send(
+                    JSON.stringify(
+                        {
+                            listener: "global-connect",
+                            global: {
+                                wallet: pp.provider.wallet.publicKey.toString()
+                            }
+                        }
+                    )
+                );
+            }
+            // or new creator confirm handle
+        } else if (sender === "new-creator-confirm-handle") {
             // parse more json
             const more = JSON.parse(parsed.more);
             // validate handle

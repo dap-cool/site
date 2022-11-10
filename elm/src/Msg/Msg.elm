@@ -16,6 +16,8 @@ type
     = NoOp
     | UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
+      -- wallet
+    | Connect
       -- creator
     | FromCreator Global FromCreator
       -- collector

@@ -332,213 +332,205 @@ update msg model =
                     case Listener.decode0 json of
                         -- decode success
                         Ok ( global, maybeListener ) ->
-                            -- check global status
-                            case global of
-                                Global.WalletMissing ->
-                                    case model.state of
-                                        Valid _ (State.Create creator) ->
-                                            ( { model | state = Valid global <| State.Create creator }
-                                            , Cmd.none
-                                            )
-
-                                        Valid _ (State.Collect collector) ->
-                                            ( { model | state = Valid global <| State.Collect collector }
-                                            , Cmd.none
-                                            )
-
-                                        Error _ ->
-                                            ( model
-                                            , Cmd.none
-                                            )
-
-                                _ ->
-                                    -- look for role
-                                    case maybeListener of
-                                        -- found role
-                                        Just listener ->
-                                            -- which role?
-                                            case listener of
-                                                -- found msg for creator
-                                                Listener.Create toCreator ->
-                                                    -- what is creator doing?
-                                                    case toCreator of
-                                                        ToCreator.New new ->
-                                                            case new of
-                                                                ToNewCreator.HandleInvalid ->
-                                                                    let
-                                                                        f handle =
-                                                                            { model
-                                                                                | state =
-                                                                                    Valid global <|
-                                                                                        State.Create <|
-                                                                                            Creator.New <|
-                                                                                                NewCreator.HandleInvalid handle
-                                                                            }
-                                                                    in
-                                                                    Listener.decode model json Handle.decode f
-
-                                                                ToNewCreator.HandleAlreadyExists ->
-                                                                    let
-                                                                        f handle =
-                                                                            { model
-                                                                                | state =
-                                                                                    Valid global <|
-                                                                                        State.Create <|
-                                                                                            Creator.New <|
-                                                                                                NewCreator.HandleAlreadyExists
-                                                                                                    handle
-                                                                            }
-                                                                    in
-                                                                    Listener.decode model json Handle.decode f
-
-                                                                ToNewCreator.NewHandleSuccess ->
-                                                                    ( { model
+                            -- look for role
+                            case maybeListener of
+                                -- found role
+                                Just listener ->
+                                    -- which role?
+                                    case listener of
+                                        -- found msg for creator
+                                        Listener.Create toCreator ->
+                                            -- what is creator doing?
+                                            case toCreator of
+                                                ToCreator.New new ->
+                                                    case new of
+                                                        ToNewCreator.HandleInvalid ->
+                                                            let
+                                                                f handle =
+                                                                    { model
                                                                         | state =
                                                                             Valid global <|
                                                                                 State.Create <|
-                                                                                    Creator.Existing <|
-                                                                                        ExistingCreator.Top []
-                                                                      }
-                                                                    , Cmd.none
-                                                                    )
+                                                                                    Creator.New <|
+                                                                                        NewCreator.HandleInvalid handle
+                                                                    }
+                                                            in
+                                                            Listener.decode model json Handle.decode f
 
-                                                        ToCreator.Existing existing ->
-                                                            case existing of
-                                                                ToExistingCreator.HandleForm handleFormStatus ->
-                                                                    case handleFormStatus of
-                                                                        ToExistingCreator.Invalid ->
-                                                                            let
-                                                                                f handle =
-                                                                                    { model
-                                                                                        | state =
-                                                                                            Valid global <|
-                                                                                                State.Create <|
-                                                                                                    Creator.Existing <|
-                                                                                                        ExistingCreator.AuthorizingFromUrl <|
-                                                                                                            ExistingHandleFormStatus.HandleInvalid
-                                                                                                                handle
-                                                                                    }
-                                                                            in
-                                                                            Listener.decode model json Handle.decode f
+                                                        ToNewCreator.HandleAlreadyExists ->
+                                                            let
+                                                                f handle =
+                                                                    { model
+                                                                        | state =
+                                                                            Valid global <|
+                                                                                State.Create <|
+                                                                                    Creator.New <|
+                                                                                        NewCreator.HandleAlreadyExists
+                                                                                            handle
+                                                                    }
+                                                            in
+                                                            Listener.decode model json Handle.decode f
 
-                                                                        ToExistingCreator.DoesNotExist ->
-                                                                            let
-                                                                                f handle =
-                                                                                    { model
-                                                                                        | state =
-                                                                                            Valid global <|
-                                                                                                State.Create <|
-                                                                                                    Creator.Existing <|
-                                                                                                        ExistingCreator.AuthorizingFromUrl <|
-                                                                                                            ExistingHandleFormStatus.HandleDoesNotExist
-                                                                                                                handle
-                                                                                    }
-                                                                            in
-                                                                            Listener.decode model json Handle.decode f
+                                                        ToNewCreator.NewHandleSuccess ->
+                                                            ( { model
+                                                                | state =
+                                                                    Valid global <|
+                                                                        State.Create <|
+                                                                            Creator.Existing <|
+                                                                                ExistingCreator.Top []
+                                                              }
+                                                            , Cmd.none
+                                                            )
 
-                                                                        ToExistingCreator.UnAuthorized ->
-                                                                            ( { model
+                                                ToCreator.Existing existing ->
+                                                    case existing of
+                                                        ToExistingCreator.HandleForm handleFormStatus ->
+                                                            case handleFormStatus of
+                                                                ToExistingCreator.Invalid ->
+                                                                    let
+                                                                        f handle =
+                                                                            { model
                                                                                 | state =
                                                                                     Valid global <|
                                                                                         State.Create <|
                                                                                             Creator.Existing <|
                                                                                                 ExistingCreator.AuthorizingFromUrl <|
-                                                                                                    ExistingHandleFormStatus.UnAuthorized
-                                                                              }
-                                                                            , Cmd.none
-                                                                            )
+                                                                                                    ExistingHandleFormStatus.HandleInvalid
+                                                                                                        handle
+                                                                            }
+                                                                    in
+                                                                    Listener.decode model json Handle.decode f
 
-                                                                ToExistingCreator.Authorized ->
+                                                                ToExistingCreator.DoesNotExist ->
                                                                     let
-                                                                        f collections =
+                                                                        f handle =
                                                                             { model
                                                                                 | state =
                                                                                     Valid global <|
                                                                                         State.Create <|
                                                                                             Creator.Existing <|
-                                                                                                ExistingCreator.Top <|
-                                                                                                    collections
+                                                                                                ExistingCreator.AuthorizingFromUrl <|
+                                                                                                    ExistingHandleFormStatus.HandleDoesNotExist
+                                                                                                        handle
                                                                             }
                                                                     in
-                                                                    Listener.decode model json Collection.decodeList f
+                                                                    Listener.decode model json Handle.decode f
 
-                                                -- found msg for collector
-                                                Listener.Collect toCollector ->
-                                                    -- what is creator doing?
-                                                    case toCollector of
-                                                        ToCollector.HandleInvalid ->
+                                                                ToExistingCreator.UnAuthorized ->
+                                                                    ( { model
+                                                                        | state =
+                                                                            Valid global <|
+                                                                                State.Create <|
+                                                                                    Creator.Existing <|
+                                                                                        ExistingCreator.AuthorizingFromUrl <|
+                                                                                            ExistingHandleFormStatus.UnAuthorized
+                                                                      }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                        ToExistingCreator.Authorized ->
                                                             let
-                                                                f handle =
+                                                                f collections =
                                                                     { model
                                                                         | state =
                                                                             Valid global <|
-                                                                                State.Collect <|
-                                                                                    Collector.HandleInvalid handle
+                                                                                State.Create <|
+                                                                                    Creator.Existing <|
+                                                                                        ExistingCreator.Top <|
+                                                                                            collections
                                                                     }
                                                             in
-                                                            Listener.decode model json Handle.decode f
+                                                            Listener.decode model json Collection.decodeList f
 
-                                                        ToCollector.HandleDoesNotExist ->
-                                                            let
-                                                                f handle =
-                                                                    { model
-                                                                        | state =
-                                                                            Valid global <|
-                                                                                State.Collect <|
-                                                                                    Collector.HandleDoesNotExist handle
-                                                                    }
-                                                            in
-                                                            Listener.decode model json Handle.decode f
+                                        -- found msg for collector
+                                        Listener.Collect toCollector ->
+                                            -- what is creator doing?
+                                            case toCollector of
+                                                ToCollector.HandleInvalid ->
+                                                    let
+                                                        f handle =
+                                                            { model
+                                                                | state =
+                                                                    Valid global <|
+                                                                        State.Collect <|
+                                                                            Collector.HandleInvalid handle
+                                                            }
+                                                    in
+                                                    Listener.decode model json Handle.decode f
 
-                                                        ToCollector.HandleFound ->
-                                                            let
-                                                                f withCollections =
-                                                                    { model
-                                                                        | state =
-                                                                            Valid global <|
-                                                                                State.Collect <|
-                                                                                    Collector.SelectedCreator withCollections
-                                                                    }
-                                                            in
-                                                            Listener.decode model json WithCollections.decode f
+                                                ToCollector.HandleDoesNotExist ->
+                                                    let
+                                                        f handle =
+                                                            { model
+                                                                | state =
+                                                                    Valid global <|
+                                                                        State.Collect <|
+                                                                            Collector.HandleDoesNotExist handle
+                                                            }
+                                                    in
+                                                    Listener.decode model json Handle.decode f
 
-                                                        ToCollector.CollectionSelected ->
-                                                            let
-                                                                f withCollection =
-                                                                    { model
-                                                                        | state =
-                                                                            Valid global <|
-                                                                                State.Collect <|
-                                                                                    Collector.SelectedCollection withCollection
-                                                                    }
-                                                            in
-                                                            Listener.decode model json WithCollection.decode f
+                                                ToCollector.HandleFound ->
+                                                    let
+                                                        f withCollections =
+                                                            { model
+                                                                | state =
+                                                                    Valid global <|
+                                                                        State.Collect <|
+                                                                            Collector.SelectedCreator withCollections
+                                                            }
+                                                    in
+                                                    Listener.decode model json WithCollections.decode f
 
-                                                        ToCollector.CollectionPurchased ->
-                                                            let
-                                                                f withCollection =
-                                                                    { model
-                                                                        | state =
-                                                                            Valid global <|
-                                                                                State.Collect <|
-                                                                                    Collector.PurchaseSuccess withCollection
-                                                                    }
-                                                            in
-                                                            Listener.decode model json WithCollection.decode f
+                                                ToCollector.CollectionSelected ->
+                                                    let
+                                                        f withCollection =
+                                                            { model
+                                                                | state =
+                                                                    Valid global <|
+                                                                        State.Collect <|
+                                                                            Collector.SelectedCollection withCollection
+                                                            }
+                                                    in
+                                                    Listener.decode model json WithCollection.decode f
 
-                                        -- undefined role
-                                        Nothing ->
-                                            let
-                                                message =
-                                                    String.join
-                                                        " "
-                                                        [ "Invalid role sent from client:"
-                                                        , json
-                                                        ]
-                                            in
-                                            ( { model | state = Error message }
-                                            , Cmd.none
-                                            )
+                                                ToCollector.CollectionPurchased ->
+                                                    let
+                                                        f withCollection =
+                                                            { model
+                                                                | state =
+                                                                    Valid global <|
+                                                                        State.Collect <|
+                                                                            Collector.PurchaseSuccess withCollection
+                                                            }
+                                                    in
+                                                    Listener.decode model json WithCollection.decode f
+
+                                        Listener.Global ->
+                                            case model.state of
+                                                Valid _ local ->
+                                                    ( { model | state = Valid global local }
+                                                    , Cmd.none
+                                                    )
+
+                                                Error _ ->
+                                                    ( model
+                                                    , Cmd.none
+                                                    )
+
+                                -- undefined role
+                                Nothing ->
+                                    let
+                                        message =
+                                            String.join
+                                                " "
+                                                [ "Invalid role sent from client:"
+                                                , json
+                                                ]
+                                    in
+                                    ( { model | state = Error message }
+                                    , Cmd.none
+                                    )
 
                         -- error from decoder
                         Err string ->
@@ -549,6 +541,18 @@ update msg model =
                 -- JS sending error to raise
                 JsMsg.Error string ->
                     ( { model | state = Error string }
+                    , Cmd.none
+                    )
+
+        Connect ->
+            case model.state of
+                Valid _ local ->
+                    ( { model | state = Valid Global.Connecting local }
+                    , sender <| Sender.encode0 Sender.Global
+                    )
+
+                Error _ ->
+                    ( model
                     , Cmd.none
                     )
 

@@ -13,6 +13,7 @@ import Util.Decode as Util
 type Listener
     = Create ToCreator
     | Collect ToCollector
+    | Global
 
 
 decode0 : String -> Result String ( Global.Global, Maybe Listener )
@@ -71,17 +72,22 @@ decodeMore string =
 
 fromString : String -> Maybe Listener
 fromString string =
-    case ToCreator.fromString string of
-        Just toCreator ->
-            Just <| Create toCreator
+    case string of
+        "global-connect" ->
+            Just Global
 
-        Nothing ->
-            case ToCollector.fromString string of
-                Just toCollector ->
-                    Just <| Collect toCollector
+        _ ->
+            case ToCreator.fromString string of
+                Just toCreator ->
+                    Just <| Create toCreator
 
                 Nothing ->
-                    Nothing
+                    case ToCollector.fromString string of
+                        Just toCollector ->
+                            Just <| Collect toCollector
+
+                        Nothing ->
+                            Nothing
 
 
 type alias Json =

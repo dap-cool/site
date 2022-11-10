@@ -9,6 +9,7 @@ import Msg.Creator.Creator as CreatorMsg exposing (FromCreator)
 type Sender
     = Create FromCreator
     | Collect FromCollector
+    | Global
 
 
 type alias WithMore =
@@ -50,6 +51,9 @@ toString role =
 
         Collect fromCollector ->
             CollectorMsg.toString fromCollector
+
+        Global ->
+            "connect"
 
 
 type alias Json =
