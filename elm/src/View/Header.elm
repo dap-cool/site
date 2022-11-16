@@ -62,6 +62,7 @@ view global =
             ]
         ]
 
+
 viewWallet : Global -> Html Msg
 viewWallet global =
     case global of
@@ -77,7 +78,6 @@ viewWallet global =
             Html.div
                 []
                 []
-
 
         Connecting ->
             Html.div

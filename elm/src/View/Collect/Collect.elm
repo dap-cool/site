@@ -1,7 +1,7 @@
 module View.Collect.Collect exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, placeholder, style, type_)
+import Html.Attributes exposing (class, placeholder, src, style, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collector.Collector exposing (Collector(..))
 import Model.Global exposing (Global)
@@ -310,21 +310,30 @@ hiw =
         [ class "is-hiw mt-6"
         ]
         [ Html.h3
-            [ class "is-text-container-2 is-size-2 has-text-centered mt-6 mb-5"
+            [ class "is-text-container-2 is-size-2 has-text-centered mt-6"
             , style "height" "100px"
             ]
             [ Html.text "How It Works"
             ]
         , Html.div
-            [ class "columns is-mobile my-6"
-            , style "height" "150px"
+            [ class "columns is-mobile mb-6"
+            , style "height" "203px"
             ]
             [ Html.div
-                [ class "column is-5"
+                [ class "column is-3"
                 ]
                 []
             , Html.div
+                [ class "column is-2"
+                ]
+                [ Html.img
+                    [ src "images/landing/landing-a.svg"
+                    ]
+                    []
+                ]
+            , Html.div
                 [ class "column is-7"
+                , style "margin-top" "60px"
                 ]
                 [ Html.div
                     [ class "is-text-container-3 is-size-3"
@@ -347,14 +356,15 @@ hiw =
             ]
         , Html.div
             [ class "columns is-mobile mt-6"
-            , style "height" "150px"
+            , style "height" "203px"
             ]
             [ Html.div
                 [ class "column is-3"
                 ]
                 []
             , Html.div
-                [ class "column is-5"
+                [ class "column is-4"
+                , style "margin-top" "45px"
                 ]
                 [ Html.div
                     [ class "is-text-container-3 is-size-3"
@@ -370,17 +380,22 @@ hiw =
                         ]
                     , Html.div
                         []
-                        [ Html.text "favorite Creators. Take ownership and re-"
+                        [ Html.text "favorite Creators. Take ownership and"
                         ]
                     , Html.div
                         []
-                        [ Html.text "sell in secondary markets with blockchain."
+                        [ Html.text "re-sell in secondary markets with blockchain."
                         ]
                     ]
                 ]
             , Html.div
-                [ class "column is-4"
+                [ class "column is-5"
                 ]
-                []
+                [ Html.img
+                    [ src "images/landing/landing-b.svg"
+                    , width 215
+                    ]
+                    []
+                ]
             ]
         ]

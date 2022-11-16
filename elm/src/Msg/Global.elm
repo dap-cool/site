@@ -1,8 +1,10 @@
 module Msg.Global exposing (Global(..), toString)
 
+
 type Global
     = Connect
     | Disconnect
+
 
 toString : Global -> String
 toString global =
@@ -10,6 +12,5 @@ toString global =
         Connect ->
             "connect"
 
-
         Disconnect ->
-             "disconnect"
+            "disconnect"
