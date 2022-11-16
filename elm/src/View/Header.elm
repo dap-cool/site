@@ -15,7 +15,7 @@ import String as Wallet
 view : Global -> Html Msg
 view global =
     Html.nav
-        [ class "is-navbar level is-mobile is-size-4"
+        [ class "level is-size-4" -- is-navbar level is-mobile is-size-4
         ]
         [ Html.div
             [ class "level-left ml-5 my-3"
@@ -81,7 +81,7 @@ viewWallet global =
 
         Connecting ->
             Html.div
-                [ class "is-loading"
+                [ class "is-loading-tiny"
                 ]
                 []
 
