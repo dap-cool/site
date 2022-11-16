@@ -320,20 +320,21 @@ hiw =
             , style "height" "203px"
             ]
             [ Html.div
-                [ class "column is-3"
+                [ class "column is-2"
                 ]
                 []
             , Html.div
-                [ class "column is-2"
+                [ class "column is-3"
                 ]
                 [ Html.img
                     [ src "images/landing/landing-a.svg"
+                    , width 269
                     ]
                     []
                 ]
             , Html.div
                 [ class "column is-7"
-                , style "margin-top" "60px"
+                , style "margin-top" "75px"
                 ]
                 [ Html.div
                     [ class "is-text-container-3 is-size-3"
@@ -359,12 +360,12 @@ hiw =
             , style "height" "203px"
             ]
             [ Html.div
-                [ class "column is-3"
+                [ class "column is-2"
                 ]
                 []
             , Html.div
-                [ class "column is-4"
-                , style "margin-top" "45px"
+                [ class "column is-5"
+                , style "margin-top" "55px"
                 ]
                 [ Html.div
                     [ class "is-text-container-3 is-size-3"
@@ -376,15 +377,11 @@ hiw =
                     ]
                     [ Html.div
                         []
-                        [ Html.text "Unlock exclusive content from your"
-                        ]
-                    , Html.div
-                        []
-                        [ Html.text "favorite Creators. Take ownership and"
-                        ]
-                    , Html.div
-                        []
-                        [ Html.text "re-sell in secondary markets with blockchain."
+                        [ Html.text
+                            """Unlock exclusive content from your
+                            favorite Creators. Take ownership and
+                            re-sell in secondary markets with blockchain.
+                            """
                         ]
                     ]
                 ]
