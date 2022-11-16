@@ -7,7 +7,7 @@ import Model.Creator.Existing.NewCollection exposing (NewCollection)
 
 type Existing
     = Top (List Collection)
-    | CreatingNewCollection NewCollection
+    | CreatingNewCollection NewCollection -- todo; separate create-collection & mark-collection; catch state & send to selected-collection view
     | SelectedCollection Collection
       -- authorizing from url
     | AuthorizingFromUrl HandleFormStatus
