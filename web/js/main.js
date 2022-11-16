@@ -20,7 +20,7 @@ let phantom = null;
 
 export async function main(app, json) {
     console.log(json);
-    // listen for wallet disconnect
+    // listen for wallet change
     const phantomProvider = getPhantomProvider();
     if (phantomProvider) {
         phantomProvider.on("accountChanged", async () => {
@@ -34,6 +34,7 @@ export async function main(app, json) {
                     pp.provider,
                     pp.program
                 );
+                window.location = "#/creator" // top
             }
         });
     }
