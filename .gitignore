@@ -26,3 +26,6 @@ target
 
 # test artifacts
 node_modules
+
+# rpc
+rpc.ts
