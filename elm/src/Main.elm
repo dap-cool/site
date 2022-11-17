@@ -5,7 +5,7 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Nav
 import Model.AlmostExistingCollection as AlmostExistingCollection
-import Model.AlmostNewCollection as AlmostCollection
+import Model.AlmostNewCollection as AlmostNewCollection
 import Model.Collection as Collection
 import Model.Collector.Collector as Collector
 import Model.Collector.WithCollection as WithCollection
@@ -204,8 +204,9 @@ update msg model =
                                     Valid global <|
                                         State.Create <|
                                             Creator.Existing <|
-                                                ExistingCreator.CreatingNewCollection
-                                                    NewCollection.default
+                                                ExistingCreator.CreatingNewCollection <|
+                                                    NewCollection.Input
+                                                        NewCollection.default
                               }
                             , Cmd.none
                             )
@@ -222,8 +223,9 @@ update msg model =
                                             Valid global <|
                                                 State.Create <|
                                                     Creator.Existing <|
-                                                        ExistingCreator.CreatingNewCollection
-                                                            bumpNewCollection
+                                                        ExistingCreator.CreatingNewCollection <|
+                                                            NewCollection.Input
+                                                                bumpNewCollection
                                       }
                                     , Cmd.none
                                     )
@@ -238,8 +240,9 @@ update msg model =
                                             Valid global <|
                                                 State.Create <|
                                                     Creator.Existing <|
-                                                        ExistingCreator.CreatingNewCollection
-                                                            bumpNewCollection
+                                                        ExistingCreator.CreatingNewCollection <|
+                                                            NewCollection.Input
+                                                                bumpNewCollection
                                       }
                                     , Cmd.none
                                     )
@@ -250,25 +253,30 @@ update msg model =
                                       -- prepare image form events
                                     )
 
-                        FromExistingCreator.CreateNewCollection almostCollection ->
-                            ( model
-                              -- todo; waiting
+                        FromExistingCreator.CreateNewCollection almostNewCollection ->
+                            ( model -- todo; waiting without changing dom
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
                                     , global = global
-                                    , more = AlmostCollection.encode almostCollection
+                                    , more = AlmostNewCollection.encode almostNewCollection
                                     }
                             )
 
-                        FromExistingCreator.MarkNewCollection int ->
-                            ( model
-                              -- todo; waiting
+                        FromExistingCreator.MarkNewCollection collection ->
+                            ( { model
+                                | state =
+                                    Valid global <|
+                                        State.Create <|
+                                            Creator.Existing <|
+                                                ExistingCreator.CreatingNewCollection <|
+                                                    NewCollection.WaitingForMarkNft collection
+                              }
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
                                     , global = global
-                                    , more = Collection.encode int
+                                    , more = Collection.encode collection
                                     }
                             )
 
@@ -427,6 +435,36 @@ update msg model =
                                                                       }
                                                                     , Cmd.none
                                                                     )
+
+                                                        ToExistingCreator.CreatedNewCollection ->
+                                                            let
+                                                                f collection =
+                                                                    { model
+                                                                        | state =
+                                                                            Valid global <|
+                                                                                State.Create <|
+                                                                                    Creator.Existing <|
+                                                                                        ExistingCreator.CreatingNewCollection <|
+                                                                                            NewCollection.HasCreateNft
+                                                                                                collection
+                                                                    }
+                                                            in
+                                                            Listener.decode model json Collection.decode f
+
+                                                        ToExistingCreator.MarkedNewCollection ->
+                                                            let
+                                                                f collection =
+                                                                    { model
+                                                                        | state =
+                                                                            Valid global <|
+                                                                                State.Create <|
+                                                                                    Creator.Existing <|
+                                                                                        ExistingCreator.CreatingNewCollection <|
+                                                                                            NewCollection.Done
+                                                                                                collection
+                                                                    }
+                                                            in
+                                                            Listener.decode model json Collection.decode f
 
                                                         ToExistingCreator.Authorized ->
                                                             let

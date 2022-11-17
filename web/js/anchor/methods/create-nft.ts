@@ -1,6 +1,5 @@
 import {deriveHandlePda, getHandlePda} from "../pda/handle-pda";
-import {deriveAuthorityPda} from "../pda/authority-pda";
-import {getAllCollectionsFromHandle} from "../pda/get-all-collections-from-handle";
+import {CollectionAuthority, deriveAuthorityPda} from "../pda/authority-pda";
 import {
     MPL_PREFIX,
     MPL_EDITION,
@@ -13,6 +12,7 @@ import {AnchorProvider, BN, Program} from "@project-serum/anchor";
 import {Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
 import {ShdwDrive} from "@shadow-drive/sdk";
 import {DapCool} from "../idl";
+import {getAllCollectionsFromHandle} from "../pda/get-all-collections-from-handle";
 
 export async function creatNft(
     app,
@@ -97,24 +97,23 @@ export async function creatNft(
         .rpc()
     // fetch pda
     console.log("mint", mint.publicKey.toString());
-    // invoke create-collection
-    await createCollection(
-        provider, program, handlePda, authorityPda, mint.publicKey, authorityIndex
-    );
-    // fetch all collections
-    const freshHandle = await getHandlePda(program, handlePda);
-    const collections = await getAllCollectionsFromHandle(program, freshHandle);
-    console.log(collections);
+    // build response for elm
+    const response = {
+        name: name,
+        symbol: symbol,
+        index: authorityIndex,
+        mint: mint.publicKey
+    }
     app.ports.success.send(
         JSON.stringify(
             {
-                listener: "creator-authorized",
+                listener: "creator-created-new-collection",
                 global: {
                     handle: handle,
                     wallet: provider.wallet.publicKey.toString()
                 },
                 more: JSON.stringify(
-                    collections
+                    response
                 )
             }
         )
@@ -144,11 +143,11 @@ async function uploadMetadata(
 }
 
 export async function createCollection(
+    app,
     provider: AnchorProvider,
     program: Program<DapCool>,
     handle: PublicKey,
-    authority: PublicKey,
-    mint: PublicKey,
+    authority: CollectionAuthority,
     index: number
 ) {
     // derive key-pair for collection
@@ -178,7 +177,7 @@ export async function createCollection(
     let collectionMasterEditionAta;
     [collectionMasterEditionAta, _] = await PublicKey.findProgramAddress(
         [
-            authority.toBuffer(),
+            authority.pda.toBuffer(),
             SPL_TOKEN_PROGRAM_ID.toBuffer(),
             collection.publicKey.toBuffer()
         ],
@@ -190,8 +189,8 @@ export async function createCollection(
         .accounts(
             {
                 handle: handle,
-                authority: authority,
-                mint: mint,
+                authority: authority.pda,
+                mint: authority.mint,
                 collection: collection.publicKey,
                 collectionMetadata: collectionMetadata,
                 collectionMasterEdition: collectionMasterEdition,
@@ -207,4 +206,29 @@ export async function createCollection(
         .signers([collection])
         .rpc()
     console.log("collection", collection.publicKey.toString());
+    // fetch handle obj
+    const handleObj = await getHandlePda(program, handle);
+    // build response for elm
+    const response = {
+        name: authority.name,
+        symbol: authority.symbol,
+        index: authority.index,
+        mint: authority.mint,
+        collection: collection.publicKey
+    }
+    // send success to elm
+    app.ports.success.send(
+        JSON.stringify(
+            {
+                listener: "creator-marked-new-collection",
+                global: {
+                    handle: handleObj.handle,
+                    wallet: provider.wallet.publicKey.toString()
+                },
+                more: JSON.stringify(
+                    response
+                )
+            }
+        )
+    );
 }

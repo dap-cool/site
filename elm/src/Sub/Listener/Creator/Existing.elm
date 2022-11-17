@@ -3,6 +3,10 @@ module Sub.Listener.Creator.Existing exposing (Existing(..), HandleFormStatus(..
 
 type Existing
     = HandleForm HandleFormStatus
+      -- creating collection
+    | CreatedNewCollection -- step one
+    | MarkedNewCollection -- step two
+      -- authorized with list of collections
     | Authorized
 
 
@@ -26,6 +30,12 @@ fromString string =
 
         "creator-handle-unauthorized" ->
             Just <| HandleForm UnAuthorized
+
+        "creator-created-new-collection" ->
+            Just <| CreatedNewCollection
+
+        "creator-marked-new-collection" ->
+            Just <| MarkedNewCollection
 
         _ ->
             Nothing

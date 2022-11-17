@@ -6,6 +6,10 @@ import Model.Wallet as Wallet exposing (Wallet)
 import Msg.Msg exposing (Msg)
 
 
+
+-- TODO; delete
+
+
 view : Wallet -> Html Msg
 view wallet =
     Html.div

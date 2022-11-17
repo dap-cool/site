@@ -11,15 +11,15 @@ type alias Collection =
     , symbol : String
     , index : Int
     , mint : Mint
-    , collection : Mint
+    , collection : Maybe Mint
     }
 
 
-encode : Int -> String
-encode index =
+encode : Collection -> String
+encode collection =
     Encode.encode 0 <|
         Encode.object
-            [ ( "index", Encode.int index )
+            [ ( "index", Encode.int collection.index )
             ]
 
 
@@ -40,12 +40,18 @@ decoder =
         (Decode.field "symbol" Decode.string)
         (Decode.field "index" Decode.int)
         (Decode.field "mint" Decode.string)
-        (Decode.field "collection" Decode.string)
+        (Decode.maybe <| Decode.field "collection" Decode.string)
 
 
 isEmpty : Collection -> Bool
 isEmpty collection =
-    collection.collection == empty
+    case collection.collection of
+        Just id ->
+            id == empty
+
+        Nothing ->
+            True
+
 
 
 empty : String

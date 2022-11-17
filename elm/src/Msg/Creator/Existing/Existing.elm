@@ -11,7 +11,7 @@ type Existing
     | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
     | CreateNewCollection AlmostNewCollection
-    | MarkNewCollection Int -- hanging NFT that must've failed 2nd ix
+    | MarkNewCollection Collection
       -- existing collection
     | SelectCollection Collection
 

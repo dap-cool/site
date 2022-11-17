@@ -207,24 +207,16 @@ export async function main(app, json) {
             const more = JSON.parse(parsed.more);
             // derive & fetch handle pda
             const handlePda = await deriveHandlePda(pp.program, parsed.global.handle);
-            const handleObj = await getHandlePda(pp.program, handlePda);
             // fetch authority pda
-            const authority = await getAuthorityPda(pp.program, parsed.global.handle, more.index);
-            await createCollection(pp.provider, pp.program, handlePda, authority.pda, authority.mint, more.index);
-            // fetch collections
-            const collections = await getAllCollectionsFromHandle(pp.program, handleObj);
-            console.log(collections);
-            // send success to elm
-            app.ports.success.send(
-                JSON.stringify(
-                    {
-                        listener: "creator-authorized",
-                        global: parsed.global,
-                        more: JSON.stringify(
-                            collections
-                        )
-                    }
-                )
+            // TODO; can we get authority-obj from elm to prevent rpc-dne
+            const authorityObj = await getAuthorityPda(pp.program, parsed.global.handle, more.index);
+            await createCollection(
+                app,
+                pp.provider,
+                pp.program,
+                handlePda,
+                authorityObj,
+                more.index
             );
             // or collector search collector
         } else if (sender === "collector-search-handle") {

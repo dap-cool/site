@@ -5,12 +5,14 @@ import Html.Attributes exposing (accept, class, href, id, placeholder, src, targ
 import Html.Events exposing (onClick, onInput)
 import Json.Encode
 import Model.Collection as Collection
-import Model.Creator.Creator exposing (Creator(..))
+import Model.Creator.Creator as Creator exposing (Creator(..))
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
+import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
 import Model.Global as Global exposing (Global)
 import Model.Handle as Handle
+import Model.State as State
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -343,147 +345,247 @@ body global creator =
                                 ]
 
                         ( Global.HasWalletAndHandle withWallet, Existing.CreatingNewCollection newCollection ) ->
-                            let
-                                imageForm =
-                                    Html.div
-                                        []
-                                        [ Html.input
-                                            [ id "dap-cool-collection-logo-selector"
-                                            , type_ "file"
-                                            , accept <|
-                                                String.join
-                                                    ", "
-                                                    [ ".jpg"
-                                                    , ".jpeg"
-                                                    , ".png"
+                            case newCollection of
+                                NewCollection.Input form ->
+                                    let
+                                        imageForm =
+                                            Html.div
+                                                []
+                                                [ Html.input
+                                                    [ id "dap-cool-collection-logo-selector"
+                                                    , type_ "file"
+                                                    , accept <|
+                                                        String.join
+                                                            ", "
+                                                            [ ".jpg"
+                                                            , ".jpeg"
+                                                            , ".png"
+                                                            ]
+                                                    , onClick <|
+                                                        FromCreator global <|
+                                                            CreatorMsg.Existing <|
+                                                                ExistingMsg.NewCollectionForm
+                                                                    NewCollectionForm.Image
                                                     ]
-                                            , onClick <|
-                                                FromCreator global <|
-                                                    CreatorMsg.Existing <|
-                                                        ExistingMsg.NewCollectionForm
-                                                            NewCollectionForm.Image
-                                            ]
-                                            []
+                                                    []
+                                                , Html.div
+                                                    []
+                                                    [ Html.img
+                                                        [ src "images/upload/default-pfp.jpg"
+                                                        , width 500
+                                                        , id "dap-cool-collection-logo"
+                                                        ]
+                                                        []
+                                                    ]
+                                                ]
+
+                                        nameForm =
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    [ class "field"
+                                                    ]
+                                                    [ Html.p
+                                                        [ class "control has-icons-left"
+                                                        ]
+                                                        [ Html.input
+                                                            [ class "input"
+                                                            , type_ "text"
+                                                            , placeholder "Name your new collection"
+                                                            , onInput <|
+                                                                \s ->
+                                                                    FromCreator global <|
+                                                                        CreatorMsg.Existing <|
+                                                                            ExistingMsg.NewCollectionForm <|
+                                                                                NewCollectionForm.Name s form
+                                                            ]
+                                                            []
+                                                        , Html.span
+                                                            [ class "icon is-left"
+                                                            ]
+                                                            [ Html.i
+                                                                [ class "fas fa-file-signature"
+                                                                ]
+                                                                []
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+
+                                        symbolFrom =
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    [ class "field"
+                                                    ]
+                                                    [ Html.p
+                                                        [ class "control has-icons-left"
+                                                        ]
+                                                        [ Html.input
+                                                            [ class "input"
+                                                            , type_ "text"
+                                                            , placeholder "Symbol"
+                                                            , onInput <|
+                                                                \s ->
+                                                                    FromCreator global <|
+                                                                        CreatorMsg.Existing <|
+                                                                            ExistingMsg.NewCollectionForm <|
+                                                                                NewCollectionForm.Symbol
+                                                                                    (String.toUpper s)
+                                                                                    form
+                                                            ]
+                                                            []
+                                                        , Html.span
+                                                            [ class "icon is-left"
+                                                            ]
+                                                            [ Html.i
+                                                                [ class "fas fa-file-signature"
+                                                                ]
+                                                                []
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+
+                                        create =
+                                            let
+                                                e1 =
+                                                    String.isEmpty form.name
+
+                                                e2 =
+                                                    String.isEmpty form.symbol
+                                            in
+                                            case ( e1, e2 ) of
+                                                ( False, False ) ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.button
+                                                            [ class "is-button-1"
+                                                            , onClick <|
+                                                                FromCreator global <|
+                                                                    CreatorMsg.Existing <|
+                                                                        ExistingMsg.CreateNewCollection
+                                                                            { name = form.name
+                                                                            , symbol = form.symbol
+                                                                            }
+                                                            ]
+                                                            [ Html.text "create"
+                                                            ]
+                                                        ]
+
+                                                _ ->
+                                                    Html.div
+                                                        []
+                                                        []
+                                    in
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ header
+                                        , imageForm
+                                        , nameForm
+                                        , symbolFrom
+                                        , create
+                                        ]
+
+                                NewCollection.WaitingForCreateNft form ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ header
                                         , Html.div
                                             []
-                                            [ Html.img
-                                                [ src "images/upload/default-pfp.jpg"
-                                                , width 500
-                                                , id "dap-cool-collection-logo"
-                                                ]
-                                                []
+                                            [ Html.text <|
+                                                String.concat
+                                                    [ "name: "
+                                                    , form.name
+                                                    ]
                                             ]
+                                        , Html.div
+                                            []
+                                            [ Html.text <|
+                                                String.concat
+                                                    [ "symbol"
+                                                    , form.symbol
+                                                    ]
+                                            ]
+                                        , Html.div
+                                            [ class "is-loading"
+                                            ]
+                                            []
                                         ]
 
-                                nameForm =
+                                NewCollection.HasCreateNft collection ->
                                     Html.div
-                                        []
-                                        [ Html.div
-                                            [ class "field"
-                                            ]
-                                            [ Html.p
-                                                [ class "control has-icons-left"
-                                                ]
-                                                [ Html.input
-                                                    [ class "input"
-                                                    , type_ "text"
-                                                    , placeholder "Name your new collection"
-                                                    , onInput <|
-                                                        \s ->
-                                                            FromCreator global <|
-                                                                CreatorMsg.Existing <|
-                                                                    ExistingMsg.NewCollectionForm <|
-                                                                        NewCollectionForm.Name s newCollection
-                                                    ]
-                                                    []
-                                                , Html.span
-                                                    [ class "icon is-left"
-                                                    ]
-                                                    [ Html.i
-                                                        [ class "fas fa-file-signature"
-                                                        ]
-                                                        []
-                                                    ]
-                                                ]
-                                            ]
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
                                         ]
-
-                                symbolFrom =
-                                    Html.div
-                                        []
-                                        [ Html.div
-                                            [ class "field"
-                                            ]
-                                            [ Html.p
-                                                [ class "control has-icons-left"
-                                                ]
-                                                [ Html.input
-                                                    [ class "input"
-                                                    , type_ "text"
-                                                    , placeholder "Symbol"
-                                                    , onInput <|
-                                                        \s ->
-                                                            FromCreator global <|
-                                                                CreatorMsg.Existing <|
-                                                                    ExistingMsg.NewCollectionForm <|
-                                                                        NewCollectionForm.Symbol
-                                                                            (String.toUpper s)
-                                                                            newCollection
-                                                    ]
-                                                    []
-                                                , Html.span
-                                                    [ class "icon is-left"
-                                                    ]
-                                                    [ Html.i
-                                                        [ class "fas fa-file-signature"
-                                                        ]
-                                                        []
-                                                    ]
-                                                ]
-                                            ]
-                                        ]
-
-                                create =
-                                    let
-                                        e1 =
-                                            String.isEmpty newCollection.name
-
-                                        e2 =
-                                            String.isEmpty newCollection.symbol
-                                    in
-                                    case ( e1, e2 ) of
-                                        ( False, False ) ->
-                                            Html.div
+                                        [ header
+                                        , View.Generic.Collection.Creator.Creator.view
+                                            global
+                                            withWallet.handle
+                                            collection
+                                        , Html.div
+                                            []
+                                            [ Html.text
+                                                """This NFT still needs to be marked as an on-chain collection
+                                                before we can start listing the primary sale.
+                                                """
+                                            , Html.div
                                                 []
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
                                                         FromCreator global <|
                                                             CreatorMsg.Existing <|
-                                                                ExistingMsg.CreateNewCollection
-                                                                    { name = newCollection.name
-                                                                    , symbol = newCollection.symbol
-                                                                    }
+                                                                ExistingMsg.MarkNewCollection collection
                                                     ]
-                                                    [ Html.text "create"
+                                                    [ Html.text "mark collection"
                                                     ]
                                                 ]
+                                            ]
+                                        ]
 
-                                        _ ->
-                                            Html.div
-                                                []
-                                                []
-                            in
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ View.Generic.Wallet.view withWallet.wallet
-                                , header
-                                , imageForm
-                                , nameForm
-                                , symbolFrom
-                                , create
-                                ]
+                                NewCollection.WaitingForMarkNft collection ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ header
+                                        , View.Generic.Collection.Creator.Creator.view
+                                            global
+                                            withWallet.handle
+                                            collection
+                                        , Html.div
+                                            [ class "is-loading"
+                                            ]
+                                            []
+                                        ]
+
+                                NewCollection.Done collection ->
+                                    Html.div
+                                        [ class "has-border-2 px-2 pt-2 pb-6"
+                                        ]
+                                        [ header
+                                        , Html.div
+                                            []
+                                            [ Html.text
+                                                """All done \u{1FAE0}
+                                                """
+                                            ]
+                                        , View.Generic.Collection.Creator.Creator.view
+                                            global
+                                            withWallet.handle
+                                            collection
+                                        , Html.div
+                                            []
+                                            [ Html.a
+                                                [ State.href <|
+                                                    State.Valid global <|
+                                                        State.Create (Creator.MaybeExisting withWallet.handle)
+                                                ]
+                                                [ Html.text "back 2 collections 🔙"
+                                                ]
+                                            ]
+                                        ]
 
                         ( Global.HasWalletAndHandle withWallet, Existing.SelectedCollection collection ) ->
                             let
@@ -503,7 +605,7 @@ body global creator =
                                                         , onClick <|
                                                             FromCreator global <|
                                                                 CreatorMsg.Existing <|
-                                                                    ExistingMsg.MarkNewCollection collection.index
+                                                                    ExistingMsg.MarkNewCollection collection
                                                         ]
                                                         [ Html.text "mark collection"
                                                         ]
