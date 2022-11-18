@@ -6,6 +6,7 @@ use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
     init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection,
 };
+use crate::pda::collector::{Collection, Collector};
 use crate::pda::creator::Creator;
 
 pub mod pda;
@@ -200,6 +201,24 @@ pub struct CreateCollection<'info> {
 #[derive(Accounts)]
 #[instruction(n: u8)]
 pub struct MintNewCopy<'info> {
+    #[account(init_if_needed,
+    seeds = [
+    pda::collector::SEED.as_bytes(),
+    payer.key().as_ref()
+    ], bump,
+    space = pda::collector::COLLECTOR_SIZE,
+    payer = payer,
+    )]
+    pub collector: Box<Account<'info, Collector>>,
+    #[account(init,
+    seeds = [
+    pda::collector::SEED.as_bytes(),
+    payer.key().as_ref(), & [collector.num_collected + 1]
+    ], bump,
+    space = pda::collector::COLLECTION_SIZE,
+    payer = payer,
+    )]
+    pub collection_pda: Box<Account<'info, Collection>>,
     #[account(seeds = [handle.handle.as_bytes()], bump)]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut,

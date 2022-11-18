@@ -70,5 +70,12 @@ pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
     // increment
     let authority = &mut ctx.accounts.authority;
     authority.num_minted = increment;
+    // collector
+    let collector = &mut ctx.accounts.collector;
+    collector.num_collected += 1;
+    // collection
+    let collection = &mut ctx.accounts.collection_pda;
+    collection.handle = ctx.accounts.handle.key();
+    collection.mint = ctx.accounts.mint.key();
     Ok(())
 }

@@ -6,7 +6,7 @@ pub const SIZE: usize = 8 // discriminator
 const HANDLE_SIZE: usize = 32 * 3;
 
 #[account]
-pub struct Creator {
+pub struct Creator { // TODO; SEED
     pub authority: Pubkey,
     pub handle: Pubkey
 }
