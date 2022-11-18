@@ -5,7 +5,7 @@ import Html.Attributes
 import Model.Collector.Collector as Collector exposing (Collector)
 import Model.Creator.Creator as Creator exposing (Creator)
 import Model.Creator.New.New as NewCreator
-import Model.Global exposing (Global(..))
+import Model.Global.Global exposing (Global(..))
 import Url
 import Url.Parser as UrlParser exposing ((</>))
 

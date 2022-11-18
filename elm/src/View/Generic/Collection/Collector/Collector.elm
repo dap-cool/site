@@ -4,7 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Model.Collection exposing (Collection)
 import Model.Collector.Collector as Collector
-import Model.Global exposing (Global)
+import Model.Global.Global exposing (Global)
 import Model.Handle exposing (Handle)
 import Model.State as State exposing (State(..))
 import Msg.Msg exposing (Msg(..))

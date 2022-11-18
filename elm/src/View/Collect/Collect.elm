@@ -4,7 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class, placeholder, src, style, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collector.Collector exposing (Collector(..))
-import Model.Global exposing (Global)
+import Model.Global.Global exposing (Global)
 import Model.Handle as Handle
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))

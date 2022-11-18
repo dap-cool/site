@@ -14,7 +14,7 @@ import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as NewCreator
-import Model.Global as Global
+import Model.Global.Global as Global
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State as State exposing (State(..))

@@ -5,7 +5,7 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Model.Creator.Creator as Creator
 import Model.Creator.New.New as NewCreator
-import Model.Global exposing (Global(..))
+import Model.Global.Global exposing (Global(..))
 import Model.State as State exposing (State(..))
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))

@@ -10,7 +10,7 @@ import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
-import Model.Global as Global exposing (Global)
+import Model.Global.Global as Global exposing (Global)
 import Model.Handle as Handle
 import Model.State as State
 import Msg.Creator.Creator as CreatorMsg

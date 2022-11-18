@@ -1,4 +1,4 @@
-module Model.Global exposing (Global(..), decode, default, encoder)
+module Model.Global.Global exposing (Global(..), decode, default, encoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode

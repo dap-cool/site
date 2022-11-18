@@ -3,7 +3,7 @@ module View.Generic.Collection.Collection exposing (view, viewMany)
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Model.Collection exposing (Collection)
-import Model.Global exposing (Global)
+import Model.Global.Global exposing (Global)
 import Model.Handle exposing (Handle)
 import Msg.Msg exposing (Msg(..))
 

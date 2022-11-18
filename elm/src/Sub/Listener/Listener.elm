@@ -1,7 +1,7 @@
 module Sub.Listener.Listener exposing (Listener(..), decode, decode0)
 
 import Json.Decode as Decode
-import Model.Global as Global
+import Model.Global.Global as Global
 import Model.Model exposing (Model)
 import Model.State as Model
 import Msg.Msg exposing (Msg)
