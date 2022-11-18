@@ -196,6 +196,16 @@ export type DapCool = {
       "name": "mintNewCopy",
       "accounts": [
         {
+          "name": "collector",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionPda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -372,6 +382,14 @@ export type DapCool = {
         "kind": "struct",
         "fields": [
           {
+            "name": "handle",
+            "type": "string"
+          },
+          {
+            "name": "index",
+            "type": "u8"
+          },
+          {
             "name": "mint",
             "type": "publicKey"
           },
@@ -398,6 +416,38 @@ export type DapCool = {
           {
             "name": "uri",
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collector",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "numCollected",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collection",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "handle",
+            "type": "string"
+          },
+          {
+            "name": "index",
+            "type": "u8"
           }
         ]
       }
@@ -671,6 +721,16 @@ export const IDL: DapCool = {
       "name": "mintNewCopy",
       "accounts": [
         {
+          "name": "collector",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionPda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -847,6 +907,14 @@ export const IDL: DapCool = {
         "kind": "struct",
         "fields": [
           {
+            "name": "handle",
+            "type": "string"
+          },
+          {
+            "name": "index",
+            "type": "u8"
+          },
+          {
             "name": "mint",
             "type": "publicKey"
           },
@@ -873,6 +941,38 @@ export const IDL: DapCool = {
           {
             "name": "uri",
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collector",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "numCollected",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collection",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "handle",
+            "type": "string"
+          },
+          {
+            "name": "index",
+            "type": "u8"
           }
         ]
       }

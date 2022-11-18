@@ -4,38 +4,37 @@ import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Model.Collection exposing (Collection)
 import Model.Global.Global exposing (Global)
-import Model.Handle exposing (Handle)
 import Msg.Msg exposing (Msg(..))
 
 
-view : Global -> Handle -> Collection -> Html Msg
-view global handle collection =
+view : Global -> Collection -> Html Msg
+view global collection =
     let
-        nop : Global -> a -> b -> Html msg
-        nop _ _ _ =
+        nop : a -> b -> Html msg
+        nop _ _ =
             Html.div
                 []
                 []
     in
-    view_ global handle collection nop
+    view_ global collection nop
 
 
-viewMany : Global -> Handle -> List Collection -> (Global -> Handle -> Collection -> Html Msg) -> Html Msg
-viewMany global handle collections f =
+viewMany : Global -> List Collection -> (Global -> Collection -> Html Msg) -> Html Msg
+viewMany global collections f =
     Html.div
         []
     <|
         List.map
-            (\c -> view_ global handle c f)
+            (\c -> view_ global c f)
             collections
 
 
-view_ : Global -> Handle -> Collection -> (Global -> Handle -> Collection -> Html Msg) -> Html Msg
-view_ global handle collection select =
+view_ : Global -> Collection -> (Global -> Collection -> Html Msg) -> Html Msg
+view_ global collection select =
     Html.div
         [ class "has-border-2 px-2 py-2"
         ]
-        [ select global handle collection
+        [ select global collection
         , Html.div
             [ class "has-border-2 px-2 py-2 mb-2"
             ]

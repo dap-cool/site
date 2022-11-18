@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use crate::pda::handle::MAX_HANDLE_LENGTH;
 
 pub const SEED: &str = "collector";
 
@@ -7,7 +8,8 @@ pub const COLLECTOR_SIZE: usize = 8 // discriminator
 
 pub const COLLECTION_SIZE: usize = 8 // discriminator
     + 32 // mint
-    + 32; // handle
+    + MAX_HANDLE_LENGTH // handle
+    + 1;
 
 #[account]
 pub struct Collector {
@@ -17,5 +19,6 @@ pub struct Collector {
 #[account]
 pub struct Collection {
     pub mint: Pubkey,
-    pub handle: Pubkey,
+    pub handle: String,
+    pub index: u8,
 }

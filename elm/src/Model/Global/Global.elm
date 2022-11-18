@@ -2,8 +2,8 @@ module Model.Global.Global exposing (Global(..), decode, default, encoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Model.Global.HasWallet as HasWallet exposing (HasWallet)
 import Model.Handle as Handle exposing (Handle)
-import Model.Wallet as Wallet exposing (Wallet)
 import Util.Decode as Util
 
 
@@ -11,7 +11,7 @@ type Global
     = NoWalletYet
     | WalletMissing -- no browser extension found
     | Connecting -- or disconnecting
-    | HasWallet Wallet
+    | HasWallet HasWallet
     | HasWalletAndHandle Handle.WithWallet
 
 
@@ -46,8 +46,8 @@ decoder0 =
                 (\withWallet -> HasWalletAndHandle withWallet)
                 Handle.witWalletDecoder
             , Decode.map
-                (\wallet -> HasWallet wallet.wallet)
-                Wallet.decoder
+                (\hasWallet -> HasWallet hasWallet)
+                HasWallet.decoder
             ]
 
 
@@ -63,8 +63,8 @@ encoder global =
         Connecting ->
             Encode.string "connecting"
 
-        HasWallet wallet ->
-            Wallet.encoder wallet
+        HasWallet hasWallet ->
+            HasWallet.encoder hasWallet
 
         HasWalletAndHandle withWallet ->
             Handle.withWalletEncoder withWallet

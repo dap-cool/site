@@ -121,6 +121,8 @@ pub fn ix(
     )?;
     // init authority data
     let authority = &mut ctx.accounts.authority;
+    authority.handle = ctx.accounts.handle.handle.clone();
+    authority.index = increment;
     authority.mint = ctx.accounts.mint.key();
     authority.total_supply = size;
     authority.num_minted = 0;

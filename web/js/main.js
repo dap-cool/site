@@ -13,7 +13,7 @@ import {decodeAuthorityPda, getAuthorityPda} from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
-import {getCreatorAndHandle} from "./anchor/pda/creator-pda";
+import {getGlobal} from "./anchor/pda/get-global";
 
 // init phantom
 let phantom = null;
@@ -29,7 +29,7 @@ export async function main(app, json) {
             if (phantom) {
                 phantom = await getPhantom(app);
                 const pp = getPP(phantom);
-                await getCreatorAndHandle(
+                await getGlobal(
                     app,
                     pp.provider,
                     pp.program
@@ -50,7 +50,7 @@ export async function main(app, json) {
             if (phantom) {
                 // get provider & program
                 const pp = getPP(phantom);
-                await getCreatorAndHandle(
+                await getGlobal(
                     app,
                     pp.provider,
                     pp.program

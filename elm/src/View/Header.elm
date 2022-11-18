@@ -115,7 +115,7 @@ viewGlobal global =
                 ]
                 []
 
-        HasWallet wallet ->
+        HasWallet hasWallet ->
             Html.div
                 []
                 [ Html.div
@@ -124,7 +124,7 @@ viewGlobal global =
                         String.concat
                             [ "wallet:"
                             , " "
-                            , Wallet.trim wallet
+                            , Wallet.trim hasWallet.wallet
                             ]
                     ]
                 , Html.div

@@ -340,7 +340,6 @@ body global creator =
                                     ]
                                 , View.Generic.Collection.Creator.Creator.viewMany
                                     global
-                                    withWallet.handle
                                     collections
                                 ]
 
@@ -527,7 +526,6 @@ body global creator =
                                         [ header
                                         , View.Generic.Collection.Creator.Creator.view
                                             global
-                                            withWallet.handle
                                             collection
                                         , Html.div
                                             []
@@ -557,7 +555,6 @@ body global creator =
                                         [ header
                                         , View.Generic.Collection.Creator.Creator.view
                                             global
-                                            withWallet.handle
                                             collection
                                         , Html.div
                                             [ class "is-loading"
@@ -578,7 +575,6 @@ body global creator =
                                             ]
                                         , View.Generic.Collection.Creator.Creator.view
                                             global
-                                            withWallet.handle
                                             collection
                                         , Html.div
                                             []
@@ -627,7 +623,7 @@ body global creator =
                                 ]
                                 [ View.Generic.Wallet.view withWallet.wallet
                                 , header
-                                , View.Generic.Collection.Creator.Creator.view global withWallet.handle collection
+                                , View.Generic.Collection.Creator.Creator.view global collection
                                 , button
                                 ]
 

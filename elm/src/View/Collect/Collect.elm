@@ -4,7 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class, placeholder, src, style, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collector.Collector exposing (Collector(..))
-import Model.Global.Global exposing (Global)
+import Model.Global.Global as Global exposing (Global)
 import Model.Handle as Handle
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))
@@ -43,6 +43,26 @@ body global collector =
                                                     ]
                                             ]
                                         ]
+
+                        hiwOrCollections =
+                            case global of
+                                Global.HasWallet hasWallet ->
+                                    Html.div
+                                        [ class "columns is-multiline"
+                                        ]
+                                        [ View.Generic.Collection.Collector.Collector.viewMany
+                                            global
+                                            hasWallet.collections
+                                        ]
+
+                                Global.HasWalletAndHandle _ ->
+                                    Html.div
+                                        []
+                                        [ Html.text "todo"
+                                        ]
+
+                                _ ->
+                                    hiw
                     in
                     Html.div
                         []
@@ -66,7 +86,7 @@ body global collector =
                             [ class "my-6"
                             ]
                             []
-                        , hiw
+                        , hiwOrCollections
                         ]
 
                 WaitingForHandleConfirmation ->
@@ -164,7 +184,6 @@ body global collector =
                             ]
                         , View.Generic.Collection.Collector.Collector.viewMany
                             global
-                            withCollections.handle
                             withCollections.collections
                         ]
 
@@ -188,7 +207,6 @@ body global collector =
                             ]
                         , View.Generic.Collection.Collector.Collector.view
                             global
-                            withCollection.handle
                             withCollection.collection
                         , Html.button
                             [ class "is-button-1"
@@ -235,7 +253,6 @@ body global collector =
                             []
                             [ View.Generic.Collection.Collector.Collector.view
                                 global
-                                withCollection.handle
                                 withCollection.collection
                             ]
                         ]

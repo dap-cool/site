@@ -5,7 +5,6 @@ import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Model.Collection exposing (Collection)
 import Model.Global.Global exposing (Global)
-import Model.Handle exposing (Handle)
 import Msg.Creator.Creator exposing (FromCreator(..))
 import Msg.Creator.Existing.Existing exposing (Existing(..))
 import Msg.Msg exposing (Msg(..))
@@ -17,18 +16,18 @@ import View.Generic.Collection.Collection
 --  if .collection is undefined expose method to create collection
 
 
-view : Global -> Handle -> Collection -> Html Msg
-view global handle collection =
-    View.Generic.Collection.Collection.view global handle collection
+view : Global -> Collection -> Html Msg
+view global collection =
+    View.Generic.Collection.Collection.view global collection
 
 
-viewMany : Global -> Handle -> List Collection -> Html Msg
-viewMany global handle collections =
-    View.Generic.Collection.Collection.viewMany global handle collections select
+viewMany : Global -> List Collection -> Html Msg
+viewMany global collections =
+    View.Generic.Collection.Collection.viewMany global collections select
 
 
-select : Global -> Handle -> Collection -> Html Msg
-select global handle collection =
+select : Global -> Collection -> Html Msg
+select global collection =
     Html.div
         []
         [ Html.button
