@@ -12,8 +12,8 @@ type alias Collection =
     , index : Int
     , mint : Mint
     , collection : Maybe Mint
-    , numMinted: Int -- encoded as big-int
-    , pda: String
+    , numMinted : Int -- encoded as big-int
+    , pda : String
     }
 
 
@@ -35,8 +35,8 @@ encode collection =
             , ( "index", Encode.int collection.index )
             , ( "mint", Encode.string collection.mint )
             , ( "collection", collectionEncoder )
-            , ("numMinted", Encode.int collection.numMinted )
-            , ("pda", Encode.string collection.pda)
+            , ( "numMinted", Encode.int collection.numMinted )
+            , ( "pda", Encode.string collection.pda )
             ]
 
 

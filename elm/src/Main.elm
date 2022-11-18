@@ -5,7 +5,6 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Nav
 import Model.AlmostExistingCollection as AlmostExistingCollection
-import Model.AlmostNewCollection as AlmostNewCollection
 import Model.Collection as Collection
 import Model.Collector.Collector as Collector
 import Model.Collector.WithCollection as WithCollection
@@ -207,6 +206,7 @@ update msg model =
                                                 ExistingCreator.CreatingNewCollection <|
                                                     NewCollection.Input
                                                         NewCollection.default
+                                                        False
                               }
                             , Cmd.none
                             )
@@ -226,6 +226,7 @@ update msg model =
                                                         ExistingCreator.CreatingNewCollection <|
                                                             NewCollection.Input
                                                                 bumpNewCollection
+                                                                False
                                       }
                                     , Cmd.none
                                     )
@@ -243,6 +244,7 @@ update msg model =
                                                         ExistingCreator.CreatingNewCollection <|
                                                             NewCollection.Input
                                                                 bumpNewCollection
+                                                                False
                                       }
                                     , Cmd.none
                                     )
@@ -253,14 +255,22 @@ update msg model =
                                       -- prepare image form events
                                     )
 
-                        FromExistingCreator.CreateNewCollection almostNewCollection ->
-                            ( model
-                              -- todo; waiting without changing dom
+                        FromExistingCreator.CreateNewCollection form ->
+                            ( { model
+                                | state =
+                                    Valid global <|
+                                        State.Create <|
+                                            Creator.Existing <|
+                                                ExistingCreator.CreatingNewCollection <|
+                                                    NewCollection.Input
+                                                        form
+                                                        True
+                              }
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
                                     , global = global
-                                    , more = AlmostNewCollection.encode almostNewCollection
+                                    , more = NewCollection.encode form
                                     }
                             )
 

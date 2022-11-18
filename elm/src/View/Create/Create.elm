@@ -346,7 +346,7 @@ body global creator =
 
                         ( Global.HasWalletAndHandle withWallet, Existing.CreatingNewCollection newCollection ) ->
                             case newCollection of
-                                NewCollection.Input form ->
+                                NewCollection.Input form submitted ->
                                     let
                                         imageForm =
                                             Html.div
@@ -380,100 +380,131 @@ body global creator =
                                                 ]
 
                                         nameForm =
-                                            Html.div
-                                                []
-                                                [ Html.div
-                                                    [ class "field"
-                                                    ]
-                                                    [ Html.p
-                                                        [ class "control has-icons-left"
-                                                        ]
-                                                        [ Html.input
-                                                            [ class "input"
-                                                            , type_ "text"
-                                                            , placeholder "Name your new collection"
-                                                            , onInput <|
-                                                                \s ->
-                                                                    FromCreator global <|
-                                                                        CreatorMsg.Existing <|
-                                                                            ExistingMsg.NewCollectionForm <|
-                                                                                NewCollectionForm.Name s form
-                                                            ]
-                                                            []
-                                                        , Html.span
-                                                            [ class "icon is-left"
-                                                            ]
-                                                            [ Html.i
-                                                                [ class "fas fa-file-signature"
-                                                                ]
-                                                                []
-                                                            ]
-                                                        ]
-                                                    ]
-                                                ]
-
-                                        symbolFrom =
-                                            Html.div
-                                                []
-                                                [ Html.div
-                                                    [ class "field"
-                                                    ]
-                                                    [ Html.p
-                                                        [ class "control has-icons-left"
-                                                        ]
-                                                        [ Html.input
-                                                            [ class "input"
-                                                            , type_ "text"
-                                                            , placeholder "Symbol"
-                                                            , onInput <|
-                                                                \s ->
-                                                                    FromCreator global <|
-                                                                        CreatorMsg.Existing <|
-                                                                            ExistingMsg.NewCollectionForm <|
-                                                                                NewCollectionForm.Symbol
-                                                                                    (String.toUpper s)
-                                                                                    form
-                                                            ]
-                                                            []
-                                                        , Html.span
-                                                            [ class "icon is-left"
-                                                            ]
-                                                            [ Html.i
-                                                                [ class "fas fa-file-signature"
-                                                                ]
-                                                                []
-                                                            ]
-                                                        ]
-                                                    ]
-                                                ]
-
-                                        create =
-                                            let
-                                                e1 =
-                                                    String.isEmpty form.name
-
-                                                e2 =
-                                                    String.isEmpty form.symbol
-                                            in
-                                            case ( e1, e2 ) of
-                                                ( False, False ) ->
+                                            case submitted of
+                                                True ->
                                                     Html.div
                                                         []
-                                                        [ Html.button
-                                                            [ class "is-button-1"
-                                                            , onClick <|
-                                                                FromCreator global <|
-                                                                    CreatorMsg.Existing <|
-                                                                        ExistingMsg.CreateNewCollection
-                                                                            { name = form.name
-                                                                            , symbol = form.symbol
-                                                                            }
+                                                        []
+
+                                                False ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.div
+                                                            [ class "field"
                                                             ]
-                                                            [ Html.text "create"
+                                                            [ Html.p
+                                                                [ class "control has-icons-left"
+                                                                ]
+                                                                [ Html.input
+                                                                    [ class "input"
+                                                                    , type_ "text"
+                                                                    , placeholder "Name your new collection"
+                                                                    , onInput <|
+                                                                        \s ->
+                                                                            FromCreator global <|
+                                                                                CreatorMsg.Existing <|
+                                                                                    ExistingMsg.NewCollectionForm <|
+                                                                                        NewCollectionForm.Name s form
+                                                                    ]
+                                                                    []
+                                                                , Html.span
+                                                                    [ class "icon is-left"
+                                                                    ]
+                                                                    [ Html.i
+                                                                        [ class "fas fa-file-signature"
+                                                                        ]
+                                                                        []
+                                                                    ]
+                                                                ]
                                                             ]
                                                         ]
 
-                                                _ ->
+                                        symbolFrom =
+                                            case submitted of
+                                                True ->
+                                                    Html.div
+                                                        []
+                                                        []
+
+                                                False ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.div
+                                                            [ class "field"
+                                                            ]
+                                                            [ Html.p
+                                                                [ class "control has-icons-left"
+                                                                ]
+                                                                [ Html.input
+                                                                    [ class "input"
+                                                                    , type_ "text"
+                                                                    , placeholder "Symbol"
+                                                                    , onInput <|
+                                                                        \s ->
+                                                                            FromCreator global <|
+                                                                                CreatorMsg.Existing <|
+                                                                                    ExistingMsg.NewCollectionForm <|
+                                                                                        NewCollectionForm.Symbol
+                                                                                            (String.toUpper s)
+                                                                                            form
+                                                                    ]
+                                                                    []
+                                                                , Html.span
+                                                                    [ class "icon is-left"
+                                                                    ]
+                                                                    [ Html.i
+                                                                        [ class "fas fa-file-signature"
+                                                                        ]
+                                                                        []
+                                                                    ]
+                                                                ]
+                                                            ]
+                                                        ]
+
+                                        create =
+                                            case submitted of
+                                                True ->
+                                                    Html.div
+                                                        []
+                                                        []
+
+                                                False ->
+                                                    let
+                                                        e1 =
+                                                            String.isEmpty form.name
+
+                                                        e2 =
+                                                            String.isEmpty form.symbol
+                                                    in
+                                                    case ( e1, e2 ) of
+                                                        ( False, False ) ->
+                                                            Html.div
+                                                                []
+                                                                [ Html.button
+                                                                    [ class "is-button-1"
+                                                                    , onClick <|
+                                                                        FromCreator global <|
+                                                                            CreatorMsg.Existing <|
+                                                                                ExistingMsg.CreateNewCollection form
+                                                                    ]
+                                                                    [ Html.text "create"
+                                                                    ]
+                                                                ]
+
+                                                        _ ->
+                                                            Html.div
+                                                                []
+                                                                []
+
+                                        waiting =
+                                            case submitted of
+                                                True ->
+                                                    Html.div
+                                                        [ class "is-loading"
+                                                        ]
+                                                        []
+
+                                                False ->
                                                     Html.div
                                                         []
                                                         []
@@ -486,33 +517,7 @@ body global creator =
                                         , nameForm
                                         , symbolFrom
                                         , create
-                                        ]
-
-                                NewCollection.WaitingForCreateNft form ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ header
-                                        , Html.div
-                                            []
-                                            [ Html.text <|
-                                                String.concat
-                                                    [ "name: "
-                                                    , form.name
-                                                    ]
-                                            ]
-                                        , Html.div
-                                            []
-                                            [ Html.text <|
-                                                String.concat
-                                                    [ "symbol"
-                                                    , form.symbol
-                                                    ]
-                                            ]
-                                        , Html.div
-                                            [ class "is-loading"
-                                            ]
-                                            []
+                                        , waiting
                                         ]
 
                                 NewCollection.HasCreateNft collection ->

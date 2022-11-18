@@ -1,7 +1,7 @@
 module Msg.Creator.Existing.Existing exposing (Existing(..), toString)
 
-import Model.AlmostNewCollection exposing (AlmostNewCollection)
 import Model.Collection exposing (Collection)
+import Model.Creator.Existing.NewCollection as NewCollection
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (NewCollectionForm)
 
 
@@ -10,7 +10,7 @@ type Existing
       -- new collection
     | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
-    | CreateNewCollection AlmostNewCollection
+    | CreateNewCollection NewCollection.Form
     | MarkNewCollection Collection
       -- existing collection
     | SelectCollection Collection
