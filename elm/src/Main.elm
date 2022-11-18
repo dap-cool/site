@@ -254,7 +254,8 @@ update msg model =
                                     )
 
                         FromExistingCreator.CreateNewCollection almostNewCollection ->
-                            ( model -- todo; waiting without changing dom
+                            ( model
+                              -- todo; waiting without changing dom
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from

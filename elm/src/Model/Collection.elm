@@ -12,14 +12,31 @@ type alias Collection =
     , index : Int
     , mint : Mint
     , collection : Maybe Mint
+    , numMinted: Int -- encoded as big-int
+    , pda: String
     }
 
 
 encode : Collection -> String
 encode collection =
+    let
+        collectionEncoder =
+            case collection.collection of
+                Just mint ->
+                    Encode.string mint
+
+                Nothing ->
+                    Encode.null
+    in
     Encode.encode 0 <|
         Encode.object
-            [ ( "index", Encode.int collection.index )
+            [ ( "name", Encode.string collection.name )
+            , ( "symbol", Encode.string collection.symbol )
+            , ( "index", Encode.int collection.index )
+            , ( "mint", Encode.string collection.mint )
+            , ( "collection", collectionEncoder )
+            , ("numMinted", Encode.int collection.numMinted )
+            , ("pda", Encode.string collection.pda)
             ]
 
 
@@ -35,12 +52,14 @@ decodeList string =
 
 decoder : Decode.Decoder Collection
 decoder =
-    Decode.map5 Collection
+    Decode.map7 Collection
         (Decode.field "name" Decode.string)
         (Decode.field "symbol" Decode.string)
         (Decode.field "index" Decode.int)
         (Decode.field "mint" Decode.string)
         (Decode.maybe <| Decode.field "collection" Decode.string)
+        (Decode.field "numMinted" Decode.int)
+        (Decode.field "pda" Decode.string)
 
 
 isEmpty : Collection -> Bool
@@ -51,7 +70,6 @@ isEmpty collection =
 
         Nothing ->
             True
-
 
 
 empty : String

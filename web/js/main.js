@@ -6,10 +6,10 @@ import {
     validateHandleForCollector,
     assertHandlePdaDoesNotExistAlready,
     assertHandlePdaDoesExistAlreadyForCollector,
-    assertHandlePdaDoesExistAlreadyForCreator, deriveHandlePda, getHandlePda
+    assertHandlePdaDoesExistAlreadyForCreator, deriveHandlePda
 } from "./anchor/pda/handle-pda";
 import {getAllCollectionsFromHandle} from "./anchor/pda/get-all-collections-from-handle";
-import {getAuthorityPda} from "./anchor/pda/authority-pda";
+import {decodeAuthorityPda, getAuthorityPda} from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
@@ -207,9 +207,8 @@ export async function main(app, json) {
             const more = JSON.parse(parsed.more);
             // derive & fetch handle pda
             const handlePda = await deriveHandlePda(pp.program, parsed.global.handle);
-            // fetch authority pda
-            // TODO; can we get authority-obj from elm to prevent rpc-dne
-            const authorityObj = await getAuthorityPda(pp.program, parsed.global.handle, more.index);
+            // decode authority pda
+            const authorityObj = decodeAuthorityPda(more);
             await createCollection(
                 app,
                 pp.provider,

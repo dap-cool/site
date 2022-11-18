@@ -20,9 +20,16 @@ export async function mintNewCopy(
     index: number
 ) {
     // derive handle pda
-    const handlePda: PublicKey = await deriveHandlePda(program, handle);
-    // derive authority pda
-    const authority: CollectionAuthority = await getAuthorityPda(program, handle, index);
+    const handlePda: PublicKey = await deriveHandlePda(
+        program,
+        handle
+    );
+    // get authority pda
+    const authority: CollectionAuthority = await getAuthorityPda(
+        program,
+        handle,
+        index
+    );
     // derive metadata
     let metadata: PublicKey, _;
     [metadata, _] = await web3.PublicKey.findProgramAddress(
@@ -78,7 +85,7 @@ export async function mintNewCopy(
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
     // derive new-edition-mark
-    let n = authority.numMinted + 1;
+    const n = authority.numMinted + 1;
     const newEditionMarkLiteral = (new BN(n)).div(new BN(248)).toString();
     let newEditionMark: PublicKey;
     [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
@@ -150,6 +157,7 @@ export async function mintNewCopy(
     )
     // invoke rpc
     console.log("adding new copy to collection");
+    // TODO; separate calls ?
     await addNewCopyToCollection(
         provider,
         program,

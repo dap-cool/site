@@ -102,7 +102,9 @@ export async function creatNft(
         name: name,
         symbol: symbol,
         index: authorityIndex,
-        mint: mint.publicKey
+        mint: mint.publicKey,
+        numMinted: 0,
+        pda: authorityPda.toString()
     }
     app.ports.success.send(
         JSON.stringify(
@@ -214,7 +216,9 @@ export async function createCollection(
         symbol: authority.symbol,
         index: authority.index,
         mint: authority.mint,
-        collection: collection.publicKey
+        collection: collection.publicKey,
+        numMinted: 0,
+        pda: authority.pda.toString()
     }
     // send success to elm
     app.ports.success.send(
