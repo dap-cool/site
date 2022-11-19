@@ -3,6 +3,7 @@ module View.Header exposing (view)
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import Model.Collector.Collector as Collector
 import Model.Creator.Creator as Creator
 import Model.Creator.New.New as NewCreator
 import Model.Global.Global exposing (Global(..))
@@ -24,10 +25,17 @@ view global =
                 [ class "level-item"
                 ]
                 [ Html.h1
-                    [ class "is-text-container-4"
-                    ]
-                    [ Html.text "DAP.COOL"
-                    , Html.text "🆒"
+                    []
+                    [ Html.a
+                        [ State.href <| (Valid NoWalletYet <| State.Collect (Collector.TypingHandle ""))
+                        ]
+                        [ Html.div
+                            [ class "is-text-container-4"
+                            ]
+                            [ Html.text "DAP.COOL"
+                            , Html.text "🆒"
+                            ]
+                        ]
                     ]
                 ]
             ]
