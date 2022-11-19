@@ -16,7 +16,7 @@ import Url
 
 
 type alias Model =
-    { state : State
+    { state : State -- TODO; local/global
     , url : Url.Url
     , key : Nav.Key
     }

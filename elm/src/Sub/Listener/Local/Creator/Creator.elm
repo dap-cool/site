@@ -1,7 +1,7 @@
-module Sub.Listener.Creator.Creator exposing (ToCreator(..), fromString)
+module Sub.Listener.Local.Creator.Creator exposing (ToCreator(..), fromString)
 
-import Sub.Listener.Creator.Existing as Existing exposing (Existing)
-import Sub.Listener.Creator.New as New exposing (New)
+import Sub.Listener.Local.Creator.Existing as Existing exposing (Existing)
+import Sub.Listener.Local.Creator.New as New exposing (New)
 
 
 type ToCreator

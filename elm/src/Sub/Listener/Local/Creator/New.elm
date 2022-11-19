@@ -1,4 +1,4 @@
-module Sub.Listener.Creator.New exposing (New(..), fromString)
+module Sub.Listener.Local.Creator.New exposing (New(..), fromString)
 
 
 type New

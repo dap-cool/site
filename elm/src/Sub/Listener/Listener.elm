@@ -1,39 +1,27 @@
 module Sub.Listener.Listener exposing (Listener(..), decode, decode0)
 
 import Json.Decode as Decode
-import Model.Global.Global as Global
 import Model.Model exposing (Model)
 import Model.State as Model
 import Msg.Msg exposing (Msg)
-import Sub.Listener.Collector.Collector as ToCollector exposing (ToCollector)
-import Sub.Listener.Creator.Creator as ToCreator exposing (ToCreator)
+import Sub.Listener.Global.Global as Global exposing (ToGlobal)
+import Sub.Listener.Local.Local as Local exposing (ToLocal)
 import Util.Decode as Util
 
 
 type Listener
-    = Create ToCreator
-    | Collect ToCollector
-    | Global
+    = Local ToLocal
+    | Global ToGlobal
 
 
-decode0 : String -> Result String ( Global.Global, Maybe Listener )
+decode0 : String -> Result String (Maybe Listener)
 decode0 string =
     let
         decoder : Decode.Decoder (Maybe Listener)
         decoder =
             Decode.field "listener" <| Decode.map fromString Decode.string
     in
-    case Util.decode string decoder (\a -> a) of
-        Ok maybeListener ->
-            case Global.decode string of
-                Ok global ->
-                    Ok ( global, maybeListener )
-
-                Err error ->
-                    Err error
-
-        Err error ->
-            Err error
+    Util.decode string decoder identity
 
 
 decode : Model -> Json -> (String -> Result String a) -> (a -> Model) -> ( Model, Cmd Msg )
@@ -67,27 +55,22 @@ decodeMore string =
         decoder =
             Decode.field "more" Decode.string
     in
-    Util.decode string decoder (\a -> a)
+    Util.decode string decoder identity
 
 
 fromString : String -> Maybe Listener
 fromString string =
-    case string of
-        "global-connect" ->
-            Just Global
+    case Global.fromString string of
+        Just toGlobal ->
+            Just <| Global toGlobal
 
-        _ ->
-            case ToCreator.fromString string of
-                Just toCreator ->
-                    Just <| Create toCreator
+        Nothing ->
+            case Local.fromString string of
+                Just toLocal ->
+                    Just <| Local toLocal
 
                 Nothing ->
-                    case ToCollector.fromString string of
-                        Just toCollector ->
-                            Just <| Collect toCollector
-
-                        Nothing ->
-                            Nothing
+                    Nothing
 
 
 type alias Json =

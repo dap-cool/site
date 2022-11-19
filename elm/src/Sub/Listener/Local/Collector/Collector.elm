@@ -1,4 +1,4 @@
-module Sub.Listener.Collector.Collector exposing (ToCollector(..), fromString)
+module Sub.Listener.Local.Collector.Collector exposing (ToCollector(..), fromString)
 
 
 type
