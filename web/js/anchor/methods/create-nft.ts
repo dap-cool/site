@@ -12,7 +12,6 @@ import {AnchorProvider, BN, Program} from "@project-serum/anchor";
 import {Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
 import {ShdwDrive} from "@shadow-drive/sdk";
 import {DapCool} from "../idl";
-import {getAllCollectionsFromHandle} from "../pda/get-all-collections-from-handle";
 
 export async function creatNft(
     app,
@@ -99,9 +98,10 @@ export async function creatNft(
     console.log("mint", mint.publicKey.toString());
     // build response for elm
     const response = {
+        handle: handle,
+        index: authorityIndex,
         name: name,
         symbol: symbol,
-        index: authorityIndex,
         mint: mint.publicKey,
         numMinted: 0,
         pda: authorityPda.toString()
@@ -212,6 +212,7 @@ export async function createCollection(
     const handleObj = await getHandlePda(program, handle);
     // build response for elm
     const response = {
+        handle: handleObj.handle,
         name: authority.name,
         symbol: authority.symbol,
         index: authority.index,
