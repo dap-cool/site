@@ -36,9 +36,10 @@ encoder collection =
                     Encode.null
     in
     Encode.object
-        [ ( "name", Encode.string collection.name )
-        , ( "symbol", Encode.string collection.symbol )
+        [ ( "handle", Encode.string collection.handle )
         , ( "index", Encode.int collection.index )
+        , ( "name", Encode.string collection.name )
+        , ( "symbol", Encode.string collection.symbol )
         , ( "mint", Encode.string collection.mint )
         , ( "collection", collectionEncoder )
         , ( "numMinted", Encode.int collection.numMinted )

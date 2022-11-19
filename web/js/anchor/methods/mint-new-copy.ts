@@ -10,6 +10,7 @@ import {
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {DapCool} from "../idl";
+import {deriveCollectionPda, deriveCollectorPda, getCollectorPda} from "../pda/collector-pda";
 
 export async function mintNewCopy(
     app,
@@ -19,6 +20,29 @@ export async function mintNewCopy(
     handle: string,
     index: number
 ) {
+    // derive collector pda
+    const collectorPda: PublicKey = await deriveCollectorPda(
+        provider,
+        program
+    );
+    // try getting collector
+    let collectorNextCollectionIndex: number;
+    try {
+        const collector = await getCollectorPda(
+            program,
+            collectorPda
+        );
+        collectorNextCollectionIndex = collector.numCollected + 1;
+    } catch (error) {
+        console.log("could not find collector on-chain");
+        collectorNextCollectionIndex = 1;
+    }
+    // derive collection pda
+    const collectionPda: PublicKey = await deriveCollectionPda(
+        provider,
+        program,
+        collectorNextCollectionIndex
+    );
     // derive handle pda
     const handlePda: PublicKey = await deriveHandlePda(
         program,
@@ -114,6 +138,8 @@ export async function mintNewCopy(
         .mintNewCopy(index as any)
         .accounts(
             {
+                collector: collectorPda,
+                collectionPda: collectionPda,
                 handle: handlePda,
                 authority: authority.pda,
                 mint: authority.mint,

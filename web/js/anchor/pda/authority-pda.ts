@@ -89,7 +89,7 @@ async function getManyAuthorityPda(
                     collection: raw.collection,
                     numMinted: raw.numMinted.toNumber(),
                     pda: pda,
-                }
+                } as CollectionAuthority
             }
         )
     )
