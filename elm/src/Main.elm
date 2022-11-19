@@ -78,33 +78,31 @@ update msg model =
                             { model | state = state, url = url }
             in
             case bump.state of
-                Valid global (State.Collect (Collector.MaybeExistingCreator handle)) ->
+                Valid _ (State.Collect (Collector.MaybeExistingCreator handle)) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
                             Sender.encode <|
                                 { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
-                                , global = global
                                 , more = Handle.encode handle
                                 }
                         , resetViewport
                         ]
                     )
 
-                Valid global (State.Collect (Collector.MaybeExistingCollection handle index)) ->
+                Valid _ (State.Collect (Collector.MaybeExistingCollection handle index)) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
                             Sender.encode <|
                                 { sender = Sender.Collect <| FromCollector.SelectCollection handle index
-                                , global = global
                                 , more = AlmostExistingCollection.encode { handle = handle, index = index }
                                 }
                         , resetViewport
                         ]
                     )
 
-                Valid global (State.Create (Creator.MaybeExisting handle)) ->
+                Valid _ (State.Create (Creator.MaybeExisting handle)) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
@@ -113,7 +111,6 @@ update msg model =
                                     Sender.Create <|
                                         FromCreator.Existing <|
                                             FromExistingCreator.ConfirmHandle handle
-                                , global = global
                                 , more = Handle.encode handle
                                 }
                         , resetViewport
@@ -173,7 +170,6 @@ update msg model =
                                     , sender <|
                                         Sender.encode <|
                                             { sender = Sender.Create from
-                                            , global = global
                                             , more = Handle.encode handle
                                             }
                                     )
@@ -192,7 +188,6 @@ update msg model =
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
-                                    , global = global
                                     , more = Handle.encode handle
                                     }
                             )
@@ -269,7 +264,6 @@ update msg model =
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
-                                    , global = global
                                     , more = NewCollection.encode form
                                     }
                             )
@@ -286,7 +280,6 @@ update msg model =
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
-                                    , global = global
                                     , more = Collection.encode collection
                                     }
                             )
@@ -323,7 +316,6 @@ update msg model =
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Collect from
-                                    , global = global
                                     , more = Handle.encode string
                                     }
                             )
@@ -338,7 +330,6 @@ update msg model =
                     , sender <|
                         Sender.encode <|
                             { sender = Sender.Collect from
-                            , global = global
                             , more = AlmostExistingCollection.encode { handle = handle, index = int }
                             }
                     )

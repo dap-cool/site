@@ -1,7 +1,6 @@
-module Model.Global.Global exposing (Global(..), decode, default, encoder)
+module Model.Global.Global exposing (Global(..), decode, default)
 
 import Json.Decode as Decode
-import Json.Encode as Encode
 import Model.Global.HasWallet as HasWallet exposing (HasWallet)
 import Model.Handle as Handle exposing (Handle)
 import Util.Decode as Util
@@ -49,22 +48,3 @@ decoder0 =
                 (\hasWallet -> HasWallet hasWallet)
                 HasWallet.decoder
             ]
-
-
-encoder : Global -> Encode.Value
-encoder global =
-    case global of
-        NoWalletYet ->
-            Encode.string "no-wallet-yet"
-
-        WalletMissing ->
-            Encode.string "wallet-missing"
-
-        Connecting ->
-            Encode.string "connecting"
-
-        HasWallet hasWallet ->
-            HasWallet.encoder hasWallet
-
-        HasWalletAndHandle withWallet ->
-            Handle.withWalletEncoder withWallet

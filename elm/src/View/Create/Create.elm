@@ -3,7 +3,6 @@ module View.Create.Create exposing (body)
 import Html exposing (Html)
 import Html.Attributes exposing (accept, class, href, id, placeholder, src, target, type_, width)
 import Html.Events exposing (onClick, onInput)
-import Json.Encode
 import Model.Collection as Collection
 import Model.Creator.Creator as Creator exposing (Creator(..))
 import Model.Creator.Existing.Existing as Existing
@@ -693,7 +692,7 @@ body global creator =
                         _ ->
                             Html.div
                                 []
-                                [ Html.text <| Json.Encode.encode 0 <| Global.encoder global
+                                [ Html.text "invalid state"
                                 ]
 
                 MaybeExisting _ ->

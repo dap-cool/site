@@ -37,32 +37,29 @@ init _ url key =
             }
     in
     case state of
-        Valid global (State.Collect (Collector.MaybeExistingCreator handle)) ->
+        Valid _ (State.Collect (Collector.MaybeExistingCreator handle)) ->
             ( model
             , sender <|
                 Sender.encode <|
                     { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
-                    , global = global
                     , more = Handle.encode handle
                     }
             )
 
-        Valid global (State.Collect (Collector.MaybeExistingCollection handle index)) ->
+        Valid _ (State.Collect (Collector.MaybeExistingCollection handle index)) ->
             ( model
             , sender <|
                 Sender.encode <|
                     { sender = Sender.Collect <| FromCollector.SelectCollection handle index
-                    , global = global
                     , more = AlmostExistingCollection.encode { handle = handle, index = index }
                     }
             )
 
-        Valid global (State.Create (Creator.MaybeExisting handle)) ->
+        Valid _ (State.Create (Creator.MaybeExisting handle)) ->
             ( model
             , sender <|
                 Sender.encode <|
                     { sender = Sender.Create <| FromCreator.Existing <| Existing.ConfirmHandle handle
-                    , global = global
                     , more = Handle.encode handle
                     }
             )
