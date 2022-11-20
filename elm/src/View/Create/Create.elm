@@ -310,7 +310,7 @@ body global creator =
 
                 Existing existingCreator ->
                     case ( global, existingCreator ) of
-                        ( Global.HasWalletAndHandle withWallet, Existing.Top collections ) ->
+                        ( Global.HasWalletAndHandle withWallet, Existing.Top ) ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
@@ -338,7 +338,7 @@ body global creator =
                                         ]
                                     ]
                                 , View.Generic.Collection.Creator.Creator.viewMany
-                                    collections
+                                    withWallet.collections
                                 ]
 
                         ( Global.HasWalletAndHandle withWallet, Existing.CreatingNewCollection newCollection ) ->

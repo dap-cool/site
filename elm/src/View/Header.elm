@@ -144,6 +144,7 @@ viewGlobal global =
                         []
                         [ Html.a
                             [ Local.href <| Local.Create (Creator.New NewCreator.Top)
+                            , class "has-sky-blue-text"
                             ]
                             [ Html.text "create-handle-now"
                             ]
@@ -167,6 +168,7 @@ viewGlobal global =
                     []
                     [ Html.a
                         [ Local.href <| Local.Create (Creator.MaybeExisting withWallet.handle)
+                        , class "has-sky-blue-text"
                         ]
                         [ Html.text withWallet.handle
                         ]

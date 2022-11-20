@@ -6,7 +6,7 @@ import {
     validateHandleForCollector,
     assertHandlePdaDoesNotExistAlready,
     assertHandlePdaDoesExistAlreadyForCollector,
-    assertHandlePdaDoesExistAlreadyForCreator, deriveHandlePda
+    assertHandlePdaDoesExistAlreadyForCreator, getHandlePda
 } from "./anchor/pda/handle-pda";
 import {getAllCollectionsFromHandle} from "./anchor/pda/get-all-collections-from-handle";
 import {decodeAuthorityPda, getAuthorityPda} from "./anchor/pda/authority-pda";
@@ -14,6 +14,7 @@ import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
+import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 
 // init phantom
 let phantom = null;
@@ -192,12 +193,18 @@ export async function main(app, json) {
             const pp = getPP(phantom);
             // parse more json
             const more = JSON.parse(parsed.more);
+            // derive & fetch creator pda
+            const creatorPda = await deriveCreatorPda(pp.provider, pp.program);
+            const creator = await getCreatorPda(pp.program, creatorPda);
+            // fetch handle
+            const handle = await getHandlePda(pp.program, creator.handle);
             // invoke rpc
             await creatNft(
                 app,
                 pp.provider,
                 pp.program,
-                parsed.global.handle,
+                creator.handle,
+                handle,
                 more.name,
                 more.symbol
             );
@@ -207,15 +214,16 @@ export async function main(app, json) {
             const pp = getPP(phantom);
             // parse more json
             const more = JSON.parse(parsed.more);
-            // derive & fetch handle pda
-            const handlePda = await deriveHandlePda(pp.program, parsed.global.handle);
+            // derive & fetch creator pda
+            const creatorPda = await deriveCreatorPda(pp.provider, pp.program);
+            const creator = await getCreatorPda(pp.program, creatorPda);
             // decode authority pda
             const authorityObj = decodeAuthorityPda(more);
             await createCollection(
                 app,
                 pp.provider,
                 pp.program,
-                handlePda,
+                creator.handle,
                 authorityObj,
                 more.index
             );
@@ -226,7 +234,6 @@ export async function main(app, json) {
             // validate handle
             const validated = validateHandleForCollector(
                 app,
-                parsed.global,
                 more.handle
             );
             if (validated) {
@@ -235,7 +242,6 @@ export async function main(app, json) {
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
-                    parsed.global,
                     ephemeralPP.program,
                     validated
                 );
@@ -246,7 +252,6 @@ export async function main(app, json) {
                         JSON.stringify(
                             {
                                 listener: "collector-handle-found",
-                                global: parsed.global,
                                 more: JSON.stringify(
                                     {
                                         handle: validated,
@@ -265,7 +270,6 @@ export async function main(app, json) {
             // validate handle
             const validated = validateHandleForCollector(
                 app,
-                parsed.global,
                 more.handle
             );
             if (validated) {
@@ -274,7 +278,6 @@ export async function main(app, json) {
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
-                    parsed.global,
                     ephemeralPP.program,
                     validated
                 );
@@ -285,12 +288,8 @@ export async function main(app, json) {
                         JSON.stringify(
                             {
                                 listener: "collector-collection-found",
-                                global: parsed.global,
                                 more: JSON.stringify(
-                                    {
-                                        handle: validated,
-                                        collection: collection
-                                    }
+                                    collection
                                 )
                             }
                         )
@@ -309,7 +308,6 @@ export async function main(app, json) {
                 // invoke rpc
                 await mintNewCopy(
                     app,
-                    parsed.global,
                     pp.provider,
                     pp.program,
                     more.handle,

@@ -483,18 +483,18 @@ update msg model =
                                                                         ToExistingCreator.UnAuthorized ->
                                                                             let
                                                                                 f hasWalletAndHandle =
-                                                                                    ( { model
+                                                                                    { model
                                                                                         | state =
                                                                                             { local =
                                                                                                 Local.Create <|
                                                                                                     Creator.Existing <|
                                                                                                         ExistingCreator.AuthorizingFromUrl <|
                                                                                                             ExistingHandleFormStatus.UnAuthorized
-                                                                                            , global = Global.HasWalletAndHandle
-                                                                                                hasWalletAndHandle
+                                                                                            , global =
+                                                                                                Global.HasWalletAndHandle
+                                                                                                    hasWalletAndHandle
                                                                                             }
-                                                                                      }
-                                                                                    )
+                                                                                    }
                                                                             in
                                                                             Listener.decode model json HasWalletAndHandle.decode f
 
@@ -541,8 +541,9 @@ update msg model =
                                                                                         Local.Create <|
                                                                                             Creator.Existing <|
                                                                                                 ExistingCreator.Top
-                                                                                    , global = Global.HasWalletAndHandle
-                                                                                        hasWalletAndHandle
+                                                                                    , global =
+                                                                                        Global.HasWalletAndHandle
+                                                                                            hasWalletAndHandle
                                                                                     }
                                                                             }
                                                                     in

@@ -1,4 +1,4 @@
-import {deriveHandlePda, getHandlePda} from "../pda/handle-pda";
+import {deriveHandlePda, getHandlePda, Handle} from "../pda/handle-pda";
 import {CollectionAuthority, deriveAuthorityPda} from "../pda/authority-pda";
 import {
     MPL_PREFIX,
@@ -17,15 +17,14 @@ export async function creatNft(
     app,
     provider: AnchorProvider,
     program: Program<DapCool>,
-    handle: string,
+    handlePda: PublicKey,
+    handle: Handle,
     name: string,
     symbol: string
 ) {
-    // derive handle pda
-    const handlePda: PublicKey = await deriveHandlePda(program, handle);
     // derive authority pda
-    const authorityIndex: number = (await getHandlePda(program, handlePda)).numCollections + 1;
-    const authorityPda: PublicKey = await deriveAuthorityPda(program, handle, authorityIndex);
+    const authorityIndex: number = handle.numCollections + 1;
+    const authorityPda: PublicKey = await deriveAuthorityPda(program, handle.handle, authorityIndex);
     // derive key-pair for mint
     const mint = Keypair.generate();
     // derive metadata
@@ -63,7 +62,7 @@ export async function creatNft(
     const metadataUrl: string = await uploadMetadata(
         provider.connection,
         provider.wallet,
-        handle,
+        handle.handle,
         authorityIndex,
         name,
         symbol
@@ -98,7 +97,7 @@ export async function creatNft(
     console.log("mint", mint.publicKey.toString());
     // build response for elm
     const response = {
-        handle: handle,
+        handle: handle.handle,
         index: authorityIndex,
         name: name,
         symbol: symbol,
