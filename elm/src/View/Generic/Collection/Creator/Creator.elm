@@ -4,7 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Model.Collection exposing (Collection)
-import Model.Global.Global exposing (Global)
+import Model.State.Global.Global as Global
 import Msg.Creator.Creator exposing (FromCreator(..))
 import Msg.Creator.Existing.Existing exposing (Existing(..))
 import Msg.Msg exposing (Msg(..))
@@ -16,24 +16,24 @@ import View.Generic.Collection.Collection
 --  if .collection is undefined expose method to create collection
 
 
-view : Global -> Collection -> Html Msg
-view global collection =
-    View.Generic.Collection.Collection.view global collection
+view : Collection -> Html Msg
+view collection =
+    View.Generic.Collection.Collection.view collection
 
 
-viewMany : Global -> List Collection -> Html Msg
-viewMany global collections =
-    View.Generic.Collection.Collection.viewMany global collections select
+viewMany : List Collection -> Html Msg
+viewMany collections =
+    View.Generic.Collection.Collection.viewMany collections select
 
 
-select : Global -> Collection -> Html Msg
-select global collection =
+select : Collection -> Html Msg
+select collection =
     Html.div
         []
         [ Html.button
             [ class "is-button-1"
             , style "width" "100%"
-            , onClick <| FromCreator global <| Existing <| SelectCollection collection -- TODO; href ??
+            , onClick <| FromCreator Global.default <| Existing <| SelectCollection collection -- TODO; href ??
             ]
             [ Html.text "Select"
             ]

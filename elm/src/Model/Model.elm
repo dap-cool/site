@@ -5,7 +5,9 @@ import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collector.Collector as Collector
 import Model.Creator.Creator as Creator
 import Model.Handle as Handle
-import Model.State as State exposing (State(..))
+import Model.State.Global.Global as Global
+import Model.State.Local.Local as Local exposing (Local)
+import Model.State.State exposing (State)
 import Msg.Collector.Collector as FromCollector
 import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as Existing
@@ -16,7 +18,7 @@ import Url
 
 
 type alias Model =
-    { state : State -- TODO; local/global
+    { state : State
     , url : Url.Url
     , key : Nav.Key
     }
@@ -25,19 +27,22 @@ type alias Model =
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
     let
-        state : State
-        state =
-            State.parse url
+        local : Local
+        local =
+            Local.parse url
 
         model : Model
         model =
-            { state = state
+            { state =
+                { local = local
+                , global = Global.default
+                }
             , url = url
             , key = key
             }
     in
-    case state of
-        Valid _ (State.Collect (Collector.MaybeExistingCreator handle)) ->
+    case local of
+        Local.Collect (Collector.MaybeExistingCreator handle) ->
             ( model
             , sender <|
                 Sender.encode <|
@@ -46,7 +51,7 @@ init _ url key =
                     }
             )
 
-        Valid _ (State.Collect (Collector.MaybeExistingCollection handle index)) ->
+        Local.Collect (Collector.MaybeExistingCollection handle index) ->
             ( model
             , sender <|
                 Sender.encode <|
@@ -55,7 +60,7 @@ init _ url key =
                     }
             )
 
-        Valid _ (State.Create (Creator.MaybeExisting handle)) ->
+        Local.Create (Creator.MaybeExisting handle) ->
             ( model
             , sender <|
                 Sender.encode <|

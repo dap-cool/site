@@ -4,8 +4,8 @@ import Html exposing (Html)
 import Html.Attributes exposing (class, placeholder, src, style, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collector.Collector exposing (Collector(..))
-import Model.Global.Global as Global exposing (Global)
 import Model.Handle as Handle
+import Model.State.Global.Global as Global exposing (Global)
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
@@ -51,7 +51,6 @@ body global collector =
                                         [ class "columns is-multiline"
                                         ]
                                         [ View.Generic.Collection.Collector.Collector.viewMany
-                                            global
                                             hasWallet.collections
                                         ]
 
@@ -183,7 +182,6 @@ body global collector =
                             [ Html.text "collections ⬇️"
                             ]
                         , View.Generic.Collection.Collector.Collector.viewMany
-                            global
                             withCollections.collections
                         ]
 
@@ -206,7 +204,6 @@ body global collector =
                             [ Html.text "collection selected ⬇️"
                             ]
                         , View.Generic.Collection.Collector.Collector.view
-                            global
                             withCollection.collection
                         , Html.button
                             [ class "is-button-1"
@@ -252,7 +249,6 @@ body global collector =
                         , Html.div
                             []
                             [ View.Generic.Collection.Collector.Collector.view
-                                global
                                 withCollection.collection
                             ]
                         ]

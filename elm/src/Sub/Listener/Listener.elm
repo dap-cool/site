@@ -2,7 +2,7 @@ module Sub.Listener.Listener exposing (Listener(..), decode, decode0)
 
 import Json.Decode as Decode
 import Model.Model exposing (Model)
-import Model.State as Model
+import Model.State.Local.Local as Local
 import Msg.Msg exposing (Msg)
 import Sub.Listener.Global.Global as Global exposing (ToGlobal)
 import Sub.Listener.Local.Local as Local exposing (ToLocal)
@@ -38,13 +38,23 @@ decode model json moreDecoder update =
 
                 -- error from decoder
                 Err string ->
-                    ( { model | state = Model.Error string }
+                    ( { model
+                        | state =
+                            { local = Local.Error string
+                            , global = model.state.global
+                            }
+                      }
                     , Cmd.none
                     )
 
         -- error from decoder
         Err string ->
-            ( { model | state = Model.Error string }
+            ( { model
+                | state =
+                    { local = Local.Error string
+                    , global = model.state.global
+                    }
+              }
             , Cmd.none
             )
 

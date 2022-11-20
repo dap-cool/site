@@ -9,9 +9,9 @@ import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
-import Model.Global.Global as Global exposing (Global)
 import Model.Handle as Handle
-import Model.State as State
+import Model.State.Global.Global as Global exposing (Global)
+import Model.State.Local.Local as Local
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -338,7 +338,6 @@ body global creator =
                                         ]
                                     ]
                                 , View.Generic.Collection.Creator.Creator.viewMany
-                                    global
                                     collections
                                 ]
 
@@ -524,7 +523,6 @@ body global creator =
                                         ]
                                         [ header
                                         , View.Generic.Collection.Creator.Creator.view
-                                            global
                                             collection
                                         , Html.div
                                             []
@@ -553,7 +551,6 @@ body global creator =
                                         ]
                                         [ header
                                         , View.Generic.Collection.Creator.Creator.view
-                                            global
                                             collection
                                         , Html.div
                                             [ class "is-loading"
@@ -573,14 +570,12 @@ body global creator =
                                                 """
                                             ]
                                         , View.Generic.Collection.Creator.Creator.view
-                                            global
                                             collection
                                         , Html.div
                                             []
                                             [ Html.a
-                                                [ State.href <|
-                                                    State.Valid global <|
-                                                        State.Create (Creator.MaybeExisting withWallet.handle)
+                                                [ Local.href <|
+                                                    Local.Create (Creator.MaybeExisting withWallet.handle)
                                                 ]
                                                 [ Html.text "back 2 collections 🔙"
                                                 ]
@@ -622,7 +617,7 @@ body global creator =
                                 ]
                                 [ View.Generic.Wallet.view withWallet.wallet
                                 , header
-                                , View.Generic.Collection.Creator.Creator.view global collection
+                                , View.Generic.Collection.Creator.Creator.view collection
                                 , button
                                 ]
 

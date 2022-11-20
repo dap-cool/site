@@ -2,7 +2,7 @@ module View.Hero exposing (view)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class)
-import Model.Global.Global exposing (Global)
+import Model.State.Global.Global exposing (Global)
 import Msg.Msg exposing (Msg)
 import View.Footer
 import View.Header

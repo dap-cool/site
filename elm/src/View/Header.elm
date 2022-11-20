@@ -6,8 +6,8 @@ import Html.Events exposing (onClick)
 import Model.Collector.Collector as Collector
 import Model.Creator.Creator as Creator
 import Model.Creator.New.New as NewCreator
-import Model.Global.Global exposing (Global(..))
-import Model.State as State exposing (State(..))
+import Model.State.Global.Global exposing (Global(..))
+import Model.State.Local.Local as Local
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
 import String as Wallet
@@ -27,7 +27,7 @@ view global =
                 [ Html.h1
                     []
                     [ Html.a
-                        [ State.href <| (Valid NoWalletYet <| State.Collect (Collector.TypingHandle ""))
+                        [ Local.href <| Local.Collect (Collector.TypingHandle "")
                         ]
                         [ Html.div
                             [ class "is-text-container-4"
@@ -143,7 +143,7 @@ viewGlobal global =
                     , Html.div
                         []
                         [ Html.a
-                            [ State.href <| Valid NoWalletYet <| State.Create (Creator.New NewCreator.Top)
+                            [ Local.href <| Local.Create (Creator.New NewCreator.Top)
                             ]
                             [ Html.text "create-handle-now"
                             ]
@@ -166,7 +166,7 @@ viewGlobal global =
                 , Html.div
                     []
                     [ Html.a
-                        [ State.href <| Valid NoWalletYet <| State.Create (Creator.MaybeExisting withWallet.handle)
+                        [ Local.href <| Local.Create (Creator.MaybeExisting withWallet.handle)
                         ]
                         [ Html.text withWallet.handle
                         ]

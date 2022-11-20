@@ -1,5 +1,6 @@
 module Sub.Listener.Global.Global exposing (ToGlobal(..), fromString)
 
+
 type ToGlobal
     = FoundMissingWalletPlugin -- no browser plugin installed
     | FoundWallet

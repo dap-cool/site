@@ -1,56 +1,51 @@
-module Model.State exposing (Local(..), State(..), href, parse)
+module Model.State.Local.Local exposing (..)
 
 import Html
 import Html.Attributes
 import Model.Collector.Collector as Collector exposing (Collector)
 import Model.Creator.Creator as Creator exposing (Creator)
 import Model.Creator.New.New as NewCreator
-import Model.Global.Global exposing (Global(..))
 import Url
 import Url.Parser as UrlParser exposing ((</>))
-
-
-type State
-    = Valid Global Local
-    | Error String
 
 
 type Local
     = Create Creator
     | Collect Collector
+    | Error String
 
 
-urlParser : UrlParser.Parser (State -> c) c
+urlParser : UrlParser.Parser (Local -> c) c
 urlParser =
     UrlParser.oneOf
         -- collector
         [ UrlParser.map
-            (Valid NoWalletYet <| Collect (Collector.TypingHandle ""))
+            (Collect (Collector.TypingHandle ""))
             UrlParser.top
         , UrlParser.map
-            (Valid NoWalletYet <| Collect (Collector.TypingHandle ""))
+            (Collect (Collector.TypingHandle ""))
             (UrlParser.s "creator")
         , UrlParser.map
-            (\handle -> Valid NoWalletYet <| Collect (Collector.MaybeExistingCreator handle))
+            (\handle -> Collect (Collector.MaybeExistingCreator handle))
             (UrlParser.s "creator" </> UrlParser.string)
         , UrlParser.map
-            (\handle index -> Valid NoWalletYet <| Collect (Collector.MaybeExistingCollection handle index))
+            (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
             (UrlParser.s "creator" </> UrlParser.string </> UrlParser.int)
 
         -- creator
         , UrlParser.map
-            (Valid NoWalletYet <| Create Creator.Top)
+            (Create Creator.Top)
             (UrlParser.s "admin")
         , UrlParser.map
-            (\handle -> Valid NoWalletYet <| Create (Creator.MaybeExisting handle))
+            (\handle -> Create (Creator.MaybeExisting handle))
             (UrlParser.s "admin" </> UrlParser.string)
         , UrlParser.map
-            (Valid NoWalletYet <| Create (Creator.New NewCreator.Top))
+            (Create (Creator.New NewCreator.Top))
             (UrlParser.s "new")
         ]
 
 
-parse : Url.Url -> State
+parse : Url.Url -> Local
 parse url =
     let
         target =
@@ -67,10 +62,10 @@ parse url =
             Error "404; Invalid Path"
 
 
-path : State -> String
-path state =
-    case state of
-        Valid _ (Create creator) ->
+path : Local -> String
+path local =
+    case local of
+        Create creator ->
             case creator of
                 Creator.Top ->
                     "#/admin"
@@ -86,9 +81,9 @@ path state =
                         ]
 
                 _ ->
-                    path (Valid NoWalletYet <| Create Creator.Top)
+                    path (Create Creator.Top)
 
-        Valid _ (Collect collector) ->
+        Collect collector ->
             case collector of
                 Collector.MaybeExistingCreator string ->
                     String.concat
@@ -112,6 +107,6 @@ path state =
             "#/invalid"
 
 
-href : State -> Html.Attribute msg
-href state =
-    Html.Attributes.href (path state)
+href : Local -> Html.Attribute msg
+href local =
+    Html.Attributes.href (path local)

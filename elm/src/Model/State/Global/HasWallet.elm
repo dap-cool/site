@@ -1,15 +1,21 @@
-module Model.Global.HasWallet exposing (HasWallet, decoder, encoder)
+module Model.State.Global.HasWallet exposing (HasWallet, decode, decoder, encoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Model.Collection as Collection exposing (Collection)
 import Model.Wallet exposing (Wallet)
+import Util.Decode as Util
 
 
 type alias HasWallet =
     { wallet : Wallet
     , collections : List Collection
     }
+
+
+decode : String -> Result String HasWallet
+decode string =
+    Util.decode string decoder identity
 
 
 decoder : Decode.Decoder HasWallet

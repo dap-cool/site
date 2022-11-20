@@ -4,8 +4,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Model.Collection exposing (Collection)
 import Model.Collector.Collector as Collector
-import Model.Global.Global exposing (Global)
-import Model.State as State exposing (State(..))
+import Model.State.Local.Local as Local
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collection
 
@@ -16,28 +15,27 @@ import View.Generic.Collection.Collection
 --  add .belongs-to field in pda
 
 
-view : Global -> Collection -> Html Msg
-view global collection =
-    View.Generic.Collection.Collection.view global collection
+view : Collection -> Html Msg
+view collection =
+    View.Generic.Collection.Collection.view collection
 
 
-viewMany : Global -> List Collection -> Html Msg
-viewMany global collections =
-    View.Generic.Collection.Collection.viewMany global collections select
+viewMany : List Collection -> Html Msg
+viewMany collections =
+    View.Generic.Collection.Collection.viewMany collections select
 
 
-select : Global -> Collection -> Html Msg
-select global collection =
+select : Collection -> Html Msg
+select collection =
     Html.div
         []
         [ Html.a
             [ class "is-button-1"
-            , State.href <|
-                Valid global <|
-                    State.Collect <|
-                        Collector.MaybeExistingCollection
-                            collection.handle
-                            collection.index
+            , Local.href <|
+                Local.Collect <|
+                    Collector.MaybeExistingCollection
+                        collection.handle
+                        collection.index
             ]
             [ Html.text "Select this"
             ]
