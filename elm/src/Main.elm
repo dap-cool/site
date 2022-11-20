@@ -135,7 +135,7 @@ update msg model =
                 Browser.External href ->
                     ( model, Nav.load href )
 
-        FromCreator global from ->
+        FromCreator from ->
             case from of
                 FromCreator.New new ->
                     case new of
@@ -146,7 +146,7 @@ update msg model =
                                         Local.Create <|
                                             Creator.New <|
                                                 NewCreator.TypingHandle ""
-                                    , global = global
+                                    , global = model.state.global
                                     }
                               }
                             , Cmd.none
@@ -162,7 +162,7 @@ update msg model =
                                                     Creator.New <|
                                                         NewCreator.TypingHandle <|
                                                             Handle.normalize string
-                                            , global = global
+                                            , global = model.state.global
                                             }
                                       }
                                     , Cmd.none
@@ -175,7 +175,7 @@ update msg model =
                                                 Local.Create <|
                                                     Creator.New <|
                                                         NewCreator.WaitingForHandleConfirmation
-                                            , global = global
+                                            , global = model.state.global
                                             }
                                       }
                                     , sender <|
@@ -195,7 +195,7 @@ update msg model =
                                             Creator.Existing <|
                                                 ExistingCreator.AuthorizingFromUrl
                                                     ExistingHandleFormStatus.WaitingForHandleConfirmation
-                                    , global = global
+                                    , global = model.state.global
                                     }
                               }
                             , sender <|
@@ -215,7 +215,7 @@ update msg model =
                                                     NewCollection.Input
                                                         NewCollection.default
                                                         False
-                                    , global = global
+                                    , global = model.state.global
                                     }
                               }
                             , Cmd.none
@@ -237,7 +237,7 @@ update msg model =
                                                             NewCollection.Input
                                                                 bumpNewCollection
                                                                 False
-                                            , global = global
+                                            , global = model.state.global
                                             }
                                       }
                                     , Cmd.none
@@ -257,7 +257,7 @@ update msg model =
                                                             NewCollection.Input
                                                                 bumpNewCollection
                                                                 False
-                                            , global = global
+                                            , global = model.state.global
                                             }
                                       }
                                     , Cmd.none
@@ -279,7 +279,7 @@ update msg model =
                                                     NewCollection.Input
                                                         form
                                                         True
-                                    , global = global
+                                    , global = model.state.global
                                     }
                               }
                             , sender <|
@@ -297,7 +297,7 @@ update msg model =
                                             Creator.Existing <|
                                                 ExistingCreator.CreatingNewCollection <|
                                                     NewCollection.WaitingForMarkNft collection
-                                    , global = global
+                                    , global = model.state.global
                                     }
                               }
                             , sender <|
@@ -315,13 +315,13 @@ update msg model =
                                             Creator.Existing <|
                                                 ExistingCreator.SelectedCollection
                                                     collection
-                                    , global = global
+                                    , global = model.state.global
                                     }
                               }
                             , Cmd.none
                             )
 
-        FromCollector global from ->
+        FromCollector from ->
             case from of
                 FromCollector.HandleForm form ->
                     case form of
@@ -332,7 +332,7 @@ update msg model =
                                         Local.Collect <|
                                             Collector.TypingHandle <|
                                                 Handle.normalize string
-                                    , global = global
+                                    , global = model.state.global
                                     }
                               }
                             , Cmd.none
@@ -342,7 +342,7 @@ update msg model =
                             ( { model
                                 | state =
                                     { local = Local.Collect <| Collector.WaitingForHandleConfirmation
-                                    , global = global
+                                    , global = model.state.global
                                     }
                               }
                             , sender <|
@@ -361,7 +361,7 @@ update msg model =
                     ( { model
                         | state =
                             { local = Local.Collect <| Collector.WaitingForPurchase
-                            , global = global
+                            , global = model.state.global
                             }
                       }
                     , sender <|
@@ -716,16 +716,19 @@ update msg model =
 view : Model -> Browser.Document Msg
 view model =
     let
+        hero =
+            View.Hero.view model.state.global
+
         html =
             case model.state.local of
                 Local.Create creator ->
-                    View.Hero.view model.state.global <| View.Create.Create.body model.state.global creator
+                    hero <| View.Create.Create.body model.state.global creator
 
                 Local.Collect collector ->
-                    View.Hero.view model.state.global <| View.Collect.Collect.body model.state.global collector
+                    hero <| View.Collect.Collect.body model.state.global collector
 
                 Local.Error error ->
-                    View.Hero.view model.state.global (View.Error.Error.body error)
+                    hero <| View.Error.Error.body error
     in
     { title = "dap.cool"
     , body =

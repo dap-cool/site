@@ -123,7 +123,7 @@ body global creator =
                                 """
                             , Html.button
                                 [ class "is-button-1"
-                                , onClick <| FromCreator global <| CreatorMsg.New <| NewMsg.StartHandleForm
+                                , onClick <| FromCreator <| CreatorMsg.New <| NewMsg.StartHandleForm
                                 ]
                                 [ Html.text "new profile"
                                 ]
@@ -149,7 +149,7 @@ body global creator =
                                             , placeholder "Handle"
                                             , onInput <|
                                                 \s ->
-                                                    FromCreator global <|
+                                                    FromCreator <|
                                                         CreatorMsg.New <|
                                                             NewMsg.HandleForm <|
                                                                 Handle.Typing s
@@ -182,7 +182,7 @@ body global creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator global <|
+                                                        FromCreator <|
                                                             CreatorMsg.New <|
                                                                 NewMsg.HandleForm <|
                                                                     Handle.Confirm string
@@ -212,7 +212,7 @@ body global creator =
                                             , placeholder "Handle"
                                             , onInput <|
                                                 \s ->
-                                                    FromCreator global <|
+                                                    FromCreator <|
                                                         CreatorMsg.New <|
                                                             NewMsg.HandleForm <|
                                                                 Handle.Typing s
@@ -262,7 +262,7 @@ body global creator =
                                         [ Html.button
                                             [ class "is-button-1"
                                             , onClick <|
-                                                FromCreator global <|
+                                                FromCreator <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
                                                             Handle.Typing ""
@@ -295,7 +295,7 @@ body global creator =
                                         [ Html.button
                                             [ class "is-button-1"
                                             , onClick <|
-                                                FromCreator global <|
+                                                FromCreator <|
                                                     CreatorMsg.New <|
                                                         NewMsg.HandleForm <|
                                                             Handle.Typing ""
@@ -330,7 +330,7 @@ body global creator =
                                     [ Html.button
                                         [ class "is-button-1"
                                         , onClick <|
-                                            FromCreator global <|
+                                            FromCreator <|
                                                 CreatorMsg.Existing <|
                                                     ExistingMsg.StartCreatingNewCollection
                                         ]
@@ -359,7 +359,7 @@ body global creator =
                                                             , ".png"
                                                             ]
                                                     , onClick <|
-                                                        FromCreator global <|
+                                                        FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.NewCollectionForm
                                                                     NewCollectionForm.Image
@@ -398,7 +398,7 @@ body global creator =
                                                                     , placeholder "Name your new collection"
                                                                     , onInput <|
                                                                         \s ->
-                                                                            FromCreator global <|
+                                                                            FromCreator <|
                                                                                 CreatorMsg.Existing <|
                                                                                     ExistingMsg.NewCollectionForm <|
                                                                                         NewCollectionForm.Name s form
@@ -438,7 +438,7 @@ body global creator =
                                                                     , placeholder "Symbol"
                                                                     , onInput <|
                                                                         \s ->
-                                                                            FromCreator global <|
+                                                                            FromCreator <|
                                                                                 CreatorMsg.Existing <|
                                                                                     ExistingMsg.NewCollectionForm <|
                                                                                         NewCollectionForm.Symbol
@@ -480,7 +480,7 @@ body global creator =
                                                                 [ Html.button
                                                                     [ class "is-button-1"
                                                                     , onClick <|
-                                                                        FromCreator global <|
+                                                                        FromCreator <|
                                                                             CreatorMsg.Existing <|
                                                                                 ExistingMsg.CreateNewCollection form
                                                                     ]
@@ -535,7 +535,7 @@ body global creator =
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
-                                                        FromCreator global <|
+                                                        FromCreator <|
                                                             CreatorMsg.Existing <|
                                                                 ExistingMsg.MarkNewCollection collection
                                                     ]
@@ -598,7 +598,7 @@ body global creator =
                                                     [ Html.button
                                                         [ class "is-button-1"
                                                         , onClick <|
-                                                            FromCreator global <|
+                                                            FromCreator <|
                                                                 CreatorMsg.Existing <|
                                                                     ExistingMsg.MarkNewCollection collection
                                                         ]

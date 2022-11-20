@@ -2,7 +2,6 @@ module Msg.Msg exposing (Msg(..), resetViewport)
 
 import Browser
 import Browser.Dom as Dom
-import Model.State.Global.Global exposing (Global)
 import Msg.Collector.Collector exposing (FromCollector)
 import Msg.Creator.Creator exposing (FromCreator)
 import Msg.Global as FromGlobal
@@ -20,9 +19,9 @@ type
       -- wallet
     | Global FromGlobal.Global
       -- creator
-    | FromCreator Global FromCreator
+    | FromCreator FromCreator
       -- collector
-    | FromCollector Global FromCollector
+    | FromCollector FromCollector
       -- js ports
     | FromJs FromJs
 

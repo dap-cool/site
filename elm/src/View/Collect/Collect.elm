@@ -31,7 +31,7 @@ body global collector =
                                         [ Html.button
                                             [ class "is-button-1"
                                             , onClick <|
-                                                FromCollector global <|
+                                                FromCollector <|
                                                     CollectorMsg.HandleForm <|
                                                         Handle.Confirm string
                                             ]
@@ -74,7 +74,7 @@ body global collector =
                                 , placeholder "🔍 Find Creators"
                                 , onInput <|
                                     \s ->
-                                        FromCollector global <|
+                                        FromCollector <|
                                             CollectorMsg.HandleForm <|
                                                 Handle.Typing s
                                 ]
@@ -119,7 +119,7 @@ body global collector =
                                 [ Html.button
                                     [ class "is-button-1"
                                     , onClick <|
-                                        FromCollector global <|
+                                        FromCollector <|
                                             CollectorMsg.HandleForm <|
                                                 Handle.Typing ""
                                     ]
@@ -151,7 +151,7 @@ body global collector =
                                 [ Html.button
                                     [ class "is-button-1"
                                     , onClick <|
-                                        FromCollector global <|
+                                        FromCollector <|
                                             CollectorMsg.HandleForm <|
                                                 Handle.Typing ""
                                     ]
@@ -208,7 +208,7 @@ body global collector =
                         , Html.button
                             [ class "is-button-1"
                             , onClick <|
-                                FromCollector global <|
+                                FromCollector <|
                                     CollectorMsg.PurchaseCollection
                                         withCollection.handle
                                         withCollection.collection.index

@@ -4,7 +4,6 @@ import Html exposing (Html)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Model.Collection exposing (Collection)
-import Model.State.Global.Global as Global
 import Msg.Creator.Creator exposing (FromCreator(..))
 import Msg.Creator.Existing.Existing exposing (Existing(..))
 import Msg.Msg exposing (Msg(..))
@@ -33,7 +32,7 @@ select collection =
         [ Html.button
             [ class "is-button-1"
             , style "width" "100%"
-            , onClick <| FromCreator Global.default <| Existing <| SelectCollection collection -- TODO; href ??
+            , onClick <| FromCreator <| Existing <| SelectCollection collection
             ]
             [ Html.text "Select"
             ]
