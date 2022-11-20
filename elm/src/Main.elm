@@ -7,7 +7,6 @@ import Browser.Navigation as Nav
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collection as Collection
 import Model.Collector.Collector as Collector
-import Model.Collector.WithCollection as WithCollection
 import Model.Collector.WithCollections as WithCollections
 import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Existing as ExistingCreator
@@ -427,17 +426,21 @@ update msg model =
                                                                     Listener.decode model json Handle.decode f
 
                                                                 ToNewCreator.NewHandleSuccess ->
-                                                                    ( { model
-                                                                        | state =
-                                                                            { local =
-                                                                                Local.Create <|
-                                                                                    Creator.Existing <|
-                                                                                        ExistingCreator.Top []
-                                                                            , global = model.state.global
+                                                                    let
+                                                                        f hasWalletAndHandle =
+                                                                            { model
+                                                                                | state =
+                                                                                    { local =
+                                                                                        Local.Create <|
+                                                                                            Creator.Existing <|
+                                                                                                ExistingCreator.Top
+                                                                                    , global =
+                                                                                        Global.HasWalletAndHandle
+                                                                                            hasWalletAndHandle
+                                                                                    }
                                                                             }
-                                                                      }
-                                                                    , Cmd.none
-                                                                    )
+                                                                    in
+                                                                    Listener.decode model json HasWalletAndHandle.decode f
 
                                                         ToCreator.Existing existing ->
                                                             case existing of
@@ -478,18 +481,22 @@ update msg model =
                                                                             Listener.decode model json Handle.decode f
 
                                                                         ToExistingCreator.UnAuthorized ->
-                                                                            ( { model
-                                                                                | state =
-                                                                                    { local =
-                                                                                        Local.Create <|
-                                                                                            Creator.Existing <|
-                                                                                                ExistingCreator.AuthorizingFromUrl <|
-                                                                                                    ExistingHandleFormStatus.UnAuthorized
-                                                                                    , global = model.state.global
-                                                                                    }
-                                                                              }
-                                                                            , Cmd.none
-                                                                            )
+                                                                            let
+                                                                                f hasWalletAndHandle =
+                                                                                    ( { model
+                                                                                        | state =
+                                                                                            { local =
+                                                                                                Local.Create <|
+                                                                                                    Creator.Existing <|
+                                                                                                        ExistingCreator.AuthorizingFromUrl <|
+                                                                                                            ExistingHandleFormStatus.UnAuthorized
+                                                                                            , global = Global.HasWalletAndHandle
+                                                                                                hasWalletAndHandle
+                                                                                            }
+                                                                                      }
+                                                                                    )
+                                                                            in
+                                                                            Listener.decode model json HasWalletAndHandle.decode f
 
                                                                 ToExistingCreator.CreatedNewCollection ->
                                                                     let
@@ -527,19 +534,19 @@ update msg model =
 
                                                                 ToExistingCreator.Authorized ->
                                                                     let
-                                                                        f collections =
+                                                                        f hasWalletAndHandle =
                                                                             { model
                                                                                 | state =
                                                                                     { local =
                                                                                         Local.Create <|
                                                                                             Creator.Existing <|
-                                                                                                ExistingCreator.Top <|
-                                                                                                    collections
-                                                                                    , global = model.state.global
+                                                                                                ExistingCreator.Top
+                                                                                    , global = Global.HasWalletAndHandle
+                                                                                        hasWalletAndHandle
                                                                                     }
                                                                             }
                                                                     in
-                                                                    Listener.decode model json Collection.decodeList f
+                                                                    Listener.decode model json HasWalletAndHandle.decode f
 
                                                 -- found msg for collector
                                                 ToLocal.Collect toCollector ->
@@ -590,37 +597,47 @@ update msg model =
 
                                                         ToCollector.CollectionSelected ->
                                                             let
-                                                                f withCollection =
+                                                                f collection =
                                                                     { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCollection
-                                                                                        withCollection
+                                                                                        collection
                                                                             , global = model.state.global
                                                                             }
                                                                     }
                                                             in
-                                                            Listener.decode model json WithCollection.decode f
+                                                            Listener.decode model json Collection.decode f
 
                                                         ToCollector.CollectionPurchased ->
                                                             let
-                                                                f withCollection =
+                                                                f collection =
                                                                     { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.PurchaseSuccess
-                                                                                        withCollection
+                                                                                        collection
                                                                             , global = model.state.global
                                                                             }
                                                                     }
                                                             in
-                                                            Listener.decode model json WithCollection.decode f
+                                                            Listener.decode model json Collection.decode f
 
                                         -- found msg for global update
                                         Listener.Global toGlobal ->
                                             case toGlobal of
+                                                ToGlobal.DisconnectWallet ->
+                                                    ( { model
+                                                        | state =
+                                                            { local = model.state.local
+                                                            , global = Global.NoWalletYet
+                                                            }
+                                                      }
+                                                    , Cmd.none
+                                                    )
+
                                                 ToGlobal.FoundMissingWalletPlugin ->
                                                     ( { model
                                                         | state =

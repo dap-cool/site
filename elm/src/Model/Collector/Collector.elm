@@ -1,6 +1,6 @@
 module Model.Collector.Collector exposing (Collector(..))
 
-import Model.Collector.WithCollection exposing (WithCollection)
+import Model.Collection exposing (Collection)
 import Model.Collector.WithCollections exposing (WithCollections)
 
 
@@ -13,10 +13,10 @@ type
     | HandleDoesNotExist String
       -- select collection
     | SelectedCreator WithCollections
-    | SelectedCollection WithCollection
+    | SelectedCollection Collection
       -- purchase collection
     | WaitingForPurchase
-    | PurchaseSuccess WithCollection
+    | PurchaseSuccess Collection
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int

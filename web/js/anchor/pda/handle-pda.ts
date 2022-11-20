@@ -67,25 +67,22 @@ export async function assertHandlePdaDoesNotExistAlready(
 
 export async function assertHandlePdaDoesExistAlreadyForCreator(
     app,
-    global,
     program: Program<DapCool>,
     handle: string
 ): Promise<Handle | null> {
-    return await assertHandlePdaDoesExistAlready(app, global, program, handle, "creator-handle-dne")
+    return await assertHandlePdaDoesExistAlready(app, program, handle, "creator-handle-dne")
 }
 
 export async function assertHandlePdaDoesExistAlreadyForCollector(
     app,
-    global,
     program: Program<DapCool>,
     handle: string
 ): Promise<Handle | null> {
-    return await assertHandlePdaDoesExistAlready(app, global, program, handle, "collector-handle-dne")
+    return await assertHandlePdaDoesExistAlready(app, program, handle, "collector-handle-dne")
 }
 
 async function assertHandlePdaDoesExistAlready(
     app,
-    global,
     program: Program<DapCool>,
     handle: string,
     listener: string
@@ -105,7 +102,6 @@ async function assertHandlePdaDoesExistAlready(
             JSON.stringify(
                 {
                     listener: listener,
-                    global: global,
                     more: JSON.stringify(handle)
                 }
             )
@@ -115,19 +111,19 @@ async function assertHandlePdaDoesExistAlready(
     return handlePda
 }
 
-export function validateNewHandle(app, global, handle: string): string | null {
-    return validateHandle(app, global, handle, "new-creator-handle-invalid")
+export function validateNewHandle(app, handle: string): string | null {
+    return validateHandle(app, handle, "new-creator-handle-invalid")
 }
 
-export function validateExistingHandle(app, global, handle: string): string | null {
-    return validateHandle(app, global, handle, "existing-creator-handle-invalid")
+export function validateExistingHandle(app, handle: string): string | null {
+    return validateHandle(app, handle, "existing-creator-handle-invalid")
 }
 
-export function validateHandleForCollector(app, global, handle: string): string | null {
-    return validateHandle(app, global, handle, "collector-handle-invalid")
+export function validateHandleForCollector(app, handle: string): string | null {
+    return validateHandle(app, handle, "collector-handle-invalid")
 }
 
-function validateHandle(app, global, handle: string, listener: string): string | null {
+function validateHandle(app, handle: string, listener: string): string | null {
     if (isValidHandle(handle)) {
         return handle
     } else {
@@ -137,7 +133,6 @@ function validateHandle(app, global, handle: string, listener: string): string |
             JSON.stringify(
                 {
                     listener: listener,
-                    global: global,
                     more: JSON.stringify(handle)
                 }
             )

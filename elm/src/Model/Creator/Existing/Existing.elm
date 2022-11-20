@@ -6,7 +6,7 @@ import Model.Creator.Existing.NewCollection exposing (NewCollection)
 
 
 type Existing
-    = Top (List Collection)
+    = Top
     | CreatingNewCollection NewCollection
     | SelectedCollection Collection
       -- authorizing from url

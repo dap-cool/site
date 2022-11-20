@@ -27,14 +27,19 @@ export async function initNewHandle(
         )
         .rpc();
     // send success
+    // TODO; fetch collected
     app.ports.success.send(
         JSON.stringify(
             {
                 listener: "creator-new-handle-success",
-                global: {
-                    handle: handle,
-                    wallet: provider.wallet.publicKey.toString()
-                }
+                more: JSON.stringify(
+                    {
+                        handle: handle,
+                        wallet: provider.wallet.publicKey.toString(),
+                        collections: [],
+                        collected: []
+                    }
+                )
             }
         )
     );

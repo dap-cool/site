@@ -2,7 +2,8 @@ module Sub.Listener.Global.Global exposing (ToGlobal(..), fromString)
 
 
 type ToGlobal
-    = FoundMissingWalletPlugin -- no browser plugin installed
+    = DisconnectWallet
+    | FoundMissingWalletPlugin -- no browser plugin installed
     | FoundWallet
     | FoundWalletAndHandle
 
@@ -10,6 +11,9 @@ type ToGlobal
 fromString : String -> Maybe ToGlobal
 fromString string =
     case string of
+        "global-disconnect-wallet" ->
+            Just DisconnectWallet
+
         "global-found-missing-wallet-plugin" ->
             Just FoundMissingWalletPlugin
 

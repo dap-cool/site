@@ -110,10 +110,6 @@ export async function creatNft(
         JSON.stringify(
             {
                 listener: "creator-created-new-collection",
-                global: {
-                    handle: handle,
-                    wallet: provider.wallet.publicKey.toString()
-                },
                 more: JSON.stringify(
                     response
                 )
@@ -226,10 +222,6 @@ export async function createCollection(
         JSON.stringify(
             {
                 listener: "creator-marked-new-collection",
-                global: {
-                    handle: handleObj.handle,
-                    wallet: provider.wallet.publicKey.toString()
-                },
                 more: JSON.stringify(
                     response
                 )

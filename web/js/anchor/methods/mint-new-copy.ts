@@ -14,7 +14,6 @@ import {deriveCollectionPda, deriveCollectorPda, getCollectorPda} from "../pda/c
 
 export async function mintNewCopy(
     app,
-    global,
     provider: AnchorProvider,
     program: Program<DapCool>,
     handle: string,
@@ -202,12 +201,8 @@ export async function mintNewCopy(
         JSON.stringify(
             {
                 listener: "collector-collection-purchased",
-                global: global,
                 more: JSON.stringify(
-                    {
-                        handle: handle,
-                        collection: authority
-                    }
+                    authority
                 )
             }
         )

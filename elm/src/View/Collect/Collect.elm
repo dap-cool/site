@@ -51,7 +51,7 @@ body global collector =
                                         [ class "columns is-multiline"
                                         ]
                                         [ View.Generic.Collection.Collector.Collector.viewMany
-                                            hasWallet.collections
+                                            hasWallet.collected
                                         ]
 
                                 Global.HasWalletAndHandle _ ->
@@ -185,7 +185,7 @@ body global collector =
                             withCollections.collections
                         ]
 
-                SelectedCollection withCollection ->
+                SelectedCollection collection ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
@@ -196,7 +196,7 @@ body global collector =
                                 String.concat
                                     [ "creator:"
                                     , " "
-                                    , withCollection.handle
+                                    , collection.handle
                                     ]
                             ]
                         , Html.div
@@ -204,14 +204,14 @@ body global collector =
                             [ Html.text "collection selected ⬇️"
                             ]
                         , View.Generic.Collection.Collector.Collector.view
-                            withCollection.collection
+                            collection
                         , Html.button
                             [ class "is-button-1"
                             , onClick <|
                                 FromCollector <|
                                     CollectorMsg.PurchaseCollection
-                                        withCollection.handle
-                                        withCollection.collection.index
+                                        collection.handle
+                                        collection.index
                             ]
                             [ Html.text "Purchase"
                             ]
@@ -228,7 +228,7 @@ body global collector =
                             []
                         ]
 
-                PurchaseSuccess withCollection ->
+                PurchaseSuccess collection ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
@@ -239,7 +239,7 @@ body global collector =
                                 String.concat
                                     [ "creator:"
                                     , " "
-                                    , withCollection.handle
+                                    , collection.handle
                                     ]
                             ]
                         , Html.div
@@ -249,7 +249,7 @@ body global collector =
                         , Html.div
                             []
                             [ View.Generic.Collection.Collector.Collector.view
-                                withCollection.collection
+                                collection
                             ]
                         ]
 

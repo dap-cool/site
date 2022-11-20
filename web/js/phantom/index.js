@@ -19,8 +19,7 @@ export async function getPhantom(app) {
         app.ports.success.send(
             JSON.stringify(
                 {
-                    listener: "global-connect",
-                    global: "wallet-missing"
+                    listener: "global-found-missing-wallet-plugin"
                 }
             )
         );

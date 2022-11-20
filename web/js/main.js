@@ -63,8 +63,7 @@ export async function main(app, json) {
             app.ports.success.send(
                 JSON.stringify(
                     {
-                        listener: "global-connect",
-                        global: "no-wallet-yet"
+                        listener: "global-disconnect-wallet"
                     }
                 )
             );
@@ -75,7 +74,6 @@ export async function main(app, json) {
             // validate handle
             const validated = validateNewHandle(
                 app,
-                parsed.global,
                 more.handle
             );
             if (validated) {
@@ -107,7 +105,6 @@ export async function main(app, json) {
             // validate handle
             const validated = validateExistingHandle(
                 app,
-                parsed.global,
                 more.handle
             );
             if (validated) {
@@ -116,7 +113,6 @@ export async function main(app, json) {
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCreator(
                     app,
-                    parsed.global,
                     ephemeralPP.program,
                     validated
                 );
@@ -127,21 +123,23 @@ export async function main(app, json) {
                     if (phantom) {
                         // get provider & program
                         const pp = getPP(phantom);
+                        // get collections
+                        // TODO; fetch collected
+                        const collections = await getAllCollectionsFromHandle(pp.program, handle);
                         // assert authority is current user
                         const current = pp.provider.wallet.publicKey.toString();
                         if (handle.authority.toString() === current) {
-                            // get collections
-                            const collections = await getAllCollectionsFromHandle(pp.program, handle);
                             app.ports.success.send(
                                 JSON.stringify(
                                     {
                                         listener: "creator-authorized",
-                                        global: {
-                                            handle: validated,
-                                            wallet: current,
-                                        },
                                         more: JSON.stringify(
-                                            collections
+                                            {
+                                                handle: validated,
+                                                wallet: current,
+                                                collections: collections,
+                                                collected: []
+                                            }
                                         )
                                     }
                                 )
@@ -152,10 +150,14 @@ export async function main(app, json) {
                                 JSON.stringify(
                                     {
                                         listener: "creator-handle-unauthorized",
-                                        global: {
-                                            handle: validated,
-                                            wallet: current,
-                                        }
+                                        more: JSON.stringify(
+                                            {
+                                                handle: validated,
+                                                wallet: current,
+                                                collections: collections,
+                                                collected: []
+                                            }
+                                        )
                                     }
                                 )
                             );
