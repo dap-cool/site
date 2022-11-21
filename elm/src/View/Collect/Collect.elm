@@ -48,16 +48,16 @@ body global collector =
                             case global of
                                 Global.HasWallet hasWallet ->
                                     Html.div
-                                        [ class "columns is-multiline"
-                                        ]
+                                        []
                                         [ View.Generic.Collection.Collector.Collector.viewMany
                                             hasWallet.collected
                                         ]
 
-                                Global.HasWalletAndHandle _ ->
+                                Global.HasWalletAndHandle hasWalletAndHandle ->
                                     Html.div
                                         []
-                                        [ Html.text "todo"
+                                        [ View.Generic.Collection.Collector.Collector.viewMany
+                                            hasWalletAndHandle.collected
                                         ]
 
                                 _ ->

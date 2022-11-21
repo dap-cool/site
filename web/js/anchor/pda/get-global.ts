@@ -4,6 +4,7 @@ import {getHandlePda} from "./handle-pda";
 import {deriveCreatorPda, getCreatorPda} from "./creator-pda";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "./collector-pda";
 import {CollectionAuthority, getManyAuthorityPdaForCollector} from "./authority-pda";
+import {getAllCollectionsFromHandle} from "./get-all-collections-from-handle";
 
 export async function getGlobal(app, provider: AnchorProvider, program: Program<DapCool>): Promise<void> {
     // derive creator pda
@@ -21,10 +22,12 @@ export async function getGlobal(app, provider: AnchorProvider, program: Program<
         collected = []
     }
     try {
+        // fetch creator
         const creator = await getCreatorPda(program, creatorPda);
         const handle = await getHandlePda(program, creator.handle);
+        // fetch collections
+        const collections = await getAllCollectionsFromHandle(program, handle);
         // send success to elm
-        // TODO; fetch collections
         app.ports.success.send(
             JSON.stringify(
                 {
@@ -33,7 +36,7 @@ export async function getGlobal(app, provider: AnchorProvider, program: Program<
                         {
                             handle: handle.handle.toString(),
                             wallet: provider.wallet.publicKey.toString(),
-                            collections: [],
+                            collections: collections,
                             collected: collected
                         }
                     )

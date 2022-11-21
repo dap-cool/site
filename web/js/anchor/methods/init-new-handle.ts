@@ -2,6 +2,8 @@ import {PublicKey, SystemProgram} from "@solana/web3.js";
 import {AnchorProvider, Program} from "@project-serum/anchor";
 import {DapCool} from "../idl";
 import {deriveCreatorPda} from "../pda/creator-pda";
+import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
+import {getManyAuthorityPdaForCollector} from "../pda/authority-pda";
 
 export async function initNewHandle(
     app,
@@ -26,8 +28,20 @@ export async function initNewHandle(
             }
         )
         .rpc();
+    // derive collector pda
+    const collectorPda = await deriveCollectorPda(provider, program);
+    // fetch collector
+    let collected;
+    try {
+        const collector = await getCollectorPda(program, collectorPda);
+        // fetch collected
+        const collectedPda = await getAllCollectionPda(provider, program, collector);
+        collected = await getManyAuthorityPdaForCollector(program, collectedPda);
+    } catch (error) {
+        console.log("could not find collector on-chain");
+        collected = [];
+    }
     // send success
-    // TODO; fetch collected
     app.ports.success.send(
         JSON.stringify(
             {
@@ -37,7 +51,7 @@ export async function initNewHandle(
                         handle: handle,
                         wallet: provider.wallet.publicKey.toString(),
                         collections: [],
-                        collected: []
+                        collected: collected
                     }
                 )
             }

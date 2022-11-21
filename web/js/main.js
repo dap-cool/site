@@ -9,12 +9,13 @@ import {
     assertHandlePdaDoesExistAlreadyForCreator, getHandlePda
 } from "./anchor/pda/handle-pda";
 import {getAllCollectionsFromHandle} from "./anchor/pda/get-all-collections-from-handle";
-import {decodeAuthorityPda, getAuthorityPda} from "./anchor/pda/authority-pda";
+import {decodeAuthorityPda, getAuthorityPda, getManyAuthorityPdaForCollector} from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
+import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "./anchor/pda/collector-pda";
 
 // init phantom
 let phantom = null;
@@ -94,8 +95,13 @@ export async function main(app, json) {
                         // get provider & program
                         const pp = getPP(phantom);
                         // invoke init-new-handle
-                        // TODO; check for creator-pda
-                        await initNewHandle(app, pp.provider, pp.program, validated, handle);
+                        await initNewHandle(
+                            app,
+                            pp.provider,
+                            pp.program,
+                            validated,
+                            handle
+                        );
                     }
                 }
             }
@@ -125,8 +131,20 @@ export async function main(app, json) {
                         // get provider & program
                         const pp = getPP(phantom);
                         // get collections
-                        // TODO; fetch collected
                         const collections = await getAllCollectionsFromHandle(pp.program, handle);
+                        // derive collector pda
+                        const collectorPda = await deriveCollectorPda(pp.provider, pp.program);
+                        let collected;
+                        try {
+                            // fetch collector
+                            const collector = await getCollectorPda(pp.program, collectorPda);
+                            // fetch collected
+                            const collectedPda = await getAllCollectionPda(pp.provider, pp.program, collector);
+                            collected = await getManyAuthorityPdaForCollector(pp.program, collectedPda);
+                        } catch (error) {
+                            console.log("could not find collector on-chain");
+                            collected = [];
+                        }
                         // assert authority is current user
                         const current = pp.provider.wallet.publicKey.toString();
                         if (handle.authority.toString() === current) {
@@ -139,7 +157,7 @@ export async function main(app, json) {
                                                 handle: validated,
                                                 wallet: current,
                                                 collections: collections,
-                                                collected: []
+                                                collected: collected
                                             }
                                         )
                                     }
@@ -156,7 +174,7 @@ export async function main(app, json) {
                                                 handle: validated,
                                                 wallet: current,
                                                 collections: collections,
-                                                collected: []
+                                                collected: collected
                                             }
                                         )
                                     }
