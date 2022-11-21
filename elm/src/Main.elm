@@ -4,6 +4,7 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
+import Json.Decode as Decode
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collection as Collection
 import Model.Collector.Collector as Collector
@@ -37,6 +38,7 @@ import Sub.Sender.Ports exposing (sender)
 import Sub.Sender.Sender as Sender
 import Sub.Sub as Sub
 import Url
+import Util.Decode as Util
 import View.Collect.Collect
 import View.Create.Create
 import View.Error.Error
@@ -613,18 +615,33 @@ update msg model =
 
                                                         ToCollector.CollectionPurchased ->
                                                             let
-                                                                f collection =
+                                                                f typeAlias =
                                                                     { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.PurchaseSuccess
-                                                                                        collection
-                                                                            , global = model.state.global
+                                                                                        typeAlias.purchased
+                                                                            , global =
+                                                                                Global.HasWalletAndHandle
+                                                                                    typeAlias.global
                                                                             }
                                                                     }
+
+                                                                decoder =
+                                                                    Decode.map2
+                                                                        (\collection hasWalletAndHandle ->
+                                                                            { purchased = collection
+                                                                            , global = hasWalletAndHandle
+                                                                            }
+                                                                        )
+                                                                        (Decode.field "purchased" Collection.decoder)
+                                                                        (Decode.field "global" HasWalletAndHandle.decoder)
+
+                                                                decode string =
+                                                                    Util.decode string decoder identity
                                                             in
-                                                            Listener.decode model json Collection.decode f
+                                                            Listener.decode model json decode f
 
                                         -- found msg for global update
                                         Listener.Global toGlobal ->

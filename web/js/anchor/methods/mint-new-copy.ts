@@ -1,7 +1,7 @@
 import {AnchorProvider, BN, Program, web3} from "@project-serum/anchor";
 import {Keypair, PublicKey} from "@solana/web3.js";
-import {CollectionAuthority, getAuthorityPda} from "../pda/authority-pda";
-import {deriveHandlePda} from "../pda/handle-pda";
+import {CollectionAuthority, getAuthorityPda, getManyAuthorityPdaForCollector} from "../pda/authority-pda";
+import {deriveHandlePda, getHandlePda} from "../pda/handle-pda";
 import {
     MPL_PREFIX,
     MPL_EDITION,
@@ -10,7 +10,8 @@ import {
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {DapCool} from "../idl";
-import {deriveCollectionPda, deriveCollectorPda, getCollectorPda} from "../pda/collector-pda";
+import {deriveCollectionPda, deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
+import {getAllCollectionsFromHandle} from "../pda/get-all-collections-from-handle";
 
 export async function mintNewCopy(
     app,
@@ -25,12 +26,18 @@ export async function mintNewCopy(
         program
     );
     // try getting collector
+    let collected: CollectionAuthority[]
     let collectorNextCollectionIndex: number;
     try {
+        // fetch collector
         const collector = await getCollectorPda(
             program,
             collectorPda
         );
+        // fetch all collected
+        const collectedPda = await getAllCollectionPda(provider, program, collector);
+        collected = await getManyAuthorityPdaForCollector(program, collectedPda);
+        // increment
         collectorNextCollectionIndex = collector.numCollected + 1;
     } catch (error) {
         console.log("could not find collector on-chain");
@@ -196,13 +203,30 @@ export async function mintNewCopy(
         newMint.publicKey,
         newMetadata
     );
+    // fetch collected
+    if (collectorNextCollectionIndex === 1) {
+        collected = [authority];
+    } else {
+        collected = collected.concat([authority]);
+    }
+    // fetch collections
+    const fetchedHandle = await getHandlePda(program, handlePda);
+    const collections = await getAllCollectionsFromHandle(program, fetchedHandle);
     // send success to elm
     app.ports.success.send(
         JSON.stringify(
             {
                 listener: "collector-collection-purchased",
                 more: JSON.stringify(
-                    authority
+                    {
+                        purchased: authority,
+                        global: {
+                            handle: handle,
+                            wallet: provider.wallet.publicKey.toString(),
+                            collections: collections,
+                            collected: collected
+                        }
+                    }
                 )
             }
         )

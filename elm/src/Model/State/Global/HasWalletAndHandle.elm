@@ -1,4 +1,4 @@
-module Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle, decode)
+module Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle, decode, decoder)
 
 import Json.Decode as Decode
 import Model.Collection as Collection exposing (Collection)

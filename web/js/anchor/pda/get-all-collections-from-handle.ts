@@ -3,6 +3,7 @@ import {CollectionAuthority, getAuthorityPda} from "./authority-pda";
 import {DapCool} from "../idl";
 import {Handle} from "./handle-pda";
 
+// TODO; batch
 export async function getAllCollectionsFromHandle(
     program: Program<DapCool>,
     handle: Handle
