@@ -10,6 +10,8 @@ import Model.State.Global.Global exposing (Global(..))
 import Model.State.Local.Local as Local
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
+import Msg.Creator.Creator as FromCreator
+import Msg.Creator.Existing.Existing as FromExisting
 import String as Wallet
 
 
@@ -166,9 +168,10 @@ viewGlobal global =
                     ]
                 , Html.div
                     []
-                    [ Html.a
-                        [ Local.href <| Local.Create (Creator.MaybeExisting withWallet.handle)
-                        , class "has-sky-blue-text"
+                    [ Html.button
+                        [ class "is-button-1"
+                        , onClick <| FromCreator <| FromCreator.Existing <|
+                            FromExisting.ViewAdminPage withWallet.handle withWallet.collections
                         ]
                         [ Html.text withWallet.handle
                         ]

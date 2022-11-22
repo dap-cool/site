@@ -3,8 +3,7 @@ module Model.State.Local.Local exposing (..)
 import Html
 import Html.Attributes
 import Model.Collector.Collector as Collector exposing (Collector)
-import Model.Creator.Creator as Creator exposing (Creator)
-import Model.Creator.New.New as NewCreator
+import Model.Creator.Creator exposing (Creator)
 import Url
 import Url.Parser as UrlParser exposing ((</>))
 
@@ -23,25 +22,15 @@ urlParser =
             (Collect (Collector.TypingHandle ""))
             UrlParser.top
         , UrlParser.map
-            (Collect (Collector.TypingHandle ""))
-            (UrlParser.s "creator")
-        , UrlParser.map
             (\handle -> Collect (Collector.MaybeExistingCreator handle))
-            (UrlParser.s "creator" </> UrlParser.string)
+            (UrlParser.string)
         , UrlParser.map
             (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
-            (UrlParser.s "creator" </> UrlParser.string </> UrlParser.int)
-
-        -- creator
+            (UrlParser.string </> UrlParser.int)
+        -- invalid literal
         , UrlParser.map
-            (Create Creator.Top)
-            (UrlParser.s "admin")
-        , UrlParser.map
-            (\handle -> Create (Creator.MaybeExisting handle))
-            (UrlParser.s "admin" </> UrlParser.string)
-        , UrlParser.map
-            (Create (Creator.New NewCreator.Top))
-            (UrlParser.s "new")
+            (Error "Invalid state; Click to homepage.")
+            (UrlParser.s "invalid")
         ]
 
 
@@ -65,24 +54,6 @@ parse url =
 path : Local -> String
 path local =
     case local of
-        Create creator ->
-            case creator of
-                Creator.Top ->
-                    "#/admin"
-
-                Creator.New NewCreator.Top ->
-                    "#/new"
-
-                Creator.MaybeExisting string ->
-                    String.concat
-                        [ "#/admin"
-                        , "/"
-                        , string
-                        ]
-
-                _ ->
-                    path (Create Creator.Top)
-
         Collect collector ->
             case collector of
                 Collector.MaybeExistingCreator string ->
@@ -103,7 +74,7 @@ path local =
                 _ ->
                     "#/creator"
 
-        Error _ ->
+        _ ->
             "#/invalid"
 
 

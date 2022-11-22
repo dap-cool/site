@@ -6,7 +6,7 @@ import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (New
 
 
 type Existing
-    = ConfirmHandle String
+    = ViewAdminPage
       -- new collection
     | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
@@ -19,9 +19,6 @@ type Existing
 toString : Existing -> String
 toString existing =
     case existing of
-        ConfirmHandle _ ->
-            "existing-creator-confirm-handle"
-
         NewCollectionForm form ->
             case form of
                 NewCollectionForm.Image ->

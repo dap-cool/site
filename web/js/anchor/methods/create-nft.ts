@@ -12,6 +12,8 @@ import {AnchorProvider, BN, Program} from "@project-serum/anchor";
 import {Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
 import {ShdwDrive} from "@shadow-drive/sdk";
 import {DapCool} from "../idl";
+import {getAllCollectionsFromHandle} from "../pda/get-all-collections-from-handle";
+import {getAllCollectionPda} from "../pda/collector-pda";
 
 export async function creatNft(
     app,
@@ -22,6 +24,12 @@ export async function creatNft(
     name: string,
     symbol: string
 ) {
+    // fetch all collections from handle
+    const collections = await getAllCollectionsFromHandle(program, handle);
+    // fetch all collected from creator pda
+    try {
+        const collectorPda // -- todo
+    }
     // derive authority pda
     const authorityIndex: number = handle.numCollections + 1;
     const authorityPda: PublicKey = await deriveAuthorityPda(program, handle.handle, authorityIndex);

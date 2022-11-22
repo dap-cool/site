@@ -3,14 +3,11 @@ module Model.Model exposing (Model, init)
 import Browser.Navigation as Nav
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collector.Collector as Collector
-import Model.Creator.Creator as Creator
 import Model.Handle as Handle
 import Model.State.Global.Global as Global
 import Model.State.Local.Local as Local exposing (Local)
 import Model.State.State exposing (State)
 import Msg.Collector.Collector as FromCollector
-import Msg.Creator.Creator as FromCreator
-import Msg.Creator.Existing.Existing as Existing
 import Msg.Msg exposing (Msg(..))
 import Sub.Sender.Ports exposing (sender)
 import Sub.Sender.Sender as Sender
@@ -57,15 +54,6 @@ init _ url key =
                 Sender.encode <|
                     { sender = Sender.Collect <| FromCollector.SelectCollection handle index
                     , more = AlmostExistingCollection.encode { handle = handle, index = index }
-                    }
-            )
-
-        Local.Create (Creator.MaybeExisting handle) ->
-            ( model
-            , sender <|
-                Sender.encode <|
-                    { sender = Sender.Create <| FromCreator.Existing <| Existing.ConfirmHandle handle
-                    , more = Handle.encode handle
                     }
             )
 

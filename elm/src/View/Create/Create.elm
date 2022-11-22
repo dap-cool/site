@@ -6,7 +6,6 @@ import Html.Events exposing (onClick, onInput)
 import Model.Collection as Collection
 import Model.Creator.Creator as Creator exposing (Creator(..))
 import Model.Creator.Existing.Existing as Existing
-import Model.Creator.Existing.HandleFormStatus as ExistingHandleFormStatus
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
 import Model.Handle as Handle
@@ -309,20 +308,19 @@ body global creator =
                                 ]
 
                 Existing existingCreator ->
-                    case ( global, existingCreator ) of
-                        ( Global.HasWalletAndHandle withWallet, Existing.Top ) ->
+                    case existingCreator of
+                        Existing.Top handle collections ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ View.Generic.Wallet.view withWallet.wallet
-                                , header
+                                [ header
                                 , Html.div
                                     []
                                     [ Html.text <|
                                         String.concat
                                             [ "authorized as:"
                                             , " "
-                                            , withWallet.handle
+                                            , handle
                                             ]
                                     ]
                                 , Html.div
@@ -338,10 +336,10 @@ body global creator =
                                         ]
                                     ]
                                 , View.Generic.Collection.Creator.Creator.viewMany
-                                    withWallet.collections
+                                    collections
                                 ]
 
-                        ( Global.HasWalletAndHandle withWallet, Existing.CreatingNewCollection newCollection ) ->
+                        Existing.CreatingNewCollection newCollection ->
                             case newCollection of
                                 NewCollection.Input form submitted ->
                                     let
