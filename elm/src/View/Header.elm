@@ -8,10 +8,10 @@ import Model.Creator.Creator as Creator
 import Model.Creator.New.New as NewCreator
 import Model.State.Global.Global exposing (Global(..))
 import Model.State.Local.Local as Local
-import Msg.Global as FromGlobal
-import Msg.Msg as Msg exposing (Msg(..))
 import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExisting
+import Msg.Global as FromGlobal
+import Msg.Msg as Msg exposing (Msg(..))
 import String as Wallet
 
 
@@ -154,7 +154,7 @@ viewGlobal global =
                     ]
                 ]
 
-        HasWalletAndHandle withWallet ->
+        HasWalletAndHandle hasWalletAndHandle ->
             Html.div
                 []
                 [ Html.div
@@ -163,17 +163,19 @@ viewGlobal global =
                         String.concat
                             [ "wallet:"
                             , " "
-                            , Wallet.trim withWallet.wallet
+                            , Wallet.trim hasWalletAndHandle.wallet
                             ]
                     ]
                 , Html.div
                     []
                     [ Html.button
                         [ class "is-button-1"
-                        , onClick <| FromCreator <| FromCreator.Existing <|
-                            FromExisting.ViewAdminPage withWallet.handle withWallet.collections
+                        , onClick <|
+                            FromCreator <|
+                                FromCreator.Existing hasWalletAndHandle <|
+                                    FromExisting.ViewAdminPage
                         ]
-                        [ Html.text withWallet.handle
+                        [ Html.text hasWalletAndHandle.handle
                         ]
                     ]
                 ]

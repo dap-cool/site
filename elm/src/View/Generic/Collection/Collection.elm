@@ -9,8 +9,8 @@ import Msg.Msg exposing (Msg(..))
 view : Collection -> Html Msg
 view collection =
     let
-        nop : a -> Html msg
-        nop _ =
+        nop : Html msg
+        nop =
             Html.div
                 []
                 []
@@ -24,16 +24,16 @@ viewMany collections f =
         []
     <|
         List.map
-            (\c -> view_ c f)
+            (\c -> view_ c <| f c)
             collections
 
 
-view_ : Collection -> (Collection -> Html Msg) -> Html Msg
+view_ : Collection -> Html Msg -> Html Msg
 view_ collection select =
     Html.div
         [ class "has-border-2 px-2 py-2"
         ]
-        [ select collection
+        [ select
         , Html.div
             [ class "has-border-2 px-2 py-2 mb-2"
             ]

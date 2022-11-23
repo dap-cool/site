@@ -4,14 +4,15 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
-import Json.Decode as Decode
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collection as Collection
 import Model.Collector.Collector as Collector
+import Model.Collector.WithCollection as WithCollectionForCollector
 import Model.Collector.WithCollections as WithCollections
 import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.NewCollection as NewCollection
+import Model.Creator.Existing.WithCollection as WithCollectionForCreator
 import Model.Creator.New.New as NewCreator
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
@@ -19,7 +20,6 @@ import Model.State.Global.Global as Global
 import Model.State.Global.HasWallet as HasWallet
 import Model.State.Global.HasWalletAndHandle as HasWalletAndHandle
 import Model.State.Local.Local as Local exposing (Local)
-import Model.WithCollection as WithCollection
 import Msg.Collector.Collector as FromCollector
 import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExistingCreator
@@ -38,7 +38,6 @@ import Sub.Sender.Ports exposing (sender)
 import Sub.Sender.Sender as Sender
 import Sub.Sub as Sub
 import Url
-import Util.Decode as Util
 import View.Collect.Collect
 import View.Create.Create
 import View.Error.Error
@@ -182,8 +181,7 @@ update msg model =
                                                 ExistingCreator.Top
                                     , global = model.state.global
                                     }
-
-                            }
+                              }
                             , Cmd.none
                             )
 
@@ -438,12 +436,13 @@ update msg model =
                                                                                                 ExistingCreator.CreatingNewCollection <|
                                                                                                     NewCollection.HasCreateNft
                                                                                                         withCollection.collection
-                                                                                    , global = Global.HasWalletAndHandle
-                                                                                        withCollection.global
+                                                                                    , global =
+                                                                                        Global.HasWalletAndHandle
+                                                                                            withCollection.global
                                                                                     }
                                                                             }
-                                                                    in -- TODO; encode js
-                                                                    Listener.decode model json WithCollection.decode f
+                                                                    in
+                                                                    Listener.decode model json WithCollectionForCreator.decode f
 
                                                                 ToExistingCreator.MarkedNewCollection ->
                                                                     let
@@ -456,12 +455,13 @@ update msg model =
                                                                                                 ExistingCreator.CreatingNewCollection <|
                                                                                                     NewCollection.Done
                                                                                                         withCollection.collection
-                                                                                    , global = Global.HasWalletAndHandle
-                                                                                        withCollection.global
+                                                                                    , global =
+                                                                                        Global.HasWalletAndHandle
+                                                                                            withCollection.global
                                                                                     }
                                                                             }
                                                                     in
-                                                                    Listener.decode model json WithCollection.decode f
+                                                                    Listener.decode model json WithCollectionForCreator.decode f
 
                                                 -- found msg for collector
                                                 ToLocal.Collect toCollector ->
@@ -527,20 +527,32 @@ update msg model =
 
                                                         ToCollector.CollectionPurchased ->
                                                             let
+                                                                local collection =
+                                                                    Local.Collect <|
+                                                                        Collector.PurchaseSuccess
+                                                                            collection
+
                                                                 f withCollection =
-                                                                    { model
-                                                                        | state =
-                                                                            { local =
-                                                                                Local.Collect <|
-                                                                                    Collector.PurchaseSuccess
-                                                                                        withCollection.collection
-                                                                            , global =
-                                                                                Global.HasWalletAndHandle
-                                                                                    withCollection.global
+                                                                    case withCollection.global of
+                                                                        WithCollectionForCollector.HasWallet g ->
+                                                                            { model
+                                                                                | state =
+                                                                                    { local = local withCollection.collection
+                                                                                    , global =
+                                                                                        Global.HasWallet g
+                                                                                    }
                                                                             }
-                                                                    }
+
+                                                                        WithCollectionForCollector.HasWalletAndHandle g ->
+                                                                            { model
+                                                                                | state =
+                                                                                    { local = local withCollection.collection
+                                                                                    , global =
+                                                                                        Global.HasWalletAndHandle g
+                                                                                    }
+                                                                            }
                                                             in
-                                                            Listener.decode model json WithCollection.decode f
+                                                            Listener.decode model json WithCollectionForCollector.decode f
 
                                         -- found msg for global update
                                         Listener.Global toGlobal ->

@@ -1,5 +1,5 @@
-import {deriveHandlePda, getHandlePda, Handle} from "../pda/handle-pda";
-import {CollectionAuthority, deriveAuthorityPda} from "../pda/authority-pda";
+import {getHandlePda, Handle} from "../pda/handle-pda";
+import {CollectionAuthority, deriveAuthorityPda, getManyAuthorityPdaForCollector} from "../pda/authority-pda";
 import {
     MPL_PREFIX,
     MPL_EDITION,
@@ -13,7 +13,8 @@ import {Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from 
 import {ShdwDrive} from "@shadow-drive/sdk";
 import {DapCool} from "../idl";
 import {getAllCollectionsFromHandle} from "../pda/get-all-collections-from-handle";
-import {getAllCollectionPda} from "../pda/collector-pda";
+import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
+import {Creator} from "../pda/creator-pda";
 
 export async function creatNft(
     app,
@@ -25,10 +26,17 @@ export async function creatNft(
     symbol: string
 ) {
     // fetch all collections from handle
-    const collections = await getAllCollectionsFromHandle(program, handle);
+    let collections = await getAllCollectionsFromHandle(program, handle);
     // fetch all collected from creator pda
+    let collected;
     try {
-        const collectorPda // -- todo
+        const collectorPda = await deriveCollectorPda(provider, program);
+        const collector = await getCollectorPda(program, collectorPda);
+        const collectedPda = await getAllCollectionPda(provider, program, collector);
+        collected = await getManyAuthorityPdaForCollector(program, collectedPda);
+    } catch (error) {
+        console.log("could not find collector on-chain");
+        collected = [];
     }
     // derive authority pda
     const authorityIndex: number = handle.numCollections + 1;
@@ -104,57 +112,62 @@ export async function creatNft(
     // fetch pda
     console.log("mint", mint.publicKey.toString());
     // build response for elm
-    const response = {
+    const justCreated = {
         handle: handle.handle,
         index: authorityIndex,
         name: name,
         symbol: symbol,
         mint: mint.publicKey,
+        collection: null,
         numMinted: 0,
-        pda: authorityPda.toString()
-    }
+        pda: authorityPda
+    } as CollectionAuthority;
+    // concat
+    collections = collections.concat([justCreated]);
+    // send to elm
     app.ports.success.send(
         JSON.stringify(
             {
                 listener: "creator-created-new-collection",
                 more: JSON.stringify(
-                    response
+                    {
+                        global: {
+                            handle: handle.handle,
+                            wallet: provider.wallet.publicKey.toString(),
+                            collections: collections,
+                            collected: collected,
+                        },
+                        collection: justCreated
+                    }
                 )
             }
         )
     );
 }
 
-async function uploadMetadata(
-    connection: Connection,
-    uploader: any,
-    handle: string,
-    index: number,
-    name: string,
-    symbol: string
-): Promise<string> {
-    // read logo from input
-    const logo: File = readLogo();
-    // provision space
-    const provisioned: { drive: ShdwDrive; account: PublicKey } = await provision(connection, uploader, logo.size);
-    // upload logo
-    const shdwUrl: string = await uploadFile(logo, provisioned.drive, provisioned.account);
-    const logoUrl: string = shdwUrl + logo.name;
-    // build metadata
-    const metadata: File = buildMetaData(handle, index, name, symbol, "description", logoUrl);
-    // upload metadata
-    await uploadFile(metadata, provisioned.drive, provisioned.account);
-    return (shdwUrl + "meta.json")
-}
-
 export async function createCollection(
     app,
     provider: AnchorProvider,
     program: Program<DapCool>,
-    handle: PublicKey,
+    creator: Creator,
     authority: CollectionAuthority,
     index: number
 ) {
+    // fetch handle obj
+    const handleObj = await getHandlePda(program, creator.handle);
+    // fetch all collections from handle
+    let collections = await getAllCollectionsFromHandle(program, handleObj);
+    // fetch all collected from creator pda
+    let collected;
+    try {
+        const collectorPda = await deriveCollectorPda(provider, program);
+        const collector = await getCollectorPda(program, collectorPda);
+        const collectedPda = await getAllCollectionPda(provider, program, collector);
+        collected = await getManyAuthorityPdaForCollector(program, collectedPda);
+    } catch (error) {
+        console.log("could not find collector on-chain");
+        collected = [];
+    }
     // derive key-pair for collection
     const collection = Keypair.generate();
     // derive collection metadata
@@ -193,7 +206,7 @@ export async function createCollection(
         .createCollection(index as any)
         .accounts(
             {
-                handle: handle,
+                handle: creator.handle,
                 authority: authority.pda,
                 mint: authority.mint,
                 collection: collection.publicKey,
@@ -211,10 +224,8 @@ export async function createCollection(
         .signers([collection])
         .rpc()
     console.log("collection", collection.publicKey.toString());
-    // fetch handle obj
-    const handleObj = await getHandlePda(program, handle);
     // build response for elm
-    const response = {
+    const justMarked = {
         handle: handleObj.handle,
         name: authority.name,
         symbol: authority.symbol,
@@ -222,17 +233,49 @@ export async function createCollection(
         mint: authority.mint,
         collection: collection.publicKey,
         numMinted: 0,
-        pda: authority.pda.toString()
-    }
+        pda: authority.pda
+    } as CollectionAuthority;
+    // concat
+    collections = collections.concat([justMarked]);
     // send success to elm
     app.ports.success.send(
         JSON.stringify(
             {
                 listener: "creator-marked-new-collection",
                 more: JSON.stringify(
-                    response
+                    {
+                        global: {
+                            handle: handleObj.handle,
+                            wallet: provider.wallet.publicKey.toString(),
+                            collections: collections,
+                            collected: collected,
+                        },
+                        collection: justMarked
+                    }
                 )
             }
         )
     );
+}
+
+async function uploadMetadata(
+    connection: Connection,
+    uploader: any,
+    handle: string,
+    index: number,
+    name: string,
+    symbol: string
+): Promise<string> {
+    // read logo from input
+    const logo: File = readLogo();
+    // provision space
+    const provisioned: { drive: ShdwDrive; account: PublicKey } = await provision(connection, uploader, logo.size);
+    // upload logo
+    const shdwUrl: string = await uploadFile(logo, provisioned.drive, provisioned.account);
+    const logoUrl: string = shdwUrl + logo.name;
+    // build metadata
+    const metadata: File = buildMetaData(handle, index, name, symbol, "description", logoUrl);
+    // upload metadata
+    await uploadFile(metadata, provisioned.drive, provisioned.account);
+    return (shdwUrl + "meta.json")
 }

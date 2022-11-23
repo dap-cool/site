@@ -11,7 +11,7 @@ export interface CollectionAuthority {
     index: number
     // for other pda derivations
     mint: PublicKey
-    collection: PublicKey
+    collection: PublicKey | null
     numMinted: number // decoded as BN
     // pda for program invocation
     pda: PublicKey

@@ -1,17 +1,18 @@
-module Model.WithCollection exposing (WithCollection, decode)
+module Model.Creator.Existing.WithCollection exposing (WithCollection, decode)
 
 import Json.Decode as Decode
 import Model.Collection as Collection exposing (Collection)
 import Model.State.Global.HasWalletAndHandle as HasWalletAndHandle exposing (HasWalletAndHandle)
 import Util.Decode as Util
 
+
 type alias WithCollection =
-    { collection: Collection
-    , global: HasWalletAndHandle
+    { collection : Collection
+    , global : HasWalletAndHandle
     }
 
 
-decode: String -> Result String WithCollection
+decode : String -> Result String WithCollection
 decode string =
     Util.decode string decoder identity
 

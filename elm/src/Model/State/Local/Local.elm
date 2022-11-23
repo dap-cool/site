@@ -23,10 +23,11 @@ urlParser =
             UrlParser.top
         , UrlParser.map
             (\handle -> Collect (Collector.MaybeExistingCreator handle))
-            (UrlParser.string)
+            UrlParser.string
         , UrlParser.map
             (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
             (UrlParser.string </> UrlParser.int)
+
         -- invalid literal
         , UrlParser.map
             (Error "Invalid state; Click to homepage.")
@@ -58,21 +59,20 @@ path local =
             case collector of
                 Collector.MaybeExistingCreator string ->
                     String.concat
-                        [ "#/creator"
-                        , "/"
+                        [ "#/"
                         , string
                         ]
 
                 Collector.MaybeExistingCollection string int ->
                     String.join
                         "/"
-                        [ "#/creator"
+                        [ "#"
                         , string
                         , String.fromInt int
                         ]
 
                 _ ->
-                    "#/creator"
+                    "#/invalid"
 
         _ ->
             "#/invalid"

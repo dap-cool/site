@@ -241,7 +241,7 @@ export async function main(app, json) {
                 app,
                 pp.provider,
                 pp.program,
-                creator.handle,
+                creator,
                 authorityObj,
                 more.index
             );

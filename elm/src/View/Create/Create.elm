@@ -17,7 +17,6 @@ import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
 import Msg.Creator.New.New as NewMsg
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Creator.Creator
-import View.Generic.Wallet
 
 
 body : Global -> Creator -> Html Msg
@@ -307,9 +306,9 @@ body global creator =
                                     ]
                                 ]
 
-                Existing existingCreator ->
+                Existing fromGlobal existingCreator ->
                     case existingCreator of
-                        Existing.Top handle collections ->
+                        Existing.Top ->
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
@@ -320,7 +319,7 @@ body global creator =
                                         String.concat
                                             [ "authorized as:"
                                             , " "
-                                            , handle
+                                            , fromGlobal.handle
                                             ]
                                     ]
                                 , Html.div
@@ -329,14 +328,15 @@ body global creator =
                                         [ class "is-button-1"
                                         , onClick <|
                                             FromCreator <|
-                                                CreatorMsg.Existing <|
+                                                CreatorMsg.Existing fromGlobal <|
                                                     ExistingMsg.StartCreatingNewCollection
                                         ]
                                         [ Html.text "create new collection"
                                         ]
                                     ]
                                 , View.Generic.Collection.Creator.Creator.viewMany
-                                    collections
+                                    fromGlobal
+                                    fromGlobal.collections
                                 ]
 
                         Existing.CreatingNewCollection newCollection ->
@@ -358,7 +358,7 @@ body global creator =
                                                             ]
                                                     , onClick <|
                                                         FromCreator <|
-                                                            CreatorMsg.Existing <|
+                                                            CreatorMsg.Existing fromGlobal <|
                                                                 ExistingMsg.NewCollectionForm
                                                                     NewCollectionForm.Image
                                                     ]
@@ -397,7 +397,7 @@ body global creator =
                                                                     , onInput <|
                                                                         \s ->
                                                                             FromCreator <|
-                                                                                CreatorMsg.Existing <|
+                                                                                CreatorMsg.Existing fromGlobal <|
                                                                                     ExistingMsg.NewCollectionForm <|
                                                                                         NewCollectionForm.Name s form
                                                                     ]
@@ -437,7 +437,7 @@ body global creator =
                                                                     , onInput <|
                                                                         \s ->
                                                                             FromCreator <|
-                                                                                CreatorMsg.Existing <|
+                                                                                CreatorMsg.Existing fromGlobal <|
                                                                                     ExistingMsg.NewCollectionForm <|
                                                                                         NewCollectionForm.Symbol
                                                                                             (String.toUpper s)
@@ -479,7 +479,7 @@ body global creator =
                                                                     [ class "is-button-1"
                                                                     , onClick <|
                                                                         FromCreator <|
-                                                                            CreatorMsg.Existing <|
+                                                                            CreatorMsg.Existing fromGlobal <|
                                                                                 ExistingMsg.CreateNewCollection form
                                                                     ]
                                                                     [ Html.text "create"
@@ -534,7 +534,7 @@ body global creator =
                                                     [ class "is-button-1"
                                                     , onClick <|
                                                         FromCreator <|
-                                                            CreatorMsg.Existing <|
+                                                            CreatorMsg.Existing fromGlobal <|
                                                                 ExistingMsg.MarkNewCollection collection
                                                     ]
                                                     [ Html.text "mark collection"
@@ -571,16 +571,18 @@ body global creator =
                                             collection
                                         , Html.div
                                             []
-                                            [ Html.a
-                                                [ Local.href <|
-                                                    Local.Create (Creator.MaybeExisting withWallet.handle)
+                                            [ Html.button
+                                                [ onClick <|
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing fromGlobal <|
+                                                            ExistingMsg.ViewAdminPage
                                                 ]
                                                 [ Html.text "back 2 collections 🔙"
                                                 ]
                                             ]
                                         ]
 
-                        ( Global.HasWalletAndHandle withWallet, Existing.SelectedCollection collection ) ->
+                        Existing.SelectedCollection collection ->
                             let
                                 button =
                                     case Collection.isEmpty collection of
@@ -597,7 +599,7 @@ body global creator =
                                                         [ class "is-button-1"
                                                         , onClick <|
                                                             FromCreator <|
-                                                                CreatorMsg.Existing <|
+                                                                CreatorMsg.Existing fromGlobal <|
                                                                     ExistingMsg.MarkNewCollection collection
                                                         ]
                                                         [ Html.text "mark collection"
@@ -613,90 +615,10 @@ body global creator =
                             Html.div
                                 [ class "has-border-2 px-2 pt-2 pb-6"
                                 ]
-                                [ View.Generic.Wallet.view withWallet.wallet
-                                , header
+                                [ header
                                 , View.Generic.Collection.Creator.Creator.view collection
                                 , button
                                 ]
-
-                        ( Global.NoWalletYet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.WaitingForHandleConfirmation ) ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ header
-                                , Html.div
-                                    [ class "is-loading"
-                                    ]
-                                    []
-                                ]
-
-                        ( Global.NoWalletYet, Existing.AuthorizingFromUrl (ExistingHandleFormStatus.HandleInvalid string) ) ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ header
-                                , Html.div
-                                    [ class "has-border-2 px-2 py-2"
-                                    ]
-                                    [ Html.text <|
-                                        String.concat
-                                            [ "input handle found to be invalid:"
-                                            , " "
-                                            , string
-                                            ]
-                                    ]
-                                ]
-
-                        ( Global.NoWalletYet, Existing.AuthorizingFromUrl (ExistingHandleFormStatus.HandleDoesNotExist string) ) ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ header
-                                , Html.div
-                                    [ class "has-border-2 px-2 py-2"
-                                    ]
-                                    [ Html.text <|
-                                        String.concat
-                                            [ "input handle does-not-exist:"
-                                            , " "
-                                            , string
-                                            ]
-                                    ]
-                                ]
-
-                        ( Global.HasWalletAndHandle withWallet, Existing.AuthorizingFromUrl ExistingHandleFormStatus.UnAuthorized ) ->
-                            Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
-                                [ View.Generic.Wallet.view withWallet.wallet
-                                , header
-                                , Html.div
-                                    [ class "has-border-2 px-2 py-2"
-                                    ]
-                                    [ Html.text <|
-                                        String.concat
-                                            [ "connected wallet is not authorized to manage handle:"
-                                            , " "
-                                            , withWallet.handle
-                                            ]
-                                    ]
-                                ]
-
-                        _ ->
-                            Html.div
-                                []
-                                [ Html.text "invalid state"
-                                ]
-
-                MaybeExisting _ ->
-                    Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ Html.div
-                            [ class "is-loading"
-                            ]
-                            []
-                        ]
     in
     Html.div
         [ class "container"

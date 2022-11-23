@@ -12,6 +12,7 @@ import {
 import {DapCool} from "../idl";
 import {deriveCollectionPda, deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 import {getAllCollectionsFromHandle} from "../pda/get-all-collections-from-handle";
+import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
 
 export async function mintNewCopy(
     app,
@@ -209,9 +210,26 @@ export async function mintNewCopy(
     } else {
         collected = collected.concat([authority]);
     }
-    // fetch collections
-    const fetchedHandle = await getHandlePda(program, handlePda);
-    const collections = await getAllCollectionsFromHandle(program, fetchedHandle);
+    // fetch collections & set global
+    let global;
+    try {
+        const creatorPda = await deriveCreatorPda(provider, program);
+        const creator = await getCreatorPda(program, creatorPda);
+        const fetchedHandle = await getHandlePda(program, creator.handle);
+        const collections = await getAllCollectionsFromHandle(program, fetchedHandle);
+        global = {
+            handle: fetchedHandle.handle,
+            wallet: provider.wallet.publicKey.toString(),
+            collections: collections,
+            collected: collected
+        };
+    } catch (error) {
+        console.log("could not find creator on-chain");
+        global = {
+            wallet: provider.wallet.publicKey.toString(),
+            collected: collected
+        }
+    }
     // send success to elm
     app.ports.success.send(
         JSON.stringify(
@@ -219,13 +237,8 @@ export async function mintNewCopy(
                 listener: "collector-collection-purchased",
                 more: JSON.stringify(
                     {
-                        purchased: authority,
-                        global: {
-                            handle: handle,
-                            wallet: provider.wallet.publicKey.toString(),
-                            collections: collections,
-                            collected: collected
-                        }
+                        collection: authority,
+                        global: global
                     }
                 )
             }
