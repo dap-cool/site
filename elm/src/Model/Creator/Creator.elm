@@ -6,6 +6,5 @@ import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
 
 
 type Creator
-    = Top
-    | New New
+    = New New
     | Existing HasWalletAndHandle Existing

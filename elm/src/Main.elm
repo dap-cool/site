@@ -669,7 +669,7 @@ view model =
         html =
             case model.state.local of
                 Local.Create creator ->
-                    hero <| View.Create.Create.body model.state.global creator
+                    hero <| View.Create.Create.body creator
 
                 Local.Collect collector ->
                     hero <| View.Collect.Collect.body model.state.global collector

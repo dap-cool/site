@@ -2,20 +2,18 @@ import {getPhantom, getPhantomProvider} from "./phantom";
 import {getEphemeralPP, getPP} from "./anchor/util/context";
 import {
     validateNewHandle,
-    validateExistingHandle,
     validateHandleForCollector,
     assertHandlePdaDoesNotExistAlready,
     assertHandlePdaDoesExistAlreadyForCollector,
-    assertHandlePdaDoesExistAlreadyForCreator, getHandlePda
+    getHandlePda
 } from "./anchor/pda/handle-pda";
 import {getAllCollectionsFromHandle} from "./anchor/pda/get-all-collections-from-handle";
-import {decodeAuthorityPda, getAuthorityPda, getManyAuthorityPdaForCollector} from "./anchor/pda/authority-pda";
+import {decodeAuthorityPda, getAuthorityPda} from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
-import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "./anchor/pda/collector-pda";
 
 // init phantom
 let phantom = null;
@@ -36,7 +34,7 @@ export async function main(app, json) {
                     pp.provider,
                     pp.program
                 );
-                window.location = "#/creator" // top
+                window.location = "#/" // top
             }
         });
     }
@@ -102,85 +100,6 @@ export async function main(app, json) {
                             validated,
                             handle
                         );
-                    }
-                }
-            }
-            // or existing creator confirm handle
-        } else if (sender === "existing-creator-confirm-handle") {
-            // parse more json
-            const more = JSON.parse(parsed.more);
-            // validate handle
-            const validated = validateExistingHandle(
-                app,
-                more.handle
-            );
-            if (validated) {
-                // get ephemeral provider & program
-                const ephemeralPP = getEphemeralPP();
-                // asert handle pda exists
-                const handle = await assertHandlePdaDoesExistAlreadyForCreator(
-                    app,
-                    ephemeralPP.program,
-                    validated
-                );
-                // authorize pda
-                if (handle) {
-                    // get phantom
-                    phantom = await getPhantom(app);
-                    if (phantom) {
-                        // get provider & program
-                        const pp = getPP(phantom);
-                        // get collections
-                        const collections = await getAllCollectionsFromHandle(pp.program, handle);
-                        // derive collector pda
-                        const collectorPda = await deriveCollectorPda(pp.provider, pp.program);
-                        let collected;
-                        try {
-                            // fetch collector
-                            const collector = await getCollectorPda(pp.program, collectorPda);
-                            // fetch collected
-                            const collectedPda = await getAllCollectionPda(pp.provider, pp.program, collector);
-                            collected = await getManyAuthorityPdaForCollector(pp.program, collectedPda);
-                        } catch (error) {
-                            console.log("could not find collector on-chain");
-                            collected = [];
-                        }
-                        // assert authority is current user
-                        const current = pp.provider.wallet.publicKey.toString();
-                        if (handle.authority.toString() === current) {
-                            app.ports.success.send(
-                                JSON.stringify(
-                                    {
-                                        listener: "creator-authorized",
-                                        more: JSON.stringify(
-                                            {
-                                                handle: validated,
-                                                wallet: current,
-                                                collections: collections,
-                                                collected: collected
-                                            }
-                                        )
-                                    }
-                                )
-                            );
-                        } else {
-                            console.log("user unauthorized");
-                            app.ports.success.send(
-                                JSON.stringify(
-                                    {
-                                        listener: "creator-handle-unauthorized",
-                                        more: JSON.stringify(
-                                            {
-                                                handle: validated,
-                                                wallet: current,
-                                                collections: collections,
-                                                collected: collected
-                                            }
-                                        )
-                                    }
-                                )
-                            );
-                        }
                     }
                 }
             }

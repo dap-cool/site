@@ -65,14 +65,6 @@ export async function assertHandlePdaDoesNotExistAlready(
     return handlePda
 }
 
-export async function assertHandlePdaDoesExistAlreadyForCreator(
-    app,
-    program: Program<DapCool>,
-    handle: string
-): Promise<Handle | null> {
-    return await assertHandlePdaDoesExistAlready(app, program, handle, "creator-handle-dne")
-}
-
 export async function assertHandlePdaDoesExistAlreadyForCollector(
     app,
     program: Program<DapCool>,
@@ -113,10 +105,6 @@ async function assertHandlePdaDoesExistAlready(
 
 export function validateNewHandle(app, handle: string): string | null {
     return validateHandle(app, handle, "new-creator-handle-invalid")
-}
-
-export function validateExistingHandle(app, handle: string): string | null {
-    return validateHandle(app, handle, "existing-creator-handle-invalid")
 }
 
 export function validateHandleForCollector(app, handle: string): string | null {

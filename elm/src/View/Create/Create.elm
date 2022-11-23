@@ -1,16 +1,14 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (accept, class, href, id, placeholder, src, target, type_, width)
+import Html.Attributes exposing (accept, class, id, placeholder, src, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection as Collection
-import Model.Creator.Creator as Creator exposing (Creator(..))
+import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
 import Model.Handle as Handle
-import Model.State.Global.Global as Global exposing (Global)
-import Model.State.Local.Local as Local
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -19,115 +17,11 @@ import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Creator.Creator
 
 
-body : Global -> Creator -> Html Msg
-body global creator =
+body : Creator -> Html Msg
+body creator =
     let
         html =
             case creator of
-                Top ->
-                    Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ header
-                        , Html.div
-                            [ class "pb-2"
-                            ]
-                            [ Html.text
-                                """☑️
-                                """
-                            , Html.text
-                                """Create new fungible & non-fungible
-                                """
-                            , Html.a
-                                [ class "has-sky-blue-text"
-                                , href "https://spl.solana.com/token"
-                                , target "_blank"
-                                ]
-                                [ Html.text "spl-tokens"
-                                ]
-                            ]
-                        , Html.div
-                            [ class "pb-2"
-                            ]
-                            [ Html.text
-                                """☑️
-                                """
-                            , Html.text
-                                """Upload
-                                """
-                            , Html.a
-                                [ class "has-sky-blue-text"
-                                , href "https://litprotocol.com/"
-                                , target "_blank"
-                                ]
-                                [ Html.text "token-gated"
-                                ]
-                            , Html.text
-                                """ files for your community
-                                """
-                            ]
-                        , Html.div
-                            [ class "pb-2"
-                            ]
-                            [ Html.text
-                                """☑️
-                                """
-                            , Html.text
-                                """Source
-                                """
-                            , Html.a
-                                [ class "has-sky-blue-text"
-                                , href "https://docs.metaplex.com/programs/hydra/intro"
-                                , target "_blank"
-                                ]
-                                [ Html.text "crowd-funding"
-                                ]
-                            , Html.text
-                                """ for new projects
-                                """
-                            ]
-                        , Html.div
-                            [ class "pb-4"
-                            ]
-                            [ Html.text
-                                """☑️
-                                """
-                            , Html.text
-                                """Customize your own
-                                """
-                            , Html.a
-                                [ class "has-sky-blue-text"
-                                , href "https://solana.com/"
-                                , target "_blank"
-                                ]
-                                [ Html.text "on-chain"
-                                ]
-                            , Html.text
-                                """ profile to highlight your work
-                                """
-                            ]
-                        , Html.div
-                            []
-                            [ Html.text
-                                """Login as
-                                """
-                            , Html.button
-                                [ class "is-button-1" -- TODO
-                                ]
-                                [ Html.text "existing creator"
-                                ]
-                            , Html.text
-                                """ or get started with a
-                                """
-                            , Html.button
-                                [ class "is-button-1"
-                                , onClick <| FromCreator <| CreatorMsg.New <| NewMsg.StartHandleForm
-                                ]
-                                [ Html.text "new profile"
-                                ]
-                            ]
-                        ]
-
                 New newCreator ->
                     case newCreator of
                         New.Top ->

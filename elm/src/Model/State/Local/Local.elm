@@ -17,8 +17,13 @@ type Local
 urlParser : UrlParser.Parser (Local -> c) c
 urlParser =
     UrlParser.oneOf
+        [ -- invalid literal
+          UrlParser.map
+            (Error "Invalid state; Click to homepage.")
+            (UrlParser.s "invalid")
+
         -- collector
-        [ UrlParser.map
+        , UrlParser.map
             (Collect (Collector.TypingHandle ""))
             UrlParser.top
         , UrlParser.map
@@ -27,11 +32,6 @@ urlParser =
         , UrlParser.map
             (\handle index -> Collect (Collector.MaybeExistingCollection handle index))
             (UrlParser.string </> UrlParser.int)
-
-        -- invalid literal
-        , UrlParser.map
-            (Error "Invalid state; Click to homepage.")
-            (UrlParser.s "invalid")
         ]
 
 
@@ -57,6 +57,10 @@ path local =
     case local of
         Collect collector ->
             case collector of
+                Collector.TypingHandle "" ->
+                    "#/"
+
+                -- top
                 Collector.MaybeExistingCreator string ->
                     String.concat
                         [ "#/"
