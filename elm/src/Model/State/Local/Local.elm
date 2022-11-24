@@ -3,7 +3,8 @@ module Model.State.Local.Local exposing (..)
 import Html
 import Html.Attributes
 import Model.Collector.Collector as Collector exposing (Collector)
-import Model.Creator.Creator exposing (Creator)
+import Model.Creator.Creator as Creator exposing (Creator)
+import Model.Creator.New.New as NewCreator
 import Url
 import Url.Parser as UrlParser exposing ((</>))
 
@@ -21,6 +22,11 @@ urlParser =
           UrlParser.map
             (Error "Invalid state; Click to homepage.")
             (UrlParser.s "invalid")
+
+        -- creator
+        , UrlParser.map
+            (Create (Creator.New NewCreator.Top))
+            (UrlParser.s "admin")
 
         -- collector
         , UrlParser.map
@@ -55,6 +61,9 @@ parse url =
 path : Local -> String
 path local =
     case local of
+        Create (Creator.New NewCreator.Top) ->
+            "#/admin"
+
         Collect collector ->
             case collector of
                 Collector.TypingHandle "" ->

@@ -168,12 +168,9 @@ viewGlobal global =
                     ]
                 , Html.div
                     []
-                    [ Html.button
-                        [ class "is-button-1"
-                        , onClick <|
-                            FromCreator <|
-                                FromCreator.Existing hasWalletAndHandle <|
-                                    FromExisting.ViewAdminPage
+                    [ Html.a
+                        [ Local.href <| Local.Create (Creator.New NewCreator.Top)
+                        , class "has-sky-blue-text"
                         ]
                         [ Html.text hasWalletAndHandle.handle
                         ]

@@ -5,10 +5,10 @@ import Model.Creator.Existing.NewCollection as NewCollection
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (NewCollectionForm)
 
 
-type Existing
-    = ViewAdminPage
-      -- new collection
-    | StartCreatingNewCollection
+type
+    Existing
+    -- new collection
+    = StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
     | CreateNewCollection NewCollection.Form
     | MarkNewCollection Collection

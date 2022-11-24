@@ -83,6 +83,28 @@ update msg model =
                     }
             in
             case local of
+                Local.Create _ ->
+                    case model.state.global of
+                        Global.HasWalletAndHandle hasWalletAndHandle ->
+                            ( { model
+                                | state =
+                                    { local = Local.Create <| Creator.Existing hasWalletAndHandle <| ExistingCreator.Top
+                                    , global = model.state.global
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
+                        _ ->
+                            ( { model
+                                | state =
+                                    { local = Local.Create <| Creator.New <| NewCreator.Top
+                                    , global = model.state.global
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
                 Local.Collect (Collector.MaybeExistingCreator handle) ->
                     ( bump
                     , Cmd.batch
@@ -172,19 +194,6 @@ update msg model =
 
                 FromCreator.Existing hasWalletAndHandle existing ->
                     case existing of
-                        FromExistingCreator.ViewAdminPage ->
-                            ( { model
-                                | state =
-                                    { local =
-                                        Local.Create <|
-                                            Creator.Existing hasWalletAndHandle <|
-                                                ExistingCreator.Top
-                                    , global = model.state.global
-                                    }
-                              }
-                            , Cmd.none
-                            )
-
                         FromExistingCreator.StartCreatingNewCollection ->
                             ( { model
                                 | state =

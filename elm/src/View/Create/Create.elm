@@ -9,6 +9,7 @@ import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
 import Model.Handle as Handle
+import Model.State.Local.Local as Local
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -466,10 +467,8 @@ body creator =
                                         , Html.div
                                             []
                                             [ Html.button
-                                                [ onClick <|
-                                                    FromCreator <|
-                                                        CreatorMsg.Existing fromGlobal <|
-                                                            ExistingMsg.ViewAdminPage
+                                                [ Local.href <| Local.Create (New New.Top)
+                                                , class "has-sky-blue-text"
                                                 ]
                                                 [ Html.text "back 2 collections 🔙"
                                                 ]
