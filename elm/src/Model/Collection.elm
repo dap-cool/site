@@ -1,8 +1,9 @@
-module Model.Collection exposing (Collection, decode, decodeList, decoder, encode, encoder, isEmpty)
+module Model.Collection exposing (Collection, decode, decodeList, decoder, encode, encoder, intersection, isEmpty)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Model.Mint exposing (Mint)
+import Set
 import Util.Decode as Util
 
 
@@ -83,3 +84,21 @@ isEmpty collection =
 empty : String
 empty =
     "11111111111111111111111111111111"
+
+
+intersection : List Collection -> List Collection -> List Collection
+intersection left right =
+    let
+        leftMintAddresses : Set.Set Mint
+        leftMintAddresses =
+            List.map .mint left
+                |> Set.fromList
+
+        intersection_ =
+            List.filter
+                (\c ->
+                    Set.member (.mint c) leftMintAddresses
+                )
+                right
+    in
+    intersection_

@@ -49,4 +49,9 @@ view_ collection select =
             ]
             [ Html.text <| String.fromInt collection.index
             ]
+        , Html.div
+            [ class "has-border-2 px-2 py-2 mb-2"
+            ]
+            [ Html.text collection.mint
+            ]
         ]

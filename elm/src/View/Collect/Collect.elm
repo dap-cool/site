@@ -163,7 +163,7 @@ body global collector =
                             ]
                         ]
 
-                SelectedCreator withCollections ->
+                SelectedCreator intersection withCollections ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
@@ -177,6 +177,12 @@ body global collector =
                                     , withCollections.handle
                                     ]
                             ]
+                        , Html.div
+                            []
+                            [ Html.text "intersection ⬇️"
+                            ]
+                        , View.Generic.Collection.Collector.Collector.viewMany
+                            intersection
                         , Html.div
                             []
                             [ Html.text "collections ⬇️"

@@ -506,12 +506,23 @@ update msg model =
 
                                                         ToCollector.HandleFound ->
                                                             let
+                                                                intersection collections =
+                                                                    case model.state.global of
+                                                                        Global.HasWalletAndHandle hasWalletAndHandle ->
+                                                                            Collection.intersection
+                                                                                hasWalletAndHandle.collected
+                                                                                collections
+
+                                                                        _ ->
+                                                                            []
+
                                                                 f withCollections =
                                                                     { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCreator
+                                                                                        (intersection withCollections.collections)
                                                                                         withCollections
                                                                             , global = model.state.global
                                                                             }

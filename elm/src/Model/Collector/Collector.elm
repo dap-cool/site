@@ -12,7 +12,7 @@ type
     | HandleInvalid String
     | HandleDoesNotExist String
       -- select collection
-    | SelectedCreator WithCollections
+    | SelectedCreator Intersection WithCollections
     | SelectedCollection Collection
       -- purchase collection
     | WaitingForPurchase
@@ -20,3 +20,7 @@ type
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int
+
+
+type alias Intersection =
+    List Collection

@@ -17,8 +17,8 @@ pub struct Collector {
 }
 
 #[account]
-pub struct Collection {
-    pub mint: Pubkey,
+pub struct Collection { // TODO; identify copied-mint address
+    pub mint: Pubkey, // TODO; is this useful ??
     pub handle: String,
     pub index: u8,
 }
