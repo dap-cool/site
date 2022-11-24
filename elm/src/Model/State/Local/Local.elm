@@ -67,9 +67,9 @@ path local =
         Collect collector ->
             case collector of
                 Collector.TypingHandle "" ->
+                    -- top
                     "#/"
 
-                -- top
                 Collector.MaybeExistingCreator string ->
                     String.concat
                         [ "#/"
