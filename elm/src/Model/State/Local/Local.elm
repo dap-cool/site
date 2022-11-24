@@ -61,7 +61,7 @@ parse url =
 path : Local -> String
 path local =
     case local of
-        Create (Creator.New NewCreator.Top) ->
+        Create _ ->
             "#/admin"
 
         Collect collector ->
