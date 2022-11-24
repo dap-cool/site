@@ -561,7 +561,6 @@ update msg model =
                                                                                     }
                                                                             }
                                                             in
-                                                            -- TODO; test
                                                             Listener.decode model json WithCollectionForCollector.decode f
 
                                         -- found msg for global update

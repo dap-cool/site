@@ -466,7 +466,7 @@ body creator =
                                             collection
                                         , Html.div
                                             []
-                                            [ Html.button
+                                            [ Html.a
                                                 [ Local.href <| Local.Create (New New.Top)
                                                 , class "has-sky-blue-text"
                                                 ]
