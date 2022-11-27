@@ -3,11 +3,11 @@ import {Keypair, PublicKey} from "@solana/web3.js";
 import {CollectionAuthority, getAuthorityPda, getManyAuthorityPdaForCollector} from "../pda/authority-pda";
 import {deriveHandlePda, getHandlePda} from "../pda/handle-pda";
 import {
-    MPL_PREFIX,
     MPL_EDITION,
+    MPL_PREFIX,
     MPL_TOKEN_METADATA_PROGRAM_ID,
-    SPL_TOKEN_PROGRAM_ID,
-    SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+    SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
+    SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {DapCool} from "../idl";
 import {deriveCollectionPda, deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
@@ -204,6 +204,8 @@ export async function mintNewCopy(
         newMint.publicKey,
         newMetadata
     );
+    // replace master-mint with copied-mint
+    authority.mint = newMint.publicKey;
     // fetch collected
     if (collectorNextCollectionIndex === 1) {
         collected = [authority];

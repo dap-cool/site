@@ -62,13 +62,33 @@ export async function getManyAuthorityPdaForCollector(
     collections: Collection[]
 ): Promise<CollectionAuthority[]> {
     // derive all authority pda
-    const derived: PublicKey[] = await Promise.all(
-        collections.map( async (collection) =>
-            await deriveAuthorityPda(program, collection.handle, collection.index)
+    const derived: { authorityPda: PublicKey; collection: Collection }[] = await Promise.all(
+        collections.map(async (collection) => {
+                const authorityPda = await deriveAuthorityPda(program, collection.handle, collection.index);
+                return {
+                    authorityPda,
+                    collection
+                }
+            }
         )
     )
+    const derived0: PublicKey[] = derived.map(obj =>
+        obj.authorityPda
+    );
     // fetch all
-    return await getManyAuthorityPda(program, derived)
+    const fetched: CollectionAuthority[] = await getManyAuthorityPda(
+        program,
+        derived0
+    );
+    // replace master-mint with copied-mint
+    return derived.map(obj => {
+            const found = fetched.find(ca =>
+                ca.pda.equals(obj.authorityPda) // find collection-authority matching copied-mint
+            )
+            found.mint = obj.collection.mint // replace master-mint with copied-mint
+            return found
+        }
+    )
 }
 
 async function getManyAuthorityPda(

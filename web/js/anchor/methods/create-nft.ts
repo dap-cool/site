@@ -235,6 +235,8 @@ export async function createCollection(
         numMinted: 0,
         pda: authority.pda
     } as CollectionAuthority;
+    // filter out before-marked
+    collections.filter(c => c.mint.equals(authority.mint));
     // concat
     collections = collections.concat([justMarked]);
     // send success to elm
