@@ -1,5 +1,5 @@
 import {PublicKey, SystemProgram} from "@solana/web3.js";
-import {AnchorProvider, Program} from "@project-serum/anchor";
+import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import {DapCool} from "../idl";
 import {deriveCreatorPda} from "../pda/creator-pda";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
@@ -8,14 +8,17 @@ import {getManyAuthorityPdaForCollector} from "../pda/authority-pda";
 export async function initNewHandle(
     app,
     provider: AnchorProvider,
-    program: Program<DapCool>,
+    programs: {
+        dap: Program<DapCool>,
+        token: Program<SplToken>
+    },
     handle: string,
     handlePda: PublicKey
 ) {
     // derive creator pda
-    const creatorPda = await deriveCreatorPda(provider, program);
+    const creatorPda = await deriveCreatorPda(provider, programs.dap);
     // invoke rpc
-    await program.methods
+    await programs.dap.methods
         .initNewCreator(
             handle as any
         )
@@ -29,14 +32,14 @@ export async function initNewHandle(
         )
         .rpc();
     // derive collector pda
-    const collectorPda = await deriveCollectorPda(provider, program);
+    const collectorPda = await deriveCollectorPda(provider, programs.dap);
     // fetch collector
     let collected;
     try {
-        const collector = await getCollectorPda(program, collectorPda);
+        const collector = await getCollectorPda(programs.dap, collectorPda);
         // fetch collected
-        const collectedPda = await getAllCollectionPda(provider, program, collector);
-        collected = await getManyAuthorityPdaForCollector(program, collectedPda);
+        const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
+        collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
     } catch (error) {
         console.log("could not find collector on-chain");
         collected = [];

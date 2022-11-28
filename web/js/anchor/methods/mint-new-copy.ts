@@ -1,6 +1,11 @@
-import {AnchorProvider, BN, Program, web3} from "@project-serum/anchor";
+import {AnchorProvider, BN, Program, SplToken, web3} from "@project-serum/anchor";
 import {Keypair, PublicKey} from "@solana/web3.js";
-import {CollectionAuthority, getAuthorityPda, getManyAuthorityPdaForCollector} from "../pda/authority-pda";
+import {
+    CollectionAuthority,
+    getAuthorityPda,
+    getManyAuthorityPdaForCollector,
+    getManyAuthorityPdaForCreator
+} from "../pda/authority-pda";
 import {deriveHandlePda, getHandlePda} from "../pda/handle-pda";
 import {
     MPL_EDITION,
@@ -11,20 +16,22 @@ import {
 } from "../util/constants";
 import {DapCool} from "../idl";
 import {deriveCollectionPda, deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
-import {getAllCollectionsFromHandle} from "../pda/get-all-collections-from-handle";
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
 
 export async function mintNewCopy(
     app,
     provider: AnchorProvider,
-    program: Program<DapCool>,
+    programs: {
+        dap: Program<DapCool>,
+        token: Program<SplToken>
+    },
     handle: string,
     index: number
 ) {
     // derive collector pda
     const collectorPda: PublicKey = await deriveCollectorPda(
         provider,
-        program
+        programs.dap
     );
     // try getting collector
     let collected: CollectionAuthority[]
@@ -32,12 +39,12 @@ export async function mintNewCopy(
     try {
         // fetch collector
         const collector = await getCollectorPda(
-            program,
+            programs.dap,
             collectorPda
         );
         // fetch all collected
-        const collectedPda = await getAllCollectionPda(provider, program, collector);
-        collected = await getManyAuthorityPdaForCollector(program, collectedPda);
+        const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
+        collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
         // increment
         collectorNextCollectionIndex = collector.numCollected + 1;
     } catch (error) {
@@ -47,17 +54,17 @@ export async function mintNewCopy(
     // derive collection pda
     const collectionPda: PublicKey = await deriveCollectionPda(
         provider,
-        program,
+        programs.dap,
         collectorNextCollectionIndex
     );
     // derive handle pda
     const handlePda: PublicKey = await deriveHandlePda(
-        program,
+        programs.dap,
         handle
     );
     // get authority pda
     const authority: CollectionAuthority = await getAuthorityPda(
-        program,
+        programs.dap,
         handle,
         index
     );
@@ -67,7 +74,7 @@ export async function mintNewCopy(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.mint.toBuffer(),
+            authority.accounts.mint.toBuffer(),
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
@@ -77,7 +84,7 @@ export async function mintNewCopy(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.mint.toBuffer(),
+            authority.accounts.mint.toBuffer(),
             Buffer.from(MPL_EDITION),
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
@@ -86,9 +93,9 @@ export async function mintNewCopy(
     let masterEditionAta: PublicKey;
     [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
         [
-            authority.pda.toBuffer(),
+            authority.accounts.pda.toBuffer(),
             SPL_TOKEN_PROGRAM_ID.toBuffer(),
-            authority.mint.toBuffer()
+            authority.accounts.mint.toBuffer()
         ],
         SPL_ASSOCIATED_TOKEN_PROGRAM_ID
     )
@@ -116,14 +123,14 @@ export async function mintNewCopy(
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
     // derive new-edition-mark
-    const n = authority.numMinted + 1;
+    const n = authority.meta.numMinted + 1;
     const newEditionMarkLiteral = (new BN(n)).div(new BN(248)).toString();
     let newEditionMark: PublicKey;
     [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.mint.toBuffer(),
+            authority.accounts.mint.toBuffer(),
             Buffer.from(MPL_EDITION),
             Buffer.from(newEditionMarkLiteral)
         ],
@@ -141,15 +148,15 @@ export async function mintNewCopy(
     )
     // invoke rpc
     console.log("minting new copy");
-    await program.methods
+    await programs.dap.methods
         .mintNewCopy(index as any)
         .accounts(
             {
                 collector: collectorPda,
                 collectionPda: collectionPda,
                 handle: handlePda,
-                authority: authority.pda,
-                mint: authority.mint,
+                authority: authority.accounts.pda,
+                mint: authority.accounts.mint,
                 metadata: metadata,
                 masterEdition: masterEdition,
                 masterEditionAta: masterEditionAta,
@@ -173,7 +180,7 @@ export async function mintNewCopy(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.collection.toBuffer(),
+            authority.accounts.collection.toBuffer(),
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
     )
@@ -183,7 +190,7 @@ export async function mintNewCopy(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.collection.toBuffer(),
+            authority.accounts.collection.toBuffer(),
             Buffer.from(MPL_EDITION),
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
@@ -193,19 +200,21 @@ export async function mintNewCopy(
     // TODO; separate calls ?
     await addNewCopyToCollection(
         provider,
-        program,
+        programs.dap,
         index,
         handlePda,
-        authority.pda,
-        authority.mint,
-        authority.collection,
+        authority.accounts.pda,
+        authority.accounts.mint,
+        authority.accounts.collection,
         collectionMetadata,
         collectionMasterEdition,
         newMint.publicKey,
         newMetadata
     );
     // replace master-mint with copied-mint
-    authority.mint = newMint.publicKey;
+    authority.accounts.mint = newMint.publicKey;
+    // add associated-token-account balance
+    authority.accounts.ata.balance = 1;
     // fetch collected
     if (collectorNextCollectionIndex === 1) {
         collected = [authority];
@@ -215,10 +224,10 @@ export async function mintNewCopy(
     // fetch collections & set global
     let global;
     try {
-        const creatorPda = await deriveCreatorPda(provider, program);
-        const creator = await getCreatorPda(program, creatorPda);
-        const fetchedHandle = await getHandlePda(program, creator.handle);
-        const collections = await getAllCollectionsFromHandle(program, fetchedHandle);
+        const creatorPda = await deriveCreatorPda(provider, programs.dap);
+        const creator = await getCreatorPda(programs.dap, creatorPda);
+        const fetchedHandle = await getHandlePda(programs.dap, creator.handle);
+        const collections = await getManyAuthorityPdaForCreator(programs.dap, fetchedHandle);
         global = {
             handle: fetchedHandle.handle,
             wallet: provider.wallet.publicKey.toString(),

@@ -7,8 +7,7 @@ import {
     assertHandlePdaDoesExistAlreadyForCollector,
     getHandlePda
 } from "./anchor/pda/handle-pda";
-import {getAllCollectionsFromHandle} from "./anchor/pda/get-all-collections-from-handle";
-import {decodeAuthorityPda, getAuthorityPda} from "./anchor/pda/authority-pda";
+import {decodeAuthorityPda, getAuthorityPda, getManyAuthorityPdaForCreator} from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
@@ -32,7 +31,7 @@ export async function main(app, json) {
                 await getGlobal(
                     app,
                     pp.provider,
-                    pp.program
+                    pp.programs
                 );
                 window.location = "#/" // top
             }
@@ -53,7 +52,7 @@ export async function main(app, json) {
                 await getGlobal(
                     app,
                     pp.provider,
-                    pp.program
+                    pp.programs
                 );
             }
             // or listen for disconnect
@@ -82,7 +81,7 @@ export async function main(app, json) {
                 // assert handle pda does-not-exist
                 const handle = await assertHandlePdaDoesNotExistAlready(
                     app,
-                    ephemeralPP.program,
+                    ephemeralPP.programs.dap,
                     validated
                 );
                 // initialize handle
@@ -96,7 +95,7 @@ export async function main(app, json) {
                         await initNewHandle(
                             app,
                             pp.provider,
-                            pp.program,
+                            pp.programs.dap,
                             validated,
                             handle
                         );
@@ -131,15 +130,15 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // derive & fetch creator pda
-            const creatorPda = await deriveCreatorPda(pp.provider, pp.program);
-            const creator = await getCreatorPda(pp.program, creatorPda);
+            const creatorPda = await deriveCreatorPda(pp.provider, pp.programs.dap);
+            const creator = await getCreatorPda(pp.programs.dap, creatorPda);
             // fetch handle
-            const handle = await getHandlePda(pp.program, creator.handle);
+            const handle = await getHandlePda(pp.programs.dap, creator.handle);
             // invoke rpc
             await creatNft(
                 app,
                 pp.provider,
-                pp.program,
+                pp.programs.dap,
                 creator.handle,
                 handle,
                 more.name,
@@ -152,14 +151,14 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // derive & fetch creator pda
-            const creatorPda = await deriveCreatorPda(pp.provider, pp.program);
-            const creator = await getCreatorPda(pp.program, creatorPda);
+            const creatorPda = await deriveCreatorPda(pp.provider, pp.programs.dap);
+            const creator = await getCreatorPda(pp.programs.dap, creatorPda);
             // decode authority pda
             const authorityObj = decodeAuthorityPda(more);
             await createCollection(
                 app,
                 pp.provider,
-                pp.program,
+                pp.programs.dap,
                 creator,
                 authorityObj,
                 more.index
@@ -179,12 +178,12 @@ export async function main(app, json) {
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
-                    ephemeralPP.program,
+                    ephemeralPP.programs.dap,
                     validated
                 );
                 if (handle) {
                     // get collections
-                    const collections = await getAllCollectionsFromHandle(ephemeralPP.program, handle);
+                    const collections = await getManyAuthorityPdaForCreator(ephemeralPP.programs.dap, handle);
                     app.ports.success.send(
                         JSON.stringify(
                             {
@@ -215,12 +214,12 @@ export async function main(app, json) {
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
-                    ephemeralPP.program,
+                    ephemeralPP.programs.dap,
                     validated
                 );
                 if (handle) {
                     // get collection
-                    const collection = await getAuthorityPda(ephemeralPP.program, validated, more.index);
+                    const collection = await getAuthorityPda(ephemeralPP.programs.dap, validated, more.index);
                     app.ports.success.send(
                         JSON.stringify(
                             {
@@ -246,7 +245,7 @@ export async function main(app, json) {
                 await mintNewCopy(
                     app,
                     pp.provider,
-                    pp.program,
+                    pp.programs.dap,
                     more.handle,
                     more.index
                 )
