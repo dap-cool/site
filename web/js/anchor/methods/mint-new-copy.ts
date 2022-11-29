@@ -214,7 +214,9 @@ export async function mintNewCopy(
     // replace master-mint with copied-mint
     authority.accounts.mint = newMint.publicKey;
     // add associated-token-account balance
-    authority.accounts.ata.balance = 1;
+    authority.accounts.ata = {
+        balance: 1
+    };
     // fetch collected
     if (collectorNextCollectionIndex === 1) {
         collected = [authority];

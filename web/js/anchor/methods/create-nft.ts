@@ -165,13 +165,12 @@ export async function createCollection(
         token: Program<SplToken>
     },
     creator: Creator,
-    authority: CollectionAuthority,
-    index: number
+    authority: CollectionAuthority
 ) {
     // fetch handle obj
-    const handleObj = await getHandlePda(programs.dap, creator.handle);
+    const handle = await getHandlePda(programs.dap, creator.handle);
     // fetch all collections from handle
-    let collections = await getManyAuthorityPdaForCreator(programs.dap, handleObj);
+    let collections = await getManyAuthorityPdaForCreator(programs.dap, handle);
     // fetch all collected from creator pda
     let collected;
     try {
@@ -218,7 +217,7 @@ export async function createCollection(
     )
     // invoke rpc
     await programs.dap.methods
-        .createCollection(index as any)
+        .createCollection(authority.meta.index as any)
         .accounts(
             {
                 handle: creator.handle,
@@ -242,7 +241,7 @@ export async function createCollection(
     // build response for elm
     const justMarked = {
         meta: {
-            handle: handleObj.handle,
+            handle: handle.handle,
             name: authority.meta.name,
             symbol: authority.meta.symbol,
             index: authority.meta.index,
@@ -256,7 +255,7 @@ export async function createCollection(
         }
     } as CollectionAuthority;
     // filter out before-marked
-    collections.filter(c => c.accounts.mint.equals(authority.accounts.mint));
+    collections = collections.filter(c => !c.accounts.mint.equals(authority.accounts.mint));
     // concat
     collections = collections.concat([justMarked]);
     // send success to elm
@@ -267,7 +266,7 @@ export async function createCollection(
                 more: JSON.stringify(
                     {
                         global: {
-                            handle: handleObj.handle,
+                            handle: handle.handle,
                             wallet: provider.wallet.publicKey.toString(),
                             collections: collections,
                             collected: collected,

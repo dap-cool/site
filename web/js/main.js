@@ -7,7 +7,11 @@ import {
     assertHandlePdaDoesExistAlreadyForCollector,
     getHandlePda
 } from "./anchor/pda/handle-pda";
-import {decodeAuthorityPda, getAuthorityPda, getManyAuthorityPdaForCreator} from "./anchor/pda/authority-pda";
+import {
+    decodeAuthorityPda,
+    getAuthorityPda,
+    getManyAuthorityPdaForCreator
+} from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
@@ -95,7 +99,7 @@ export async function main(app, json) {
                         await initNewHandle(
                             app,
                             pp.provider,
-                            pp.programs.dap,
+                            pp.programs,
                             validated,
                             handle
                         );
@@ -138,7 +142,7 @@ export async function main(app, json) {
             await creatNft(
                 app,
                 pp.provider,
-                pp.programs.dap,
+                pp.programs,
                 creator.handle,
                 handle,
                 more.name,
@@ -154,14 +158,14 @@ export async function main(app, json) {
             const creatorPda = await deriveCreatorPda(pp.provider, pp.programs.dap);
             const creator = await getCreatorPda(pp.programs.dap, creatorPda);
             // decode authority pda
-            const authorityObj = decodeAuthorityPda(more);
+            const authority = decodeAuthorityPda(more);
+            // invoke create-collection
             await createCollection(
                 app,
                 pp.provider,
-                pp.programs.dap,
+                pp.programs,
                 creator,
-                authorityObj,
-                more.index
+                authority
             );
             // or collector search collector
         } else if (sender === "collector-search-handle") {
@@ -245,7 +249,7 @@ export async function main(app, json) {
                 await mintNewCopy(
                     app,
                     pp.provider,
-                    pp.programs.dap,
+                    pp.programs,
                     more.handle,
                     more.index
                 )

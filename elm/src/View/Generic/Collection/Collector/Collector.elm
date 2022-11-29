@@ -34,8 +34,8 @@ select collection =
             , Local.href <|
                 Local.Collect <|
                     Collector.MaybeExistingCollection
-                        collection.handle
-                        collection.index
+                        collection.meta.handle
+                        collection.meta.index
             ]
             [ Html.text "Select this"
             ]

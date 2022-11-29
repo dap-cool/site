@@ -11,6 +11,10 @@ import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
 
 
+
+-- TODO; drop global
+
+
 body : Global -> Collector -> Html Msg
 body global collector =
     let
@@ -202,7 +206,7 @@ body global collector =
                                 String.concat
                                     [ "creator:"
                                     , " "
-                                    , collection.handle
+                                    , collection.meta.handle
                                     ]
                             ]
                         , Html.div
@@ -216,8 +220,8 @@ body global collector =
                             , onClick <|
                                 FromCollector <|
                                     CollectorMsg.PurchaseCollection
-                                        collection.handle
-                                        collection.index
+                                        collection.meta.handle
+                                        collection.meta.index
                             ]
                             [ Html.text "Purchase"
                             ]
@@ -245,7 +249,7 @@ body global collector =
                                 String.concat
                                     [ "creator:"
                                     , " "
-                                    , collection.handle
+                                    , collection.meta.handle
                                     ]
                             ]
                         , Html.div

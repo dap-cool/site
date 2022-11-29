@@ -30,6 +30,21 @@ viewMany collections f =
 
 view_ : Collection -> Html Msg -> Html Msg
 view_ collection select =
+    let
+        ataDiv =
+            case collection.accounts.ata of
+                Just ata ->
+                    Html.div
+                        [ class "has-border-2 px-2 py-2 mb-2"
+                        ]
+                        [ Html.text <| String.fromInt ata.balance
+                        ]
+
+                Nothing ->
+                    Html.div
+                        []
+                        []
+    in
     Html.div
         [ class "has-border-2 px-2 py-2"
         ]
@@ -37,21 +52,17 @@ view_ collection select =
         , Html.div
             [ class "has-border-2 px-2 py-2 mb-2"
             ]
-            [ Html.text collection.name
+            [ Html.text collection.meta.name
             ]
         , Html.div
             [ class "has-border-2 px-2 py-2 mb-2"
             ]
-            [ Html.text collection.symbol
+            [ Html.text collection.meta.symbol
             ]
         , Html.div
             [ class "has-border-2 px-2 py-2 mb-2"
             ]
-            [ Html.text <| String.fromInt collection.index
+            [ Html.text collection.accounts.mint
             ]
-        , Html.div
-            [ class "has-border-2 px-2 py-2 mb-2"
-            ]
-            [ Html.text collection.mint
-            ]
+        , ataDiv
         ]
