@@ -510,8 +510,13 @@ update msg model =
                                                                     case model.state.global of
                                                                         Global.HasWalletAndHandle hasWalletAndHandle ->
                                                                             Collection.intersection
-                                                                                hasWalletAndHandle.collected
                                                                                 collections
+                                                                                hasWalletAndHandle.collected
+
+                                                                        Global.HasWallet hasWallet ->
+                                                                            Collection.intersection
+                                                                                collections
+                                                                                hasWallet.collected
 
                                                                         _ ->
                                                                             []
@@ -578,9 +583,22 @@ update msg model =
                                         Listener.Global toGlobal ->
                                             case toGlobal of
                                                 ToGlobal.DisconnectWallet ->
+                                                    let
+                                                        local =
+                                                            case model.state.local of
+                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
+                                                                    Local.Collect <|
+                                                                        Collector.SelectedCreator
+                                                                            []
+                                                                            -- no intersection
+                                                                            withCollections
+
+                                                                _ ->
+                                                                    model.state.local
+                                                    in
                                                     ( { model
                                                         | state =
-                                                            { local = model.state.local
+                                                            { local = local
                                                             , global = Global.NoWalletYet
                                                             }
                                                       }
@@ -599,10 +617,25 @@ update msg model =
 
                                                 ToGlobal.FoundWallet ->
                                                     let
+                                                        local collections =
+                                                            case model.state.local of
+                                                                -- compute intersection from new global state
+                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
+                                                                    Local.Collect <|
+                                                                        Collector.SelectedCreator
+                                                                            (Collection.intersection
+                                                                                withCollections.collections
+                                                                                collections
+                                                                            )
+                                                                            withCollections
+
+                                                                _ ->
+                                                                    model.state.local
+
                                                         f hasWallet =
                                                             { model
                                                                 | state =
-                                                                    { local = model.state.local
+                                                                    { local = local hasWallet.collected
                                                                     , global = Global.HasWallet hasWallet
                                                                     }
                                                             }
@@ -611,10 +644,25 @@ update msg model =
 
                                                 ToGlobal.FoundWalletAndHandle ->
                                                     let
+                                                        local collections =
+                                                            case model.state.local of
+                                                                -- compute intersection from new global state
+                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
+                                                                    Local.Collect <|
+                                                                        Collector.SelectedCreator
+                                                                            (Collection.intersection
+                                                                                withCollections.collections
+                                                                                collections
+                                                                            )
+                                                                            withCollections
+
+                                                                _ ->
+                                                                    model.state.local
+
                                                         f hasWalletAndHandle =
                                                             { model
                                                                 | state =
-                                                                    { local = model.state.local
+                                                                    { local = local hasWalletAndHandle.collected
                                                                     , global =
                                                                         Global.HasWalletAndHandle
                                                                             hasWalletAndHandle

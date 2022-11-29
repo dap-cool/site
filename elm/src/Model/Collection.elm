@@ -141,13 +141,13 @@ intersection left right =
     let
         leftMintAddresses : Set.Set Mint
         leftMintAddresses =
-            List.map (\c -> c.accounts.mint) left
+            List.map (\c -> c.accounts.pda) left
                 |> Set.fromList
 
         intersection_ =
             List.filter
                 (\c ->
-                    Set.member ((\c_ -> c_.accounts.mint) c) leftMintAddresses
+                    Set.member ((\c_ -> c_.accounts.pda) c) leftMintAddresses
                 )
                 right
     in

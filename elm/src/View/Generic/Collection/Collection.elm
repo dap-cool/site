@@ -62,7 +62,22 @@ view_ collection select =
         , Html.div
             [ class "has-border-2 px-2 py-2 mb-2"
             ]
-            [ Html.text collection.accounts.mint
+            [ Html.text <|
+                String.concat
+                    [ "mint:"
+                    , " "
+                    , collection.accounts.mint
+                    ]
+            ]
+        , Html.div
+            [ class "has-border-2 px-2 py-2 mb-2"
+            ]
+            [ Html.text <|
+                String.concat
+                    [ "pda:"
+                    , " "
+                    , collection.accounts.pda
+                    ]
             ]
         , ataDiv
         ]
