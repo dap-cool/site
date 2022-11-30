@@ -1,45 +1,9 @@
-import {ShdwDrive} from "@shadow-drive/sdk";
-import {Connection, PublicKey} from "@solana/web3.js";
-import {version} from "./config";
-
 export interface CollectionMetadata {
     name: string
     symbol: string
     description: string
     image: string // url
     external_url: string
-}
-
-export async function provision(
-    connection: Connection,
-    uploader: any,
-    sizeInBytes: number
-): Promise<{ drive: ShdwDrive; account: PublicKey }> {
-    // build drive client
-    console.log("build shdw client with finalized commitment");
-    // build connection with finalized commitment for initial account creation
-    const finalizedConnection = new Connection(connection.rpcEndpoint, "finalized");
-    const drive: ShdwDrive = await new ShdwDrive(finalizedConnection, uploader).init();
-    // create storage account
-    console.log("create shdw storage account");
-    const size = (((sizeInBytes / 1000000) + 2).toString()).split(".")[0] + "MB";
-    console.log(size);
-    const createStorageResponse = await drive.createStorageAccount("dap-cool", size, version)
-    const account: PublicKey = new PublicKey(createStorageResponse.shdw_bucket);
-    return {drive, account}
-}
-
-export async function markAsImmutable(drive: ShdwDrive, account: PublicKey): Promise<void> {
-    console.log("mark account as immutable");
-    // time out for 1 second to give RPC time to resolve account
-    await new Promise(r => setTimeout(r, 1000));
-    await drive.makeStorageImmutable(account, version);
-}
-
-export async function uploadFile(file: File, drive: ShdwDrive, account: PublicKey): Promise<string> {
-    console.log("upload file to shdw drive");
-    const url = (await drive.uploadFile(account, file, version)).finalized_locations[0];
-    return url.replace(file.name, "");
 }
 
 export function readLogo(): File {

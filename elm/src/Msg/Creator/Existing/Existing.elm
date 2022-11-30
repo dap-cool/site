@@ -7,10 +7,11 @@ import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (New
 
 type
     Existing
-    -- new collection
+    -- new collection form
     = StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
-    | CreateNewCollection NewCollection.Form
+      -- create new nft rpc transactions
+    | CreateNewCollection NewCollection.MetaForm
     | MarkNewCollection Collection
       -- existing collection
     | SelectCollection Collection

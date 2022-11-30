@@ -274,7 +274,12 @@ update msg model =
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
-                                    , more = NewCollection.encode form
+                                    , more =
+                                        NewCollection.encode <|
+                                            { step = 1
+                                            , meta = form
+                                            , shdw = Nothing
+                                            }
                                     }
                             )
 
@@ -434,6 +439,32 @@ update msg model =
 
                                                         ToCreator.Existing existing ->
                                                             case existing of
+                                                                ToExistingCreator.CreatingNewCollection ->
+                                                                    let
+                                                                        f decoded =
+                                                                            ( { model
+                                                                                | state =
+                                                                                    { local =
+                                                                                        Local.Create <|
+                                                                                            Creator.Existing decoded.global <|
+                                                                                                ExistingCreator.CreatingNewCollection <|
+                                                                                                    NewCollection.Input decoded.form.meta True
+                                                                                    , global = model.state.global
+                                                                                    }
+                                                                              }
+                                                                            , sender <|
+                                                                                Sender.encode <|
+                                                                                    { sender =
+                                                                                        Sender.Create <|
+                                                                                            FromCreator.Existing
+                                                                                                decoded.global
+                                                                                                (FromExistingCreator.CreateNewCollection decoded.form.meta)
+                                                                                    , more = NewCollection.encode decoded.form
+                                                                                    }
+                                                                            )
+                                                                    in
+                                                                    Listener.decode2 model json NewCollection.decode f
+
                                                                 ToExistingCreator.CreatedNewCollection ->
                                                                     let
                                                                         f withCollection =

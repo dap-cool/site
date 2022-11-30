@@ -145,8 +145,7 @@ export async function main(app, json) {
                 pp.programs,
                 creator.handle,
                 handle,
-                more.name,
-                more.symbol
+                more
             );
             // or creator mark new collection
         } else if (sender === "creator-mark-new-collection") {

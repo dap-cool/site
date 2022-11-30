@@ -1,3 +1,7 @@
+import {AnchorProvider, BN, Program, SplToken} from "@project-serum/anchor";
+import {Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
+import {buildClient, buildUrl, provision, uploadMultipleFiles} from "@dap-cool/sdk";
+import {ShdwDrive} from "@shadow-drive/sdk";
 import {getHandlePda, Handle} from "../pda/handle-pda";
 import {
     CollectionAuthority,
@@ -12,13 +16,22 @@ import {
     SPL_TOKEN_PROGRAM_ID,
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID
 } from "../util/constants";
-import {buildMetaData, provision, readLogo, uploadFile} from "../../shdw/shdw";
-import {AnchorProvider, BN, Program, SplToken} from "@project-serum/anchor";
-import {Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
-import {ShdwDrive} from "@shadow-drive/sdk";
+import {buildMetaData, readLogo} from "../../shdw/shdw";
 import {DapCool} from "../idl";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 import {Creator} from "../pda/creator-pda";
+
+export interface Form {
+    step: number
+    meta: {
+        name: string
+        symbol: string
+    }
+    shdw: {
+        account: PublicKey
+        drive: ShdwDrive | null
+    } | null
+}
 
 export async function creatNft(
     app,
@@ -29,8 +42,7 @@ export async function creatNft(
     },
     handlePda: PublicKey,
     handle: Handle,
-    name: string,
-    symbol: string
+    form: Form
 ) {
     // fetch all collections from handle
     let collections = await getManyAuthorityPdaForCreator(programs.dap, handle);
@@ -59,7 +71,7 @@ export async function creatNft(
             mint.publicKey.toBuffer(),
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
-    )
+    );
     // derive master-edition
     let masterEdition;
     [masterEdition, _] = await PublicKey.findProgramAddress(
@@ -70,7 +82,7 @@ export async function creatNft(
             Buffer.from(MPL_EDITION),
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
-    )
+    );
     // derive master-edition-ata
     let masterEditionAta;
     [masterEditionAta, _] = await PublicKey.findProgramAddress(
@@ -80,81 +92,232 @@ export async function creatNft(
             mint.publicKey.toBuffer()
         ],
         SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-    )
-    // upload metadata
-    const metadataUrl: string = await uploadMetadata(
-        provider.connection,
-        provider.wallet,
-        handle.handle,
-        authorityIndex,
-        name,
-        symbol
     );
-    // invoke rpc
-    await programs.dap.methods
-        .createNft(
-            name as any,
-            symbol as any,
-            metadataUrl as any,
-            new BN(2) // TODO; supply
-        )
-        .accounts(
-            {
-                handle: handlePda,
-                authority: authorityPda,
-                mint: mint.publicKey,
-                metadata: metadata,
-                masterEdition: masterEdition,
-                masterEditionAta: masterEditionAta,
-                payer: provider.wallet.publicKey,
-                tokenProgram: SPL_TOKEN_PROGRAM_ID,
-                associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
-                metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
-                systemProgram: SystemProgram.programId,
-                rent: SYSVAR_RENT_PUBKEY,
-            }
-        )
-        .signers([mint])
-        .rpc()
-    // fetch pda
-    console.log("mint", mint.publicKey.toString());
-    // build response for elm
-    const justCreated = {
-        meta: {
-            handle: handle.handle,
-            index: authorityIndex,
-            name: name,
-            symbol: symbol,
-            numMinted: 0,
-        },
-        accounts: {
-            pda: authorityPda,
-            mint: mint.publicKey,
-            collection: null,
-            ata: null
-        }
-    } as CollectionAuthority;
-    // concat
-    collections = collections.concat([justCreated]);
-    // send to elm
-    app.ports.success.send(
-        JSON.stringify(
-            {
-                listener: "creator-created-new-collection",
-                more: JSON.stringify(
+    // read logo from input
+    const logo: File = readLogo();
+    // kick off upload steps
+    if (form.step === 1) {
+        try {
+            // provision space
+            form.shdw = await provision(
+                provider.connection,
+                provider.wallet,
+                logo
+            );
+            // bump step
+            form.step = 2;
+            form.shdw.drive = null;
+            // send to elm
+            app.ports.success.send(
+                JSON.stringify(
                     {
-                        global: {
-                            handle: handle.handle,
-                            wallet: provider.wallet.publicKey.toString(),
-                            collections: collections,
-                            collected: collected,
-                        },
-                        collection: justCreated
+                        listener: "creator-creating-new-collection",
+                        more: JSON.stringify(
+                            {
+                                global: {
+                                    handle: handle.handle,
+                                    wallet: provider.wallet.publicKey.toString(),
+                                    collections: collections,
+                                    collected: collected,
+                                },
+                                form: form
+                            }
+                        )
                     }
                 )
-            }
-        )
-    );
+            );
+        } catch (error) {
+            console.log(error);
+            console.log("caught exception at step 1");
+            // send to elm
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-creating-new-collection",
+                        more: JSON.stringify(
+                            {
+                                global: {
+                                    handle: handle.handle,
+                                    wallet: provider.wallet.publicKey.toString(),
+                                    collections: collections,
+                                    collected: collected,
+                                },
+                                form: form
+                            }
+                        )
+                    }
+                )
+            );
+        }
+    } else if (form.step === 2) {
+        try {
+            // build url
+            const url = buildUrl(
+                form.shdw.account
+            );
+            // build new client
+            form.shdw.drive = await buildClient(
+                provider.connection,
+                provider.wallet
+            );
+            // build metadata
+            const logoUrl = url + logo.name;
+            const metadata: File = buildMetaData(
+                handle.handle,
+                authorityIndex,
+                form.meta.name,
+                form.meta.symbol,
+                "description",
+                logoUrl
+            );
+            // upload logo + metadata
+            await uploadMultipleFiles(
+                [logo, metadata],
+                form.shdw.drive,
+                form.shdw.account
+            );
+            // bump step
+            form.step = 3;
+            form.shdw.drive = null;
+            // send to elm
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-creating-new-collection",
+                        more: JSON.stringify(
+                            {
+                                global: {
+                                    handle: handle.handle,
+                                    wallet: provider.wallet.publicKey.toString(),
+                                    collections: collections,
+                                    collected: collected,
+                                },
+                                form: form
+                            }
+                        )
+                    }
+                )
+            );
+        } catch (error) {
+            console.log(error);
+            console.log("caught exception at step 2");
+            // send to elm
+            form.shdw.drive = null;
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-creating-new-collection",
+                        more: JSON.stringify(
+                            {
+                                global: {
+                                    handle: handle.handle,
+                                    wallet: provider.wallet.publicKey.toString(),
+                                    collections: collections,
+                                    collected: collected,
+                                },
+                                form: form
+                            }
+                        )
+                    }
+                )
+            );
+        }
+    } else if (form.step === 3) {
+        try {
+            // build url
+            const url = buildUrl(
+                form.shdw.account
+            );
+            const metadataUrl = url + metadata.name;
+            // invoke rpc
+            await programs.dap.methods
+                .createNft(
+                    form.meta.name as any,
+                    form.meta.symbol as any,
+                    metadataUrl as any,
+                    new BN(2) // TODO; supply
+                )
+                .accounts(
+                    {
+                        handle: handlePda,
+                        authority: authorityPda,
+                        mint: mint.publicKey,
+                        metadata: metadata,
+                        masterEdition: masterEdition,
+                        masterEditionAta: masterEditionAta,
+                        payer: provider.wallet.publicKey,
+                        tokenProgram: SPL_TOKEN_PROGRAM_ID,
+                        associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
+                        metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
+                        systemProgram: SystemProgram.programId,
+                        rent: SYSVAR_RENT_PUBKEY,
+                    }
+                )
+                .signers([mint])
+                .rpc()
+            // fetch pda
+            console.log("mint", mint.publicKey.toString());
+            // build response for elm
+            const justCreated = {
+                meta: {
+                    handle: handle.handle,
+                    index: authorityIndex,
+                    name: form.meta.name,
+                    symbol: form.meta.symbol,
+                    numMinted: 0,
+                },
+                accounts: {
+                    pda: authorityPda,
+                    mint: mint.publicKey,
+                    collection: null,
+                    ata: null
+                }
+            } as CollectionAuthority;
+            // concat
+            collections = collections.concat([justCreated]);
+            // send to elm
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-created-new-collection",
+                        more: JSON.stringify(
+                            {
+                                global: {
+                                    handle: handle.handle,
+                                    wallet: provider.wallet.publicKey.toString(),
+                                    collections: collections,
+                                    collected: collected,
+                                },
+                                collection: justCreated
+                            }
+                        )
+                    }
+                )
+            );
+        } catch (error) {
+            console.log(error);
+            console.log("caught exception at step 3");
+            // send to elm
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-creating-new-collection",
+                        more: JSON.stringify(
+                            {
+                                global: {
+                                    handle: handle.handle,
+                                    wallet: provider.wallet.publicKey.toString(),
+                                    collections: collections,
+                                    collected: collected,
+                                },
+                                form: form
+                            }
+                        )
+                    }
+                )
+            );
+        }
+    }
 }
 
 export async function createCollection(
@@ -277,26 +440,4 @@ export async function createCollection(
             }
         )
     );
-}
-
-async function uploadMetadata(
-    connection: Connection,
-    uploader: any,
-    handle: string,
-    index: number,
-    name: string,
-    symbol: string
-): Promise<string> {
-    // read logo from input
-    const logo: File = readLogo();
-    // provision space
-    const provisioned: { drive: ShdwDrive; account: PublicKey } = await provision(connection, uploader, logo.size);
-    // upload logo
-    const shdwUrl: string = await uploadFile(logo, provisioned.drive, provisioned.account);
-    const logoUrl: string = shdwUrl + logo.name;
-    // build metadata
-    const metadata: File = buildMetaData(handle, index, name, symbol, "description", logoUrl);
-    // upload metadata
-    await uploadFile(metadata, provisioned.drive, provisioned.account);
-    return (shdwUrl + "meta.json")
 }

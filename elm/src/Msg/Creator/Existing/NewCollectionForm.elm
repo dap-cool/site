@@ -5,5 +5,5 @@ import Model.Creator.Existing.NewCollection as NewCollection exposing (NewCollec
 
 type NewCollectionForm
     = Image
-    | Name String NewCollection.Form
-    | Symbol String NewCollection.Form
+    | Name String NewCollection.MetaForm
+    | Symbol String NewCollection.MetaForm

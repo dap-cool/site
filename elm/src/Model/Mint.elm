@@ -3,6 +3,10 @@ module Model.Mint exposing (Mint, encode)
 import Json.Encode as Encode
 
 
+
+-- TODO; rename to public-key ??
+
+
 type alias Mint =
     String
 

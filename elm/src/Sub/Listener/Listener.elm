@@ -1,4 +1,4 @@
-module Sub.Listener.Listener exposing (Listener(..), decode, decode0)
+module Sub.Listener.Listener exposing (Listener(..), decode, decode0, decode2)
 
 import Json.Decode as Decode
 import Model.Model exposing (Model)
@@ -26,15 +26,18 @@ decode0 string =
 
 decode : Model -> Json -> (String -> Result String a) -> (a -> Model) -> ( Model, Cmd Msg )
 decode model json moreDecoder update =
+    decode2 model json moreDecoder (\a -> ( update a, Cmd.none ))
+
+
+decode2 : Model -> Json -> (String -> Result String a) -> (a -> ( Model, Cmd Msg )) -> ( Model, Cmd Msg )
+decode2 model json moreDecoder update =
     case decodeMore json of
         -- more found
         Ok moreJson ->
             -- decode
             case moreDecoder moreJson of
                 Ok decoded ->
-                    ( update decoded
-                    , Cmd.none
-                    )
+                    update decoded
 
                 -- error from decoder
                 Err string ->
