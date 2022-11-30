@@ -464,19 +464,6 @@ body creator =
                                             ]
                                         ]
 
-                                NewCollection.WaitingForMarkNft collection ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ header
-                                        , View.Generic.Collection.Creator.Creator.view
-                                            collection
-                                        , Html.div
-                                            [ class "is-loading"
-                                            ]
-                                            []
-                                        ]
-
                                 NewCollection.Done collection ->
                                     Html.div
                                         [ class "has-border-2 px-2 pt-2 pb-6"

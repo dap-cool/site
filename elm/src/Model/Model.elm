@@ -4,6 +4,7 @@ import Browser.Navigation as Nav
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collector.Collector as Collector
 import Model.Handle as Handle
+import Model.State.Exception.Exception as Exception
 import Model.State.Global.Global as Global
 import Model.State.Local.Local as Local exposing (Local)
 import Model.State.State exposing (State)
@@ -33,6 +34,7 @@ init _ url key =
             { state =
                 { local = local
                 , global = Global.default
+                , exception = Exception.Closed
                 }
             , url = url
             , key = key

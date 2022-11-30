@@ -22,6 +22,8 @@ type
     | FromCreator FromCreator
       -- collector
     | FromCollector FromCollector
+      -- exception
+    | CloseExceptionModal
       -- js ports
     | FromJs FromJs
 

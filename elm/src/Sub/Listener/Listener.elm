@@ -45,6 +45,7 @@ decode2 model json moreDecoder update =
                         | state =
                             { local = Local.Error string
                             , global = model.state.global
+                            , exception = model.state.exception
                             }
                       }
                     , Cmd.none
@@ -56,6 +57,7 @@ decode2 model json moreDecoder update =
                 | state =
                     { local = Local.Error string
                     , global = model.state.global
+                    , exception = model.state.exception
                     }
               }
             , Cmd.none

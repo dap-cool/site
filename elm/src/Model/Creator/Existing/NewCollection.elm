@@ -10,24 +10,12 @@ import Util.Decode as Util
 
 type NewCollection
     = Input Submitted
-      -- create nft
-      -- | WaitingForProvision -- waiting for step 1 to finish
-      -- | HasProvision Form -- ready step 2
-      -- | WaitingForUpload -- waiting for step 2 to finish
-      -- | HasUpload Form -- ready for step 3
-      -- | WaitingForCreateNft -- waiting for step 3 to finish
     | HasCreateNft Collection
-      -- mark nft
-    | WaitingForMarkNft Collection
     | Done Collection
 
 
-
-{- needs to be in same div as input for DOM preservation -}
-
-
 type Submitted
-    = Yes Form
+    = Yes Form -- needs to be in same div as input for DOM preservation
     | No MetaForm
 
 

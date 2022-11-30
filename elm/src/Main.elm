@@ -16,6 +16,7 @@ import Model.Creator.Existing.WithCollection as WithCollectionForCreator
 import Model.Creator.New.New as NewCreator
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
+import Model.State.Exception.Exception as Exception
 import Model.State.Global.Global as Global
 import Model.State.Global.HasWallet as HasWallet
 import Model.State.Global.HasWalletAndHandle as HasWalletAndHandle
@@ -78,6 +79,7 @@ update msg model =
                         | state =
                             { local = local
                             , global = model.state.global
+                            , exception = model.state.exception
                             }
                         , url = url
                     }
@@ -90,6 +92,7 @@ update msg model =
                                 | state =
                                     { local = Local.Create <| Creator.Existing hasWalletAndHandle <| ExistingCreator.Top
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , Cmd.none
@@ -100,6 +103,7 @@ update msg model =
                                 | state =
                                     { local = Local.Create <| Creator.New <| NewCreator.Top
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , Cmd.none
@@ -154,6 +158,7 @@ update msg model =
                                             Creator.New <|
                                                 NewCreator.TypingHandle ""
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , Cmd.none
@@ -170,6 +175,7 @@ update msg model =
                                                         NewCreator.TypingHandle <|
                                                             Handle.normalize string
                                             , global = model.state.global
+                                            , exception = model.state.exception
                                             }
                                       }
                                     , Cmd.none
@@ -183,6 +189,7 @@ update msg model =
                                                     Creator.New <|
                                                         NewCreator.WaitingForHandleConfirmation
                                             , global = model.state.global
+                                            , exception = model.state.exception
                                             }
                                       }
                                     , sender <|
@@ -205,6 +212,7 @@ update msg model =
                                                         NewCollection.No
                                                             NewCollection.default
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , Cmd.none
@@ -227,6 +235,7 @@ update msg model =
                                                                 NewCollection.No
                                                                     bumpNewCollection
                                             , global = model.state.global
+                                            , exception = model.state.exception
                                             }
                                       }
                                     , Cmd.none
@@ -247,6 +256,7 @@ update msg model =
                                                                 NewCollection.No
                                                                     bumpNewCollection
                                             , global = model.state.global
+                                            , exception = model.state.exception
                                             }
                                       }
                                     , Cmd.none
@@ -277,6 +287,7 @@ update msg model =
                                                         NewCollection.Yes
                                                             form
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , sender <|
@@ -289,12 +300,9 @@ update msg model =
                         FromExistingCreator.MarkNewCollection collection ->
                             ( { model
                                 | state =
-                                    { local =
-                                        Local.Create <|
-                                            Creator.Existing hasWalletAndHandle <|
-                                                ExistingCreator.CreatingNewCollection <|
-                                                    NewCollection.WaitingForMarkNft collection
+                                    { local = model.state.local
                                     , global = model.state.global
+                                    , exception = Exception.Waiting
                                     }
                               }
                             , sender <|
@@ -313,6 +321,7 @@ update msg model =
                                                 ExistingCreator.SelectedCollection
                                                     collection
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , Cmd.none
@@ -330,6 +339,7 @@ update msg model =
                                             Collector.TypingHandle <|
                                                 Handle.normalize string
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , Cmd.none
@@ -340,6 +350,7 @@ update msg model =
                                 | state =
                                     { local = Local.Collect <| Collector.WaitingForHandleConfirmation
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , sender <|
@@ -359,6 +370,7 @@ update msg model =
                         | state =
                             { local = Local.Collect <| Collector.WaitingForPurchase
                             , global = model.state.global
+                            , exception = model.state.exception
                             }
                       }
                     , sender <|
@@ -402,6 +414,7 @@ update msg model =
                                                                                                 NewCreator.HandleInvalid
                                                                                                     handle
                                                                                     , global = model.state.global
+                                                                                    , exception = model.state.exception
                                                                                     }
                                                                             }
                                                                     in
@@ -418,6 +431,7 @@ update msg model =
                                                                                                 NewCreator.HandleAlreadyExists
                                                                                                     handle
                                                                                     , global = model.state.global
+                                                                                    , exception = model.state.exception
                                                                                     }
                                                                             }
                                                                     in
@@ -435,6 +449,7 @@ update msg model =
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             hasWalletAndHandle
+                                                                                    , exception = model.state.exception
                                                                                     }
                                                                             }
                                                                     in
@@ -455,6 +470,7 @@ update msg model =
                                                                                                         NewCollection.Yes
                                                                                                             decoded.form
                                                                                     , global = model.state.global
+                                                                                    , exception = model.state.exception
                                                                                     }
                                                                               }
                                                                             , sender <|
@@ -484,6 +500,7 @@ update msg model =
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             withCollection.global
+                                                                                    , exception = model.state.exception
                                                                                     }
                                                                             }
                                                                     in
@@ -503,6 +520,7 @@ update msg model =
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             withCollection.global
+                                                                                    , exception = Exception.Closed
                                                                                     }
                                                                             }
                                                                     in
@@ -521,6 +539,7 @@ update msg model =
                                                                                 Local.Collect <|
                                                                                     Collector.HandleInvalid handle
                                                                             , global = model.state.global
+                                                                            , exception = model.state.exception
                                                                             }
                                                                     }
                                                             in
@@ -535,6 +554,7 @@ update msg model =
                                                                                 Local.Collect <|
                                                                                     Collector.HandleDoesNotExist handle
                                                                             , global = model.state.global
+                                                                            , exception = model.state.exception
                                                                             }
                                                                     }
                                                             in
@@ -566,6 +586,7 @@ update msg model =
                                                                                         (intersection withCollections.collections)
                                                                                         withCollections
                                                                             , global = model.state.global
+                                                                            , exception = model.state.exception
                                                                             }
                                                                     }
                                                             in
@@ -581,6 +602,7 @@ update msg model =
                                                                                     Collector.SelectedCollection
                                                                                         collection
                                                                             , global = model.state.global
+                                                                            , exception = model.state.exception
                                                                             }
                                                                     }
                                                             in
@@ -599,8 +621,8 @@ update msg model =
                                                                             { model
                                                                                 | state =
                                                                                     { local = local withCollection.collection
-                                                                                    , global =
-                                                                                        Global.HasWallet g
+                                                                                    , global = Global.HasWallet g
+                                                                                    , exception = model.state.exception
                                                                                     }
                                                                             }
 
@@ -610,6 +632,7 @@ update msg model =
                                                                                     { local = local withCollection.collection
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle g
+                                                                                    , exception = model.state.exception
                                                                                     }
                                                                             }
                                                             in
@@ -636,6 +659,7 @@ update msg model =
                                                         | state =
                                                             { local = local
                                                             , global = Global.NoWalletYet
+                                                            , exception = model.state.exception
                                                             }
                                                       }
                                                     , Cmd.none
@@ -646,6 +670,7 @@ update msg model =
                                                         | state =
                                                             { local = model.state.local
                                                             , global = Global.WalletMissing
+                                                            , exception = model.state.exception
                                                             }
                                                       }
                                                     , Cmd.none
@@ -673,6 +698,7 @@ update msg model =
                                                                 | state =
                                                                     { local = local hasWallet.collected
                                                                     , global = Global.HasWallet hasWallet
+                                                                    , exception = model.state.exception
                                                                     }
                                                             }
                                                     in
@@ -702,6 +728,7 @@ update msg model =
                                                                     , global =
                                                                         Global.HasWalletAndHandle
                                                                             hasWalletAndHandle
+                                                                    , exception = model.state.exception
                                                                     }
                                                             }
                                                     in
@@ -721,6 +748,7 @@ update msg model =
                                         | state =
                                             { local = Local.Error message
                                             , global = model.state.global
+                                            , exception = model.state.exception
                                             }
                                       }
                                     , Cmd.none
@@ -732,10 +760,23 @@ update msg model =
                                 | state =
                                     { local = Local.Error string
                                     , global = model.state.global
+                                    , exception = model.state.exception
                                     }
                               }
                             , Cmd.none
                             )
+
+                -- JS sending exception to catch
+                JsMsg.Exception string ->
+                    ( { model
+                        | state =
+                            { local = model.state.local
+                            , global = model.state.global
+                            , exception = Exception.Open string
+                            }
+                      }
+                    , Cmd.none
+                    )
 
                 -- JS sending error to raise
                 JsMsg.Error string ->
@@ -743,6 +784,7 @@ update msg model =
                         | state =
                             { local = Local.Error string
                             , global = model.state.global
+                            , exception = model.state.exception
                             }
                       }
                     , Cmd.none
@@ -753,9 +795,21 @@ update msg model =
                 | state =
                     { local = model.state.local
                     , global = Global.Connecting
+                    , exception = model.state.exception
                     }
               }
             , sender <| Sender.encode0 <| Sender.Global fromGlobal
+            )
+
+        CloseExceptionModal ->
+            ( { model
+                | state =
+                    { local = model.state.local
+                    , global = model.state.global
+                    , exception = Exception.Closed
+                    }
+              }
+            , Cmd.none
             )
 
 
@@ -767,7 +821,7 @@ view : Model -> Browser.Document Msg
 view model =
     let
         hero =
-            View.Hero.view model.state.global
+            View.Hero.view model.state.exception model.state.global
 
         html =
             case model.state.local of

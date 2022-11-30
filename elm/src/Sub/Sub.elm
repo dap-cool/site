@@ -2,7 +2,7 @@ module Sub.Sub exposing (subs)
 
 import Msg.Js exposing (FromJs(..))
 import Msg.Msg exposing (Msg(..))
-import Sub.Listener.Ports exposing (error, success)
+import Sub.Listener.Ports exposing (error, exception, success)
 
 
 subs : Sub Msg
@@ -15,5 +15,9 @@ subs =
         , error
             (\string ->
                 FromJs <| Error string
+            )
+        , exception
+            (\string ->
+                FromJs <| Exception string
             )
         ]
