@@ -236,7 +236,7 @@ body creator =
 
                         Existing.CreatingNewCollection newCollection ->
                             case newCollection of
-                                NewCollection.Input form submitted ->
+                                NewCollection.Input submitted ->
                                     let
                                         imageForm =
                                             Html.div
@@ -271,12 +271,12 @@ body creator =
 
                                         nameForm =
                                             case submitted of
-                                                True ->
+                                                NewCollection.Yes _ ->
                                                     Html.div
                                                         []
                                                         []
 
-                                                False ->
+                                                NewCollection.No form ->
                                                     Html.div
                                                         []
                                                         [ Html.div
@@ -311,12 +311,12 @@ body creator =
 
                                         symbolFrom =
                                             case submitted of
-                                                True ->
+                                                NewCollection.Yes _ ->
                                                     Html.div
                                                         []
                                                         []
 
-                                                False ->
+                                                NewCollection.No form ->
                                                     Html.div
                                                         []
                                                         [ Html.div
@@ -353,12 +353,12 @@ body creator =
 
                                         create =
                                             case submitted of
-                                                True ->
+                                                NewCollection.Yes _ ->
                                                     Html.div
                                                         []
                                                         []
 
-                                                False ->
+                                                NewCollection.No form ->
                                                     let
                                                         e1 =
                                                             String.isEmpty form.name
@@ -386,15 +386,40 @@ body creator =
                                                                 []
                                                                 []
 
+                                        retries =
+                                            case submitted of
+                                                NewCollection.Yes form ->
+                                                    case form.retries of
+                                                        0 ->
+                                                            Html.div
+                                                                []
+                                                                []
+
+                                                        gto ->
+                                                            Html.div
+                                                                []
+                                                                [ Html.text <|
+                                                                    String.concat
+                                                                        [ "caught exception; retry:"
+                                                                        , " "
+                                                                        , String.fromInt gto
+                                                                        ]
+                                                                ]
+
+                                                _ ->
+                                                    Html.div
+                                                        []
+                                                        []
+
                                         waiting =
                                             case submitted of
-                                                True ->
+                                                NewCollection.Yes _ ->
                                                     Html.div
                                                         [ class "is-loading"
                                                         ]
                                                         []
 
-                                                False ->
+                                                NewCollection.No _ ->
                                                     Html.div
                                                         []
                                                         []
@@ -407,6 +432,7 @@ body creator =
                                         , nameForm
                                         , symbolFrom
                                         , create
+                                        , retries
                                         , waiting
                                         ]
 

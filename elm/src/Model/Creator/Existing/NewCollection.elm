@@ -1,4 +1,4 @@
-module Model.Creator.Existing.NewCollection exposing (MetaForm, NewCollection(..), decode, default, encode)
+module Model.Creator.Existing.NewCollection exposing (MetaForm, NewCollection(..), Submitted(..), decode, default, encode)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -9,7 +9,7 @@ import Util.Decode as Util
 
 
 type NewCollection
-    = Input MetaForm Submitted
+    = Input Submitted
       -- create nft
       -- | WaitingForProvision -- waiting for step 1 to finish
       -- | HasProvision Form -- ready step 2
@@ -26,12 +26,14 @@ type NewCollection
 {- needs to be in same div as input for DOM preservation -}
 
 
-type alias Submitted =
-    Bool
+type Submitted
+    = Yes Form
+    | No MetaForm
 
 
 type alias Form =
     { step : Int
+    , retries : Int
     , meta : MetaForm
     , shdw : Maybe ShdwForm
     }
@@ -75,6 +77,7 @@ encode form =
         encoder =
             Encode.object
                 [ ( "step", Encode.int form.step )
+                , ( "retries", Encode.int form.retries )
                 , ( "meta"
                   , Encode.object
                         [ ( "name", Encode.string form.meta.name )
@@ -101,8 +104,9 @@ decoder =
     Decode.map2 WithGlobal
         (Decode.field "global" HasWalletAndHandle.decoder)
         (Decode.field "form" <|
-            Decode.map3 Form
+            Decode.map4 Form
                 (Decode.field "step" Decode.int)
+                (Decode.field "retries" Decode.int)
                 (Decode.field "meta" <|
                     Decode.map2 MetaForm
                         (Decode.field "name" Decode.string)

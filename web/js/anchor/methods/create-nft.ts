@@ -23,6 +23,7 @@ import {Creator} from "../pda/creator-pda";
 
 export interface Form {
     step: number
+    retries: number
     meta: {
         name: string
         symbol: string
@@ -104,8 +105,9 @@ export async function creatNft(
                 provider.wallet,
                 logo
             );
-            // bump step
+            // bump form
             form.step = 2;
+            form.retries = 0;
             form.shdw.drive = null;
             // send to elm
             app.ports.success.send(
@@ -130,6 +132,7 @@ export async function creatNft(
             console.log(error);
             console.log("caught exception at step 1");
             // send to elm
+            form.retries += 1;
             app.ports.success.send(
                 JSON.stringify(
                     {
@@ -176,8 +179,9 @@ export async function creatNft(
                 form.shdw.drive,
                 form.shdw.account
             );
-            // bump step
+            // bump form
             form.step = 3;
+            form.retries = 0;
             form.shdw.drive = null;
             // send to elm
             app.ports.success.send(
@@ -202,6 +206,7 @@ export async function creatNft(
             console.log(error);
             console.log("caught exception at step 2");
             // send to elm
+            form.retries += 1;
             form.shdw.drive = null;
             app.ports.success.send(
                 JSON.stringify(
@@ -298,6 +303,7 @@ export async function creatNft(
             console.log(error);
             console.log("caught exception at step 3");
             // send to elm
+            form.retries += 1;
             app.ports.success.send(
                 JSON.stringify(
                     {

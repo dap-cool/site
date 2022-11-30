@@ -201,9 +201,9 @@ update msg model =
                                         Local.Create <|
                                             Creator.Existing hasWalletAndHandle <|
                                                 ExistingCreator.CreatingNewCollection <|
-                                                    NewCollection.Input
-                                                        NewCollection.default
-                                                        False
+                                                    NewCollection.Input <|
+                                                        NewCollection.No
+                                                            NewCollection.default
                                     , global = model.state.global
                                     }
                               }
@@ -223,9 +223,9 @@ update msg model =
                                                 Local.Create <|
                                                     Creator.Existing hasWalletAndHandle <|
                                                         ExistingCreator.CreatingNewCollection <|
-                                                            NewCollection.Input
-                                                                bumpNewCollection
-                                                                False
+                                                            NewCollection.Input <|
+                                                                NewCollection.No
+                                                                    bumpNewCollection
                                             , global = model.state.global
                                             }
                                       }
@@ -243,9 +243,9 @@ update msg model =
                                                 Local.Create <|
                                                     Creator.Existing hasWalletAndHandle <|
                                                         ExistingCreator.CreatingNewCollection <|
-                                                            NewCollection.Input
-                                                                bumpNewCollection
-                                                                False
+                                                            NewCollection.Input <|
+                                                                NewCollection.No
+                                                                    bumpNewCollection
                                             , global = model.state.global
                                             }
                                       }
@@ -258,28 +258,31 @@ update msg model =
                                       -- prepare image form events
                                     )
 
-                        FromExistingCreator.CreateNewCollection form ->
+                        FromExistingCreator.CreateNewCollection metaForm ->
+                            let
+                                form =
+                                    { step = 1
+                                    , retries = 0
+                                    , meta = metaForm
+                                    , shdw = Nothing
+                                    }
+                            in
                             ( { model
                                 | state =
                                     { local =
                                         Local.Create <|
                                             Creator.Existing hasWalletAndHandle <|
                                                 ExistingCreator.CreatingNewCollection <|
-                                                    NewCollection.Input
-                                                        form
-                                                        True
+                                                    NewCollection.Input <|
+                                                        NewCollection.Yes
+                                                            form
                                     , global = model.state.global
                                     }
                               }
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
-                                    , more =
-                                        NewCollection.encode <|
-                                            { step = 1
-                                            , meta = form
-                                            , shdw = Nothing
-                                            }
+                                    , more = NewCollection.encode form
                                     }
                             )
 
@@ -448,7 +451,9 @@ update msg model =
                                                                                         Local.Create <|
                                                                                             Creator.Existing decoded.global <|
                                                                                                 ExistingCreator.CreatingNewCollection <|
-                                                                                                    NewCollection.Input decoded.form.meta True
+                                                                                                    NewCollection.Input <|
+                                                                                                        NewCollection.Yes
+                                                                                                            decoded.form
                                                                                     , global = model.state.global
                                                                                     }
                                                                               }
