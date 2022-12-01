@@ -6,7 +6,8 @@ import Model.Handle as Handle exposing (Handle)
 type FromCollector
     = HandleForm Handle.Form
     | SelectCollection Handle Int
-    | PurchaseCollection Handle Int
+    | PrintCopy Handle Int
+    | MarkCopy Handle Int
 
 
 toString : FromCollector -> String
@@ -18,8 +19,11 @@ toString collector =
         SelectCollection _ _ ->
             "collector-select-collection"
 
-        PurchaseCollection _ _ ->
-            "collector-purchase-collection"
+        PrintCopy _ _ ->
+            "collector-print-copy"
+
+        MarkCopy _ _ ->
+            "collector-mark-copy"
 
         _ ->
             "no-op"

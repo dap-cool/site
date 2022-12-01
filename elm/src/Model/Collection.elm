@@ -1,4 +1,4 @@
-module Model.Collection exposing (Collection, decode, decodeList, decoder, encode, encoder, intersection, isEmpty)
+module Model.Collection exposing (Collection, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -152,3 +152,13 @@ intersection left right =
                 right
     in
     intersection_
+
+
+find : Collection -> List Collection -> Maybe Collection
+find collection list =
+    List.filter
+        (\c ->
+            c.accounts.pda == collection.accounts.pda
+        )
+        list
+        |> List.head

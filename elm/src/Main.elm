@@ -362,15 +362,31 @@ update msg model =
 
                 FromCollector.SelectCollection _ _ ->
                     ( model
+                      -- href handles this state change
                     , Cmd.none
                     )
 
-                FromCollector.PurchaseCollection handle int ->
+                FromCollector.PrintCopy handle int ->
                     ( { model
                         | state =
-                            { local = Local.Collect <| Collector.WaitingForPurchase
+                            { local = model.state.local
                             , global = model.state.global
-                            , exception = model.state.exception
+                            , exception = Exception.Waiting
+                            }
+                      }
+                    , sender <|
+                        Sender.encode <|
+                            { sender = Sender.Collect from
+                            , more = AlmostExistingCollection.encode { handle = handle, index = int }
+                            }
+                    )
+
+                FromCollector.MarkCopy handle int ->
+                    ( { model
+                        | state =
+                            { local = model.state.local
+                            , global = model.state.global
+                            , exception = Exception.Waiting
                             }
                       }
                     , sender <|
@@ -594,15 +610,31 @@ update msg model =
 
                                                         ToCollector.CollectionSelected ->
                                                             let
+                                                                maybeCopiedEdition masterEdition =
+                                                                    case model.state.global of
+                                                                        Global.HasWalletAndHandle g ->
+                                                                            Collection.find
+                                                                                masterEdition
+                                                                                g.collected
+
+                                                                        Global.HasWallet g ->
+                                                                            Collection.find
+                                                                                masterEdition
+                                                                                g.collected
+
+                                                                        _ ->
+                                                                            Nothing
+
                                                                 f collection =
                                                                     { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCollection
+                                                                                        (maybeCopiedEdition collection)
                                                                                         collection
                                                                             , global = model.state.global
-                                                                            , exception = model.state.exception
+                                                                            , exception = Exception.Closed
                                                                             }
                                                                     }
                                                             in
@@ -610,31 +642,29 @@ update msg model =
 
                                                         ToCollector.CollectionPurchased ->
                                                             let
-                                                                local collection =
-                                                                    Local.Collect <|
-                                                                        Collector.PurchaseSuccess
-                                                                            collection
+                                                                update_ collection global =
+                                                                    { model
+                                                                        | state =
+                                                                            { local =
+                                                                                Local.Collect <|
+                                                                                    Collector.PrintedAndMarked
+                                                                                        collection
+                                                                            , global = global
+                                                                            , exception = Exception.Closed
+                                                                            }
+                                                                    }
 
                                                                 f withCollection =
                                                                     case withCollection.global of
                                                                         WithCollectionForCollector.HasWallet g ->
-                                                                            { model
-                                                                                | state =
-                                                                                    { local = local withCollection.collection
-                                                                                    , global = Global.HasWallet g
-                                                                                    , exception = model.state.exception
-                                                                                    }
-                                                                            }
+                                                                            update_
+                                                                                withCollection.collection
+                                                                                (Global.HasWallet g)
 
                                                                         WithCollectionForCollector.HasWalletAndHandle g ->
-                                                                            { model
-                                                                                | state =
-                                                                                    { local = local withCollection.collection
-                                                                                    , global =
-                                                                                        Global.HasWalletAndHandle g
-                                                                                    , exception = model.state.exception
-                                                                                    }
-                                                                            }
+                                                                            update_
+                                                                                withCollection.collection
+                                                                                (Global.HasWalletAndHandle g)
                                                             in
                                                             Listener.decode model json WithCollectionForCollector.decode f
 

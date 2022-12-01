@@ -13,10 +13,9 @@ type
     | HandleDoesNotExist String
       -- select collection
     | SelectedCreator Intersection WithCollections
-    | SelectedCollection Collection
-      -- purchase collection
-    | WaitingForPurchase
-    | PurchaseSuccess Collection
+    | SelectedCollection (Maybe CopiedEdition) MasterEdition
+      -- printed & marked collection
+    | PrintedAndMarked Collection
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int
@@ -24,3 +23,11 @@ type
 
 type alias Intersection =
     List Collection
+
+
+type alias MasterEdition =
+    Collection
+
+
+type alias CopiedEdition =
+    Collection

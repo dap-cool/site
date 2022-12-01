@@ -1,11 +1,13 @@
 module View.Collect.Collect exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, placeholder, src, style, type_, width)
+import Html.Attributes exposing (class, href, placeholder, src, style, type_, width)
 import Html.Events exposing (onClick, onInput)
-import Model.Collector.Collector exposing (Collector(..))
+import Model.Collection as Collection
+import Model.Collector.Collector as Collector exposing (Collector(..))
 import Model.Handle as Handle
 import Model.State.Global.Global as Global exposing (Global)
+import Model.State.Local.Local as Local
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
@@ -195,7 +197,74 @@ body global collector =
                             withCollections.collections
                         ]
 
-                SelectedCollection collection ->
+                SelectedCollection maybeCopiedEdition masterEdition ->
+                    let
+                        purchase =
+                            Html.button
+                                [ class "is-button-1"
+                                , onClick <|
+                                    FromCollector <|
+                                        CollectorMsg.PrintCopy
+                                            masterEdition.meta.handle
+                                            masterEdition.meta.index
+                                ]
+                                [ Html.text "Purchase"
+                                ]
+
+                        purchaseOrMark =
+                            case maybeCopiedEdition of
+                                Just copiedEdition ->
+                                    case Collection.isEmpty copiedEdition of
+                                        True ->
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    []
+                                                    [ Html.text
+                                                        """You've already purchased this NFT --
+                                                        """
+                                                    , Html.a
+                                                        [ href <|
+                                                            String.concat
+                                                                [ "https://explorer.solana.com/address/"
+                                                                , copiedEdition.accounts.mint
+                                                                ]
+                                                        ]
+                                                        [ Html.text "view it here or in your wallet 👀"
+                                                        ]
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.text
+                                                        """but you still need to mark your copy
+                                                        as part of the on-chain collection
+                                                        before you can unlock stuff
+                                                        """
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.button
+                                                        [ class "is-button-1"
+                                                        , onClick <|
+                                                            FromCollector <|
+                                                                CollectorMsg.MarkCopy
+                                                                    masterEdition.meta.handle
+                                                                    masterEdition.meta.index
+                                                        ]
+                                                        [ Html.text "Mark your copy"
+                                                        ]
+                                                    ]
+                                                ]
+
+                                        False ->
+                                            Html.div
+                                                []
+                                                [ Html.text "unlock stuff"
+                                                ]
+
+                                Nothing ->
+                                    purchase
+                    in
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
@@ -206,7 +275,7 @@ body global collector =
                                 String.concat
                                     [ "creator:"
                                     , " "
-                                    , collection.meta.handle
+                                    , masterEdition.meta.handle
                                     ]
                             ]
                         , Html.div
@@ -214,35 +283,38 @@ body global collector =
                             [ Html.text "collection selected ⬇️"
                             ]
                         , View.Generic.Collection.Collector.Collector.view
-                            collection
-                        , Html.button
-                            [ class "is-button-1"
-                            , onClick <|
-                                FromCollector <|
-                                    CollectorMsg.PurchaseCollection
-                                        collection.meta.handle
-                                        collection.meta.index
-                            ]
-                            [ Html.text "Purchase"
-                            ]
+                            masterEdition
+                        , purchaseOrMark
                         ]
 
-                WaitingForPurchase ->
+                PrintedAndMarked collection ->
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
                         [ header
                         , Html.div
-                            [ class "is-loading"
-                            ]
                             []
-                        ]
-
-                PurchaseSuccess collection ->
-                    Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ header
+                            [ Html.div
+                                []
+                                [ Html.text
+                                    """You've successfully purchased your NFT &
+                                    marked it as part of the official collection
+                                    """
+                                ]
+                            , Html.div
+                                []
+                                [ Html.a
+                                    [ class "is-button-1"
+                                    , Local.href <|
+                                        Local.Collect <|
+                                            Collector.MaybeExistingCollection
+                                                collection.meta.handle
+                                                collection.meta.index
+                                    ]
+                                    [ Html.text "go start unlocking stuff 🔓"
+                                    ]
+                                ]
+                            ]
                         , Html.div
                             []
                             [ Html.text <|
