@@ -105,6 +105,9 @@ export async function getManyAuthorityPdaForCollector(
             await deriveAtaPda(provider, collection.mint)
         )
     );
+
+    // TODO -- derive/fetch metaplex token-metadata for on-chain collection-info (marked or not)
+
     // fetch authority array
     const authorityArray: CollectionAuthority[] = await getManyAuthorityPda(
         programs.dap,
