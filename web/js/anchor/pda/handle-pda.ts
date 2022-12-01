@@ -1,6 +1,6 @@
 import {PublicKey} from "@solana/web3.js";
 import {Program} from "@project-serum/anchor";
-import {DapCool} from "../idl";
+import {DapCool} from "../idl/dap";
 
 export interface Handle {
     handle: string

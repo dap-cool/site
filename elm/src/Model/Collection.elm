@@ -18,6 +18,7 @@ type alias Meta =
     , index : Int
     , name : String
     , symbol : String
+    , uri: String
     , numMinted : Int -- encoded as big-int
     }
 
@@ -73,6 +74,7 @@ encoder collection =
                 , ( "index", Encode.int collection.meta.index )
                 , ( "name", Encode.string collection.meta.name )
                 , ( "symbol", Encode.string collection.meta.symbol )
+                , ( "uri", Encode.string collection.meta.uri )
                 , ( "numMinted", Encode.int collection.meta.numMinted )
                 ]
           )
@@ -101,11 +103,12 @@ decoder : Decode.Decoder Collection
 decoder =
     Decode.map2 Collection
         (Decode.field "meta" <|
-            Decode.map5 Meta
+            Decode.map6 Meta
                 (Decode.field "handle" Decode.string)
                 (Decode.field "index" Decode.int)
                 (Decode.field "name" Decode.string)
                 (Decode.field "symbol" Decode.string)
+                (Decode.field "uri" Decode.string)
                 (Decode.field "numMinted" Decode.int)
         )
         (Decode.field "accounts" <|

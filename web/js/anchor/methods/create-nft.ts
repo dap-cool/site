@@ -17,7 +17,8 @@ import {
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {buildMetaData, readLogo} from "../../shdw/shdw";
-import {DapCool} from "../idl";
+import {DapCool} from "../idl/dap";
+import {MplTokenMetadata} from "../idl/mpl";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 import {Creator} from "../pda/creator-pda";
 
@@ -39,6 +40,7 @@ export async function creatNft(
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
+        mpl: Program<MplTokenMetadata>,
         token: Program<SplToken>
     },
     handlePda: PublicKey,
@@ -331,6 +333,7 @@ export async function createCollection(
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
+        mpl: Program<MplTokenMetadata>,
         token: Program<SplToken>
     },
     creator: Creator,

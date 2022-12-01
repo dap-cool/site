@@ -1,5 +1,6 @@
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
-import {DapCool} from "../idl";
+import {DapCool} from "../idl/dap";
+import {MplTokenMetadata} from "../idl/mpl";
 import {getHandlePda} from "./handle-pda";
 import {deriveCreatorPda, getCreatorPda} from "./creator-pda";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "./collector-pda";
@@ -10,6 +11,7 @@ export async function getGlobal(
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
+        mpl: Program<MplTokenMetadata>,
         token: Program<SplToken>
     },
 ): Promise<void> {

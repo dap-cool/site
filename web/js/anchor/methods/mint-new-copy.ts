@@ -14,7 +14,8 @@ import {
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
     SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
-import {DapCool} from "../idl";
+import {DapCool} from "../idl/dap";
+import {MplTokenMetadata} from "../idl/mpl";
 import {deriveCollectionPda, deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
 
@@ -23,6 +24,7 @@ export async function mintNewCopy(
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
+        mpl: Program<MplTokenMetadata>,
         token: Program<SplToken>
     },
     handle: string,
