@@ -20,6 +20,7 @@ pub struct Collector {
 #[account]
 pub struct Collection {
     pub mint: Pubkey,
+    pub marked: bool,
     pub handle: String,
     pub index: u8,
 }

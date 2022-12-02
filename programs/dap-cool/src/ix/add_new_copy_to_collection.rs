@@ -37,5 +37,9 @@ pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
             ctx.accounts.collection_master_edition.to_account_info()
         ],
         signer_seeds,
-    ).map_err(Into::into)
+    )?;
+    // mark collection-pda
+    let collection_pda = &mut ctx.accounts.collection_pda;
+    collection_pda.marked = true;
+    Ok(())
 }

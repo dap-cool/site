@@ -76,6 +76,7 @@ pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
     // collection
     let collection = &mut ctx.accounts.collection_pda;
     collection.mint = ctx.accounts.new_mint.key();
+    collection.marked = false;
     collection.handle = ctx.accounts.handle.handle.clone();
     collection.index = n;
     Ok(())
