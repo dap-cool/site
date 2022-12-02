@@ -262,6 +262,7 @@ body global collector =
                                                 [ Html.text "unlock stuff"
                                                 ]
 
+                                -- TODO; href to secondary market + button to add to collection from secondary
                                 Nothing ->
                                     purchase
                     in

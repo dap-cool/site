@@ -18,7 +18,7 @@ type alias Meta =
     , index : Int
     , name : String
     , symbol : String
-    , uri: String
+    , uri : String
     , numMinted : Int -- encoded as big-int
     }
 

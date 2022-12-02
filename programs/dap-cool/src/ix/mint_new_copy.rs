@@ -4,6 +4,7 @@ use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::mint_new_edition_from_master_edition_via_token;
 use crate::{MintNewCopy, pda};
 
+// TODO; freeze until marking as part of collection
 pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
     let increment = ctx.accounts.authority.num_minted + 1;
     // unwrap authority bump
