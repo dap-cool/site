@@ -2,18 +2,18 @@ use anchor_lang::prelude::*;
 use mpl_token_metadata::state::{MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH, MAX_URI_LENGTH};
 use crate::pda::handle::MAX_HANDLE_LENGTH;
 
-pub const BUMP: &str = "authority";
+pub const SEED: &str = "authority";
 
 pub const SIZE: usize = 8 // discriminator
-    + MAX_HANDLE_LENGTH
+    + 4 + MAX_HANDLE_LENGTH
     + INDEX_SIZE
     + MINT_SIZE
     + COLLECTION_SIZE
     + NUM_MINTED
     + TOTAL_SUPPLY
-    + MAX_NAME_LENGTH
-    + MAX_SYMBOL_LENGTH
-    + MAX_URI_LENGTH;
+    + 4 + MAX_NAME_LENGTH
+    + 4 + MAX_SYMBOL_LENGTH
+    + 4 + MAX_URI_LENGTH;
 
 const INDEX_SIZE: usize = 1;
 

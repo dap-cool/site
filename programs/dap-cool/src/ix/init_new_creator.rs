@@ -17,7 +17,7 @@ pub fn ix(
     handle_pda.handle = handle;
     // collections
     handle_pda.num_collections = 0;
-    handle_pda.pinned = Pinned { collections: [0; 10] };
+    handle_pda.pinned = Pinned { collections: Vec::new() };
     // creator
     creator.authority = ctx.accounts.payer.key();
     creator.handle = handle_pda.key();

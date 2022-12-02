@@ -5,7 +5,7 @@ use crate::{AddNewCopyToCollection, pda};
 
 pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
     // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
+    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
     // build signer seeds
     let seeds = &[
         ctx.accounts.handle.handle.as_bytes(), &[n],

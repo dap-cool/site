@@ -56,13 +56,19 @@ pub mod dap_cool {
 #[instruction(handle: String)]
 pub struct InitNewCreator<'info> {
     #[account(init,
-    seeds = [handle.as_bytes()], bump,
+    seeds = [
+    pda::handle::SEED.as_bytes(),
+    handle.as_bytes()
+    ], bump,
     payer = payer,
     space = pda::handle::SIZE
     )]
     pub handle_pda: Account<'info, Handle>,
     #[account(init,
-    seeds = [payer.key().as_ref()], bump,
+    seeds = [
+    pda::creator::SEED.as_bytes(),
+    payer.key().as_ref()
+    ], bump,
     payer = payer,
     space = pda::creator::SIZE
     )]
@@ -76,12 +82,19 @@ pub struct InitNewCreator<'info> {
 #[derive(Accounts)]
 pub struct CreateNFT<'info> {
     #[account(mut,
-    seeds = [handle.handle.as_bytes()], bump,
+    seeds = [
+    pda::handle::SEED.as_bytes(),
+    handle.handle.as_bytes()
+    ], bump,
     constraint = handle.authority == payer.key()
     )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(init,
-    seeds = [handle.handle.as_bytes(), & [handle.num_collections + 1]], bump,
+    seeds = [
+    pda::authority::SEED.as_bytes(),
+    handle.handle.as_bytes(),
+    & [handle.num_collections + 1]
+    ], bump,
     payer = payer,
     space = pda::authority::SIZE
     )]
@@ -137,12 +150,19 @@ pub struct CreateNFT<'info> {
 #[derive(Accounts)]
 #[instruction(n: u8)]
 pub struct CreateCollection<'info> {
-    #[account(seeds = [handle.handle.as_bytes()], bump,
+    #[account(seeds = [
+    pda::handle::SEED.as_bytes(),
+    handle.handle.as_bytes()
+    ], bump,
     constraint = handle.authority == payer.key()
     )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut,
-    seeds = [handle.handle.as_bytes(), & [n]], bump
+    seeds = [
+    pda::authority::SEED.as_bytes(),
+    handle.handle.as_bytes(),
+    & [n]
+    ], bump
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
@@ -219,10 +239,17 @@ pub struct MintNewCopy<'info> {
     payer = payer,
     )]
     pub collection_pda: Box<Account<'info, Collection>>,
-    #[account(seeds = [handle.handle.as_bytes()], bump)]
+    #[account(seeds = [
+    pda::handle::SEED.as_bytes(),
+    handle.handle.as_bytes()
+    ], bump)]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut,
-    seeds = [handle.handle.as_bytes(), & [n]], bump,
+    seeds = [
+    pda::authority::SEED.as_bytes(),
+    handle.handle.as_bytes(),
+    & [n]
+    ], bump,
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
@@ -322,9 +349,29 @@ pub struct MintNewCopy<'info> {
 #[derive(Accounts)]
 #[instruction(n: u8)]
 pub struct AddNewCopyToCollection<'info> {
-    #[account(seeds = [handle.handle.as_bytes()], bump)]
+    #[account(seeds = [
+    pda::collector::SEED.as_bytes(),
+    payer.key().as_ref()
+    ], bump
+    )]
+    pub collector: Box<Account<'info, Collector>>,
+    #[account(mut,
+    seeds = [
+    pda::collector::SEED.as_bytes(),
+    payer.key().as_ref(), & [collector.num_collected]
+    ], bump
+    )]
+    pub collection_pda: Box<Account<'info, Collection>>,
+    #[account(seeds = [
+    pda::handle::SEED.as_bytes(),
+    handle.handle.as_bytes()
+    ], bump)]
     pub handle: Box<Account<'info, Handle>>,
-    #[account(mut, seeds = [handle.handle.as_bytes(), & [n]], bump)]
+    #[account(mut, seeds = [
+    pda::authority::SEED.as_bytes(),
+    handle.handle.as_bytes(),
+    & [n]
+    ], bump)]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
     address = authority.mint,

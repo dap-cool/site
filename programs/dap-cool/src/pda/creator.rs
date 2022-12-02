@@ -1,12 +1,18 @@
 use anchor_lang::prelude::*;
 
+pub const SEED: &str = "creator";
+
 pub const SIZE: usize = 8 // discriminator
+    + AUTHORITY_SIZE
     + HANDLE_SIZE;
 
-const HANDLE_SIZE: usize = 32 * 3;
+const AUTHORITY_SIZE: usize = 32;
+
+const HANDLE_SIZE: usize = 32;
 
 #[account]
-pub struct Creator { // TODO; SEED
+pub struct Creator {
+    // TODO; SEED
     pub authority: Pubkey,
-    pub handle: Pubkey
+    pub handle: Pubkey,
 }

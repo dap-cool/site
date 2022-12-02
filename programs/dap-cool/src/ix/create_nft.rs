@@ -14,7 +14,7 @@ pub fn ix(
     size: u64,
 ) -> Result<()> {
     // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::BUMP).unwrap();
+    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
     // increment collection
     let increment = ctx.accounts.handle.num_collections + 1;
     // build signer seeds

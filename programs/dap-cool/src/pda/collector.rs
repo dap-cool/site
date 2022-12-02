@@ -8,8 +8,9 @@ pub const COLLECTOR_SIZE: usize = 8 // discriminator
 
 pub const COLLECTION_SIZE: usize = 8 // discriminator
     + 32 // mint
-    + MAX_HANDLE_LENGTH // handle
-    + 1;
+    + 1 // marked
+    + 4 + MAX_HANDLE_LENGTH // handle
+    + 1; // index
 
 #[account]
 pub struct Collector {
