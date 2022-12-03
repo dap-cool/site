@@ -39,6 +39,9 @@ pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
         ],
         signer_seeds,
     )?;
+    // mark collector-pda
+    let collector = &mut ctx.accounts.collector;
+    collector.latest_marked = true;
     // mark collection-pda
     let collection_pda = &mut ctx.accounts.collection_pda;
     collection_pda.marked = true;

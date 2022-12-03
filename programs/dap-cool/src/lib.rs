@@ -366,6 +366,7 @@ pub struct AddNewCopyToCollection<'info> {
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()
     ], bump)]
+    // TODO: assert authority
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut, seeds = [
     pda::authority::SEED.as_bytes(),
@@ -405,8 +406,10 @@ pub struct AddNewCopyToCollection<'info> {
     /// CHECK: collection master-edition
     pub collection_master_edition: UncheckedAccount<'info>,
     #[account(mut,
+    address = collection_pda.mint.key(),
     owner = token_program.key()
     )]
+    // TODO: drop mut here ??
     pub new_mint: Account<'info, Mint>,
     #[account(mut,
     seeds = [

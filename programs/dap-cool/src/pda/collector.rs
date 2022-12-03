@@ -4,7 +4,8 @@ use crate::pda::handle::MAX_HANDLE_LENGTH;
 pub const SEED: &str = "collector";
 
 pub const COLLECTOR_SIZE: usize = 8 // discriminator
-    + 1; // num-collected
+    + 1 // num-collected
+    + 1; // latest-marked
 
 pub const COLLECTION_SIZE: usize = 8 // discriminator
     + 32 // mint
@@ -15,6 +16,7 @@ pub const COLLECTION_SIZE: usize = 8 // discriminator
 #[account]
 pub struct Collector {
     pub num_collected: u8,
+    pub latest_marked: bool,
 }
 
 #[account]

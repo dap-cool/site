@@ -1,7 +1,6 @@
 import {PublicKey, SystemProgram} from "@solana/web3.js";
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import {DapCool} from "../idl/dap";
-import {MplTokenMetadata} from "../idl/mpl";
 import {deriveCreatorPda} from "../pda/creator-pda";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 import {getManyAuthorityPdaForCollector} from "../pda/authority-pda";
@@ -11,7 +10,6 @@ export async function initNewHandle(
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
-        mpl: Program<MplTokenMetadata>,
         token: Program<SplToken>
     },
     handle: string,

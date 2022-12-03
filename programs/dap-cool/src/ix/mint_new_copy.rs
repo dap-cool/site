@@ -2,11 +2,14 @@ use anchor_lang::{Key, ToAccountInfo};
 use anchor_lang::prelude::{Context, CpiContext, Result};
 use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::mint_new_edition_from_master_edition_via_token;
-use crate::{MintNewCopy, pda};
+use crate::{Collector, MintNewCopy, pda};
+use crate::error::CustomErrors;
 
 // TODO; freeze until marking as part of collection
 pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
-    let increment = ctx.accounts.authority.num_minted + 1;
+    // assert latest copy in collections is marked
+    let collector: &mut Collector = &mut ctx.accounts.collector;
+    assert_latest_copy_is_marked(collector)?;
     // unwrap authority bump
     let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
     // build signer seeds
@@ -27,6 +30,7 @@ pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
         ata_cpi_accounts,
     );
     // build new-edition instruction
+    let increment = ctx.accounts.authority.num_minted + 1;
     let ix_new_edition = mint_new_edition_from_master_edition_via_token(
         ctx.accounts.metadata_program.key(),
         ctx.accounts.new_metadata.key(),
@@ -69,12 +73,9 @@ pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
         ],
         signer_seeds,
     )?;
-    // increment
-    let authority = &mut ctx.accounts.authority;
-    authority.num_minted = increment;
     // collector
-    let collector = &mut ctx.accounts.collector;
     collector.num_collected += 1;
+    collector.latest_marked = false;
     // collection
     let collection = &mut ctx.accounts.collection_pda;
     collection.mint = ctx.accounts.new_mint.key();
@@ -82,4 +83,12 @@ pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
     collection.handle = ctx.accounts.handle.handle.clone();
     collection.index = n;
     Ok(())
+}
+
+fn assert_latest_copy_is_marked(collector: &Collector) -> Result<()> {
+    if collector.latest_marked || collector.num_collected == 0 {
+        Ok(())
+    } else {
+        Err(CustomErrors::EveryCollectionMustBeMarked.into())
+    }
 }

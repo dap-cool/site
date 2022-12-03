@@ -20,9 +20,12 @@ export async function deriveCreatorPda(provider: AnchorProvider, program: Progra
     let creatorPda: PublicKey, _;
     [creatorPda, _] = await PublicKey.findProgramAddress(
         [
+            Buffer.from(SEED),
             provider.wallet.publicKey.toBuffer()
         ],
         program.programId
     );
     return creatorPda
 }
+
+const SEED = "creator";

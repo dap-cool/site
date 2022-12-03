@@ -675,6 +675,8 @@ update msg model =
                                                     let
                                                         local =
                                                             case model.state.local of
+                                                                -- TODO; repeat for selected-collection
+                                                                --  and on connect. this is disconnect
                                                                 Local.Collect (Collector.SelectedCreator _ withCollections) ->
                                                                     Local.Collect <|
                                                                         Collector.SelectedCreator

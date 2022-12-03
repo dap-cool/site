@@ -236,7 +236,7 @@ export async function main(app, json) {
                 }
             }
             // or collector purchase collection
-        } else if (sender === "collector-purchase-collection") {
+        } else if (sender === "collector-print-copy") {
             // get phantom
             phantom = await getPhantom(app);
             if (phantom) {

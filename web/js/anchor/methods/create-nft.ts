@@ -18,7 +18,6 @@ import {
 } from "../util/constants";
 import {buildMetaData, readLogo} from "../../shdw/shdw";
 import {DapCool} from "../idl/dap";
-import {MplTokenMetadata} from "../idl/mpl";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 import {Creator} from "../pda/creator-pda";
 
@@ -40,7 +39,6 @@ export async function creatNft(
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
-        mpl: Program<MplTokenMetadata>,
         token: Program<SplToken>
     },
     handlePda: PublicKey,
@@ -268,9 +266,10 @@ export async function creatNft(
             const justCreated = {
                 meta: {
                     handle: handle.handle,
-                    index: authorityIndex,
                     name: form.meta.name,
                     symbol: form.meta.symbol,
+                    index: authorityIndex,
+                    uri: metadataUrl,
                     numMinted: 0,
                 },
                 accounts: {
@@ -333,7 +332,6 @@ export async function createCollection(
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
-        mpl: Program<MplTokenMetadata>,
         token: Program<SplToken>
     },
     creator: Creator,
@@ -413,13 +411,7 @@ export async function createCollection(
         console.log("collection", collection.publicKey.toString());
         // build response for elm
         const justMarked = {
-            meta: {
-                handle: handle.handle,
-                name: authority.meta.name,
-                symbol: authority.meta.symbol,
-                index: authority.meta.index,
-                numMinted: 0
-            },
+            meta: authority.meta,
             accounts: {
                 pda: authority.accounts.pda,
                 mint: authority.accounts.mint,

@@ -18,12 +18,15 @@ export async function deriveHandlePda(program: Program<DapCool>, handle: string)
     let pda, _;
     [pda, _] = await PublicKey.findProgramAddress(
         [
+            Buffer.from(SEED),
             Buffer.from(handle)
         ],
         program.programId
     );
     return pda
 }
+
+const SEED = "handle";
 
 export async function getHandlePda(program: Program<DapCool>, pda: PublicKey): Promise<Handle> {
     const fetched = await program.account.handle.fetch(pda);

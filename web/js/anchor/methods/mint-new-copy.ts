@@ -15,7 +15,6 @@ import {
     SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {DapCool} from "../idl/dap";
-import {MplTokenMetadata} from "../idl/mpl";
 import {deriveCollectionPda, deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
 
@@ -24,7 +23,6 @@ export async function mintNewCopy(
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
-        mpl: Program<MplTokenMetadata>,
         token: Program<SplToken>
     },
     handle: string,
@@ -202,7 +200,7 @@ export async function mintNewCopy(
     // TODO; separate calls ?
     await addNewCopyToCollection(
         provider,
-        programs.dap,
+        programs,
         index,
         handlePda,
         authority.accounts.pda,
@@ -215,6 +213,8 @@ export async function mintNewCopy(
     );
     // replace master-mint with copied-mint
     authority.accounts.mint = newMint.publicKey;
+    // replace master-copy with null (unmarked)
+    // authority.accounts.collection = null; TODO
     // add associated-token-account balance
     authority.accounts.ata = {
         balance: 1
@@ -263,7 +263,10 @@ export async function mintNewCopy(
 
 async function addNewCopyToCollection(
     provider: AnchorProvider,
-    program: Program<DapCool>,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    },
     index: number,
     handle: PublicKey,
     authority: PublicKey,
@@ -274,11 +277,32 @@ async function addNewCopyToCollection(
     newMint: PublicKey,
     newMetadata: PublicKey
 ): Promise<void> {
+    // derive collector pda
+    const collectorPda: PublicKey = await deriveCollectorPda(
+        provider,
+        programs.dap
+    );
+    // fetch collector
+    const collector = await getCollectorPda(
+        programs.dap,
+        collectorPda
+    );
+    // fetch all collected TODO
+    // const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
+    // const collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
+    // derive collection pda
+    const collectionPda: PublicKey = await deriveCollectionPda(
+        provider,
+        programs.dap,
+        collector.numCollected
+    );
     // invoke rpc
-    await program.methods
+    await programs.dap.methods
         .addNewCopyToCollection(index as any)
         .accounts(
             {
+                collector: collectorPda,
+                collectionPda: collectionPda,
                 handle: handle,
                 authority: authority,
                 mint: mint,

@@ -8,6 +8,7 @@ export interface Collector {
 
 export interface Collection {
     mint: PublicKey,
+    marked: boolean,
     handle: string,
     index: number,
 }
@@ -35,7 +36,7 @@ export async function getAllCollectionPda(
         derived
     );
     console.log("fetched -->", fetched);
-    return fetched.filter(Boolean).map(obj => {
+    return fetched.map(obj => {
             return obj as Collection;
         }
     )

@@ -302,6 +302,16 @@ export type DapCool = {
       "name": "addNewCopyToCollection",
       "accounts": [
         {
+          "name": "collector",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collectionPda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -428,6 +438,10 @@ export type DapCool = {
           {
             "name": "numCollected",
             "type": "u8"
+          },
+          {
+            "name": "latestMarked",
+            "type": "bool"
           }
         ]
       }
@@ -440,6 +454,10 @@ export type DapCool = {
           {
             "name": "mint",
             "type": "publicKey"
+          },
+          {
+            "name": "marked",
+            "type": "bool"
           },
           {
             "name": "handle",
@@ -503,12 +521,7 @@ export type DapCool = {
         "fields": [
           {
             "name": "collections",
-            "type": {
-              "array": [
-                "u8",
-                10
-              ]
-            }
+            "type": "bytes"
           }
         ]
       }
@@ -519,6 +532,11 @@ export type DapCool = {
       "code": 6000,
       "name": "HandleTooLong",
       "msg": "Max handle length is 16 bytes."
+    },
+    {
+      "code": 6001,
+      "name": "EveryCollectionMustBeMarked",
+      "msg": "Your previous collection must be marked before purchasing another."
     }
   ]
 };
@@ -827,6 +845,16 @@ export const IDL: DapCool = {
       "name": "addNewCopyToCollection",
       "accounts": [
         {
+          "name": "collector",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collectionPda",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -953,6 +981,10 @@ export const IDL: DapCool = {
           {
             "name": "numCollected",
             "type": "u8"
+          },
+          {
+            "name": "latestMarked",
+            "type": "bool"
           }
         ]
       }
@@ -965,6 +997,10 @@ export const IDL: DapCool = {
           {
             "name": "mint",
             "type": "publicKey"
+          },
+          {
+            "name": "marked",
+            "type": "bool"
           },
           {
             "name": "handle",
@@ -1028,12 +1064,7 @@ export const IDL: DapCool = {
         "fields": [
           {
             "name": "collections",
-            "type": {
-              "array": [
-                "u8",
-                10
-              ]
-            }
+            "type": "bytes"
           }
         ]
       }
@@ -1044,6 +1075,11 @@ export const IDL: DapCool = {
       "code": 6000,
       "name": "HandleTooLong",
       "msg": "Max handle length is 16 bytes."
+    },
+    {
+      "code": 6001,
+      "name": "EveryCollectionMustBeMarked",
+      "msg": "Your previous collection must be marked before purchasing another."
     }
   ]
 };
