@@ -12,7 +12,6 @@ const HANDLE_SIZE: usize = 32;
 
 #[account]
 pub struct Creator {
-    // TODO; SEED
     pub authority: Pubkey,
     pub handle: Pubkey,
 }

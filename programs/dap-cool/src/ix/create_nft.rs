@@ -19,6 +19,7 @@ pub fn ix(
     let increment = ctx.accounts.handle.num_collections + 1;
     // build signer seeds
     let seeds = &[
+        pda::authority::SEED.as_bytes(),
         ctx.accounts.handle.handle.as_bytes(), &[increment],
         &[authority_bump]
     ];

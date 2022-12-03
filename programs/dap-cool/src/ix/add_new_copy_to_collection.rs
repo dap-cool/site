@@ -8,6 +8,7 @@ pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
     let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
     // build signer seeds
     let seeds = &[
+        pda::authority::SEED.as_bytes(),
         ctx.accounts.handle.handle.as_bytes(), &[n],
         &[authority_bump]
     ];
