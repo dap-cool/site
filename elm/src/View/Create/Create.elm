@@ -1,7 +1,7 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (accept, class, id, placeholder, src, type_, width)
+import Html.Attributes exposing (accept, class, href, id, placeholder, src, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection as Collection
 import Model.Creator.Creator exposing (Creator(..))
@@ -375,9 +375,11 @@ body creator =
                                                                     , onClick <|
                                                                         FromCreator <|
                                                                             CreatorMsg.Existing fromGlobal <|
-                                                                                ExistingMsg.CreateNewCollection form
+                                                                                ExistingMsg.CreateNewNft form
                                                                     ]
-                                                                    [ Html.text "create"
+                                                                    [ Html.text
+                                                                        """create nft "original" edition
+                                                                        """
                                                                     ]
                                                                 ]
 
@@ -445,10 +447,29 @@ body creator =
                                             collection
                                         , Html.div
                                             []
-                                            [ Html.text
-                                                """This NFT still needs to be marked as an on-chain collection
-                                                before we can start listing the primary sale.
-                                                """
+                                            [ Html.div
+                                                []
+                                                [ Html.text
+                                                    """Your NFT has successfully been created! 😁
+                                                    """
+                                                , Html.a
+                                                    [ class "has-sky-blue-text"
+                                                    , href <|
+                                                        String.concat
+                                                            [ "https://explorer.solana.com/address/"
+                                                            , collection.accounts.mint
+                                                            ]
+                                                    ]
+                                                    [ Html.text "view it here 👀"
+                                                    ]
+                                                ]
+                                            , Html.div
+                                                []
+                                                [ Html.text
+                                                    """We still need to be create an official collection "stamp"
+                                                    that proves authenticity & then we can open the primary sale!
+                                                    """
+                                                ]
                                             , Html.div
                                                 []
                                                 [ Html.button
@@ -456,9 +477,9 @@ body creator =
                                                     , onClick <|
                                                         FromCreator <|
                                                             CreatorMsg.Existing fromGlobal <|
-                                                                ExistingMsg.MarkNewCollection collection
+                                                                ExistingMsg.CreateNewCollection collection
                                                     ]
-                                                    [ Html.text "mark collection"
+                                                    [ Html.text "create official collection stamp"
                                                     ]
                                                 ]
                                             ]
@@ -506,7 +527,7 @@ body creator =
                                                         , onClick <|
                                                             FromCreator <|
                                                                 CreatorMsg.Existing fromGlobal <|
-                                                                    ExistingMsg.MarkNewCollection collection
+                                                                    ExistingMsg.CreateNewCollection collection
                                                         ]
                                                         [ Html.text "mark collection"
                                                         ]

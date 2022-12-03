@@ -113,7 +113,7 @@ export async function creatNft(
             app.ports.success.send(
                 JSON.stringify(
                     {
-                        listener: "creator-creating-new-collection",
+                        listener: "creator-creating-new-nft",
                         more: JSON.stringify(
                             {
                                 global: {
@@ -136,7 +136,7 @@ export async function creatNft(
             app.ports.success.send(
                 JSON.stringify(
                     {
-                        listener: "creator-creating-new-collection",
+                        listener: "creator-creating-new-nft",
                         more: JSON.stringify(
                             {
                                 global: {
@@ -187,7 +187,7 @@ export async function creatNft(
             app.ports.success.send(
                 JSON.stringify(
                     {
-                        listener: "creator-creating-new-collection",
+                        listener: "creator-creating-new-nft",
                         more: JSON.stringify(
                             {
                                 global: {
@@ -211,7 +211,7 @@ export async function creatNft(
             app.ports.success.send(
                 JSON.stringify(
                     {
-                        listener: "creator-creating-new-collection",
+                        listener: "creator-creating-new-nft",
                         more: JSON.stringify(
                             {
                                 global: {
@@ -285,7 +285,7 @@ export async function creatNft(
             app.ports.success.send(
                 JSON.stringify(
                     {
-                        listener: "creator-created-new-collection",
+                        listener: "creator-created-new-nft",
                         more: JSON.stringify(
                             {
                                 global: {
@@ -308,7 +308,7 @@ export async function creatNft(
             app.ports.success.send(
                 JSON.stringify(
                     {
-                        listener: "creator-creating-new-collection",
+                        listener: "creator-creating-new-nft",
                         more: JSON.stringify(
                             {
                                 global: {
@@ -427,7 +427,7 @@ export async function createCollection(
         app.ports.success.send(
             JSON.stringify(
                 {
-                    listener: "creator-marked-new-collection",
+                    listener: "creator-created-new-collection",
                     more: JSON.stringify(
                         {
                             global: {
@@ -446,7 +446,7 @@ export async function createCollection(
         console.log(error);
         // send caught exception to elm
         app.ports.exception.send(
-            "caught exception marking new collection!"
+            "caught exception creating new collection!"
         );
     }
 }

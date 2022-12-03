@@ -221,10 +221,11 @@ body global collector =
                                                 [ Html.div
                                                     []
                                                     [ Html.text
-                                                        """You've already purchased this NFT --
+                                                        """You've successfully purchased this NFT 😁 --
                                                         """
                                                     , Html.a
-                                                        [ href <|
+                                                        [ class "has-sky-blue-text"
+                                                        , href <|
                                                             String.concat
                                                                 [ "https://explorer.solana.com/address/"
                                                                 , copiedEdition.accounts.mint

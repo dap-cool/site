@@ -8,7 +8,8 @@ import Util.Decode as Util
 
 
 type alias WithCollection =
-    { collection : Collection
+    { master : Collection
+    , copied : Collection
     , global : Global
     }
 
@@ -25,8 +26,9 @@ decode string =
 
 decoder : Decode.Decoder WithCollection
 decoder =
-    Decode.map2 WithCollection
-        (Decode.field "collection" Collection.decoder)
+    Decode.map3 WithCollection
+        (Decode.field "master" Collection.decoder)
+        (Decode.field "copied" Collection.decoder)
         (Decode.field "global" globalDecoder)
 
 

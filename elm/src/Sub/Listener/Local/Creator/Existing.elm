@@ -4,22 +4,22 @@ module Sub.Listener.Local.Creator.Existing exposing (Existing(..), fromString)
 type
     Existing
     -- creating collection
-    = CreatingNewCollection -- processing multi-part step-one
-    | CreatedNewCollection -- ready for step two
-    | MarkedNewCollection -- step two
+    = CreatingNewNft -- processing multi-part step-one
+    | CreatedNewNft -- ready for step two
+    | CreatedNewCollection -- step two
 
 
 fromString : String -> Maybe Existing
 fromString string =
     case string of
-        "creator-creating-new-collection" ->
-            Just <| CreatingNewCollection
+        "creator-creating-new-nft" ->
+            Just <| CreatingNewNft
+
+        "creator-created-new-nft" ->
+            Just <| CreatedNewNft
 
         "creator-created-new-collection" ->
             Just <| CreatedNewCollection
-
-        "creator-marked-new-collection" ->
-            Just <| MarkedNewCollection
 
         _ ->
             Nothing

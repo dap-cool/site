@@ -1,5 +1,5 @@
-import {AnchorProvider, BN, Program, SplToken, web3} from "@project-serum/anchor";
-import {Keypair, PublicKey} from "@solana/web3.js";
+import {AnchorProvider, BN, Program, SplToken} from "@project-serum/anchor";
+import {Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
 import {
     CollectionAuthority,
     getAuthorityPda,
@@ -15,7 +15,13 @@ import {
     SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {DapCool} from "../idl/dap";
-import {deriveCollectionPda, deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
+import {
+    deriveCollectionPda,
+    deriveCollectorPda,
+    getAllButLastCollectionPda,
+    getAllCollectionPda, getCollectionPda,
+    getCollectorPda
+} from "../pda/collector-pda";
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
 
 export async function mintNewCopy(
@@ -28,294 +34,391 @@ export async function mintNewCopy(
     handle: string,
     index: number
 ) {
-    // derive collector pda
-    const collectorPda: PublicKey = await deriveCollectorPda(
-        provider,
-        programs.dap
-    );
-    // try getting collector
-    let collected: CollectionAuthority[]
-    let collectorNextCollectionIndex: number;
     try {
-        // fetch collector
-        const collector = await getCollectorPda(
-            programs.dap,
-            collectorPda
+        // derive collector pda
+        const collectorPda: PublicKey = await deriveCollectorPda(
+            provider,
+            programs.dap
         );
-        // fetch all collected
-        const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
-        collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
-        // increment
-        collectorNextCollectionIndex = collector.numCollected + 1;
-    } catch (error) {
-        console.log("could not find collector on-chain");
-        collectorNextCollectionIndex = 1;
-    }
-    // derive collection pda
-    const collectionPda: PublicKey = await deriveCollectionPda(
-        provider,
-        programs.dap,
-        collectorNextCollectionIndex
-    );
-    // derive handle pda
-    const handlePda: PublicKey = await deriveHandlePda(
-        programs.dap,
-        handle
-    );
-    // get authority pda
-    const authority: CollectionAuthority = await getAuthorityPda(
-        programs.dap,
-        handle,
-        index
-    );
-    // derive metadata
-    let metadata: PublicKey, _;
-    [metadata, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.accounts.mint.toBuffer(),
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    )
-    // derive master-edition
-    let masterEdition: PublicKey;
-    [masterEdition, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.accounts.mint.toBuffer(),
-            Buffer.from(MPL_EDITION),
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    )
-    // derive master-edition-ata
-    let masterEditionAta: PublicKey;
-    [masterEditionAta, _] = await web3.PublicKey.findProgramAddress(
-        [
-            authority.accounts.pda.toBuffer(),
-            SPL_TOKEN_PROGRAM_ID.toBuffer(),
-            authority.accounts.mint.toBuffer()
-        ],
-        SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-    )
-    // derive key-pair for new-edition-mint
-    const newMint: Keypair = web3.Keypair.generate();
-    // derive new-metadata
-    let newMetadata: PublicKey;
-    [newMetadata, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            newMint.publicKey.toBuffer(),
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    )
-    // derive new-edition
-    let newEdition: PublicKey;
-    [newEdition, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            newMint.publicKey.toBuffer(),
-            Buffer.from(MPL_EDITION),
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    )
-    // derive new-edition-mark
-    const n = authority.meta.numMinted + 1;
-    const newEditionMarkLiteral = (new BN(n)).div(new BN(248)).toString();
-    let newEditionMark: PublicKey;
-    [newEditionMark, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.accounts.mint.toBuffer(),
-            Buffer.from(MPL_EDITION),
-            Buffer.from(newEditionMarkLiteral)
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    )
-    // derive new-edition-ata
-    let newEditionAta: PublicKey;
-    [newEditionAta, _] = await web3.PublicKey.findProgramAddress(
-        [
-            provider.wallet.publicKey.toBuffer(),
-            SPL_TOKEN_PROGRAM_ID.toBuffer(),
-            newMint.publicKey.toBuffer()
-        ],
-        SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-    )
-    // invoke rpc
-    console.log("minting new copy");
-    await programs.dap.methods
-        .mintNewCopy(index as any)
-        .accounts(
-            {
-                collector: collectorPda,
-                collectionPda: collectionPda,
-                handle: handlePda,
-                authority: authority.accounts.pda,
-                mint: authority.accounts.mint,
-                metadata: metadata,
-                masterEdition: masterEdition,
-                masterEditionAta: masterEditionAta,
-                newMint: newMint.publicKey,
-                newMetadata: newMetadata,
-                newEdition: newEdition,
-                newEditionMark: newEditionMark,
-                newEditionAta: newEditionAta,
-                payer: provider.wallet.publicKey,
-                tokenProgram: SPL_TOKEN_PROGRAM_ID,
-                associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
-                metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
-                systemProgram: web3.SystemProgram.programId,
-                rent: web3.SYSVAR_RENT_PUBKEY,
-            }
-        ).signers([newMint])
-        .rpc();
-    // derive collection metadata
-    let collectionMetadata: PublicKey;
-    [collectionMetadata, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.accounts.collection.toBuffer(),
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    )
-    // derive collection master-edition
-    let collectionMasterEdition: PublicKey;
-    [collectionMasterEdition, _] = await web3.PublicKey.findProgramAddress(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            authority.accounts.collection.toBuffer(),
-            Buffer.from(MPL_EDITION),
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    )
-    // invoke rpc
-    console.log("adding new copy to collection");
-    // TODO; separate calls ?
-    await addNewCopyToCollection(
-        provider,
-        programs,
-        index,
-        handlePda,
-        authority.accounts.pda,
-        authority.accounts.mint,
-        authority.accounts.collection,
-        collectionMetadata,
-        collectionMasterEdition,
-        newMint.publicKey,
-        newMetadata
-    );
-    // replace master-mint with copied-mint
-    authority.accounts.mint = newMint.publicKey;
-    // replace master-copy with null (unmarked)
-    // authority.accounts.collection = null; TODO
-    // add associated-token-account balance
-    authority.accounts.ata = {
-        balance: 1
-    };
-    // fetch collected
-    if (collectorNextCollectionIndex === 1) {
-        collected = [authority];
-    } else {
-        collected = collected.concat([authority]);
-    }
-    // fetch collections & set global
-    let global;
-    try {
-        const creatorPda = await deriveCreatorPda(provider, programs.dap);
-        const creator = await getCreatorPda(programs.dap, creatorPda);
-        const fetchedHandle = await getHandlePda(programs.dap, creator.handle);
-        const collections = await getManyAuthorityPdaForCreator(programs.dap, fetchedHandle);
-        global = {
-            handle: fetchedHandle.handle,
-            wallet: provider.wallet.publicKey.toString(),
-            collections: collections,
-            collected: collected
-        };
-    } catch (error) {
-        console.log("could not find creator on-chain");
-        global = {
-            wallet: provider.wallet.publicKey.toString(),
-            collected: collected
+        // try getting collector
+        let collected: CollectionAuthority[]
+        let collectorNextCollectionIndex: number;
+        try {
+            // fetch collector
+            const collector = await getCollectorPda(
+                programs.dap,
+                collectorPda
+            );
+            // fetch all collected
+            const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
+            collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
+            // increment
+            collectorNextCollectionIndex = collector.numCollected + 1;
+        } catch (error) {
+            console.log("could not find collector on-chain");
+            collectorNextCollectionIndex = 1;
         }
-    }
-    // send success to elm
-    app.ports.success.send(
-        JSON.stringify(
-            {
-                listener: "collector-collection-purchased",
-                more: JSON.stringify(
-                    {
-                        collection: authority,
-                        global: global
-                    }
-                )
-            }
+        // derive collection pda
+        const collectionPda: PublicKey = await deriveCollectionPda(
+            provider,
+            programs.dap,
+            collectorNextCollectionIndex
+        );
+        // derive handle pda
+        const handlePda: PublicKey = await deriveHandlePda(
+            programs.dap,
+            handle
+        );
+        // get authority pda
+        const authority: CollectionAuthority = await getAuthorityPda(
+            programs.dap,
+            handle,
+            index
+        );
+        // derive metadata
+        let metadata: PublicKey, _;
+        [metadata, _] = await PublicKey.findProgramAddress(
+            [
+                Buffer.from(MPL_PREFIX),
+                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                authority.accounts.mint.toBuffer(),
+            ],
+            MPL_TOKEN_METADATA_PROGRAM_ID
         )
-    );
+        // derive master-edition
+        let masterEdition: PublicKey;
+        [masterEdition, _] = await PublicKey.findProgramAddress(
+            [
+                Buffer.from(MPL_PREFIX),
+                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                authority.accounts.mint.toBuffer(),
+                Buffer.from(MPL_EDITION),
+            ],
+            MPL_TOKEN_METADATA_PROGRAM_ID
+        )
+        // derive master-edition-ata
+        let masterEditionAta: PublicKey;
+        [masterEditionAta, _] = await PublicKey.findProgramAddress(
+            [
+                authority.accounts.pda.toBuffer(),
+                SPL_TOKEN_PROGRAM_ID.toBuffer(),
+                authority.accounts.mint.toBuffer()
+            ],
+            SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+        )
+        // derive key-pair for new-edition-mint
+        const newMint: Keypair = Keypair.generate();
+        // derive new-metadata
+        let newMetadata: PublicKey;
+        [newMetadata, _] = await PublicKey.findProgramAddress(
+            [
+                Buffer.from(MPL_PREFIX),
+                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                newMint.publicKey.toBuffer(),
+            ],
+            MPL_TOKEN_METADATA_PROGRAM_ID
+        )
+        // derive new-edition
+        let newEdition: PublicKey;
+        [newEdition, _] = await PublicKey.findProgramAddress(
+            [
+                Buffer.from(MPL_PREFIX),
+                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                newMint.publicKey.toBuffer(),
+                Buffer.from(MPL_EDITION),
+            ],
+            MPL_TOKEN_METADATA_PROGRAM_ID
+        )
+        // derive new-edition-mark
+        const n = authority.meta.numMinted + 1;
+        const newEditionMarkLiteral = (new BN(n)).div(new BN(248)).toString();
+        let newEditionMark: PublicKey;
+        [newEditionMark, _] = await PublicKey.findProgramAddress(
+            [
+                Buffer.from(MPL_PREFIX),
+                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                authority.accounts.mint.toBuffer(),
+                Buffer.from(MPL_EDITION),
+                Buffer.from(newEditionMarkLiteral)
+            ],
+            MPL_TOKEN_METADATA_PROGRAM_ID
+        )
+        // derive new-edition-ata
+        let newEditionAta: PublicKey;
+        [newEditionAta, _] = await PublicKey.findProgramAddress(
+            [
+                provider.wallet.publicKey.toBuffer(),
+                SPL_TOKEN_PROGRAM_ID.toBuffer(),
+                newMint.publicKey.toBuffer()
+            ],
+            SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+        )
+        // invoke rpc
+        console.log("minting new copy");
+        await programs.dap.methods
+            .mintNewCopy(index as any)
+            .accounts(
+                {
+                    collector: collectorPda,
+                    collectionPda: collectionPda,
+                    handle: handlePda,
+                    authority: authority.accounts.pda,
+                    mint: authority.accounts.mint,
+                    metadata: metadata,
+                    masterEdition: masterEdition,
+                    masterEditionAta: masterEditionAta,
+                    newMint: newMint.publicKey,
+                    newMetadata: newMetadata,
+                    newEdition: newEdition,
+                    newEditionMark: newEditionMark,
+                    newEditionAta: newEditionAta,
+                    payer: provider.wallet.publicKey,
+                    tokenProgram: SPL_TOKEN_PROGRAM_ID,
+                    associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
+                    metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
+                    systemProgram: SystemProgram.programId,
+                    rent: SYSVAR_RENT_PUBKEY,
+                }
+            ).signers([newMint])
+            .rpc();
+        // replace master-mint with copied-mint
+        const lastCollectedAuthority = authority;
+        lastCollectedAuthority.accounts.mint = newMint.publicKey;
+        // replace master-copy with null (unmarked)
+        lastCollectedAuthority.accounts.collection = null;
+        // add associated-token-account balance
+        lastCollectedAuthority.accounts.ata = {
+            balance: 1
+        };
+        // build collected
+        if (collectorNextCollectionIndex === 1) {
+            collected = [lastCollectedAuthority];
+        } else {
+            collected.concat([lastCollectedAuthority]);
+        }
+        // fetch collections & set global
+        let global;
+        try {
+            const creatorPda = await deriveCreatorPda(
+                provider,
+                programs.dap
+            );
+            const creator = await getCreatorPda(
+                programs.dap,
+                creatorPda
+            );
+            const fetchedHandle = await getHandlePda(
+                programs.dap,
+                creator.handle
+            );
+            const collections = await getManyAuthorityPdaForCreator(
+                programs.dap,
+                fetchedHandle
+            );
+            global = {
+                handle: fetchedHandle.handle,
+                wallet: provider.wallet.publicKey.toString(),
+                collections: collections,
+                collected: collected
+            };
+        } catch (error) {
+            console.log("could not find creator on-chain");
+            global = {
+                wallet: provider.wallet.publicKey.toString(),
+                collected: collected
+            }
+        }
+        // send success to elm
+        app.ports.success.send(
+            JSON.stringify(
+                {
+                    listener: "collector-collection-printed",
+                    more: JSON.stringify(
+                        {
+                            master: authority,
+                            copied: lastCollectedAuthority,
+                            global: global
+                        }
+                    )
+                }
+            )
+        );
+    } catch (error) {
+        console.log(error);
+        // send caught exception to elm
+        app.ports.exception.send(
+            "caught exception printing collection!"
+        );
+    }
 }
 
-async function addNewCopyToCollection(
+export async function addNewCopyToCollection(
+    app,
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>;
         token: Program<SplToken>
     },
+    handle: string,
     index: number,
-    handle: PublicKey,
-    authority: PublicKey,
-    mint: PublicKey,
-    collection: PublicKey,
-    collectionMetadata: PublicKey,
-    collectionMasterEdition: PublicKey,
-    newMint: PublicKey,
-    newMetadata: PublicKey
 ): Promise<void> {
-    // derive collector pda
-    const collectorPda: PublicKey = await deriveCollectorPda(
-        provider,
-        programs.dap
-    );
-    // fetch collector
-    const collector = await getCollectorPda(
-        programs.dap,
-        collectorPda
-    );
-    // fetch all collected TODO
-    // const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
-    // const collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
-    // derive collection pda
-    const collectionPda: PublicKey = await deriveCollectionPda(
-        provider,
-        programs.dap,
-        collector.numCollected
-    );
-    // invoke rpc
-    await programs.dap.methods
-        .addNewCopyToCollection(index as any)
-        .accounts(
-            {
-                collector: collectorPda,
-                collectionPda: collectionPda,
-                handle: handle,
-                authority: authority,
-                mint: mint,
-                collection: collection,
-                collectionMetadata: collectionMetadata,
-                collectionMasterEdition: collectionMasterEdition,
-                newMint: newMint,
-                newMetadata: newMetadata,
-                payer: provider.wallet.publicKey,
-                tokenProgram: SPL_TOKEN_PROGRAM_ID,
-                metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
-                systemProgram: web3.SystemProgram.programId,
-                rent: web3.SYSVAR_RENT_PUBKEY,
+    try {
+        // derive collector pda
+        const collectorPda: PublicKey = await deriveCollectorPda(
+            provider,
+            programs.dap
+        );
+        // fetch collector
+        const collector = await getCollectorPda(
+            programs.dap,
+            collectorPda
+        );
+        // derive all but last collected
+        const collectedPda = await getAllButLastCollectionPda(
+            provider,
+            programs.dap,
+            collector
+        );
+        // fetch all but last collected
+        const collectedButLast = await getManyAuthorityPdaForCollector(
+            provider,
+            programs,
+            collectedPda
+        );
+        // derive last collected pda
+        const lastCollectionPda: PublicKey = await deriveCollectionPda(
+            provider,
+            programs.dap,
+            collector.numCollected
+        );
+        // fetch last collected
+        const lastCollected = await getCollectionPda(
+            programs.dap,
+            lastCollectionPda
+        );
+        // derive handle pda
+        const handlePda: PublicKey = await deriveHandlePda(
+            programs.dap,
+            handle
+        );
+        // get authority pda
+        const authority: CollectionAuthority = await getAuthorityPda(
+            programs.dap,
+            handle,
+            index
+        );
+        // derive collection metadata
+        let collectionMetadata: PublicKey, _;
+        [collectionMetadata, _] = await PublicKey.findProgramAddress(
+            [
+                Buffer.from(MPL_PREFIX),
+                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                authority.accounts.collection.toBuffer(),
+            ],
+            MPL_TOKEN_METADATA_PROGRAM_ID
+        );
+        // derive collection master-edition
+        let collectionMasterEdition: PublicKey;
+        [collectionMasterEdition, _] = await PublicKey.findProgramAddress(
+            [
+                Buffer.from(MPL_PREFIX),
+                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                authority.accounts.collection.toBuffer(),
+                Buffer.from(MPL_EDITION),
+            ],
+            MPL_TOKEN_METADATA_PROGRAM_ID
+        );
+        // derive new-metadata
+        let newMetadata: PublicKey;
+        [newMetadata, _] = await PublicKey.findProgramAddress(
+            [
+                Buffer.from(MPL_PREFIX),
+                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                lastCollected.mint.toBuffer(),
+            ],
+            MPL_TOKEN_METADATA_PROGRAM_ID
+        )
+        // invoke rpc
+        await programs.dap.methods
+            .addNewCopyToCollection(index as any)
+            .accounts(
+                {
+                    collector: collectorPda,
+                    collectionPda: lastCollectionPda,
+                    handle: handlePda,
+                    authority: authority.accounts.pda,
+                    mint: authority.accounts.mint,
+                    collection: authority.accounts.collection,
+                    collectionMetadata: collectionMetadata,
+                    collectionMasterEdition: collectionMasterEdition,
+                    newMint: lastCollected.mint,
+                    newMetadata: newMetadata,
+                    payer: provider.wallet.publicKey,
+                    tokenProgram: SPL_TOKEN_PROGRAM_ID,
+                    metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
+                    systemProgram: SystemProgram.programId,
+                    rent: SYSVAR_RENT_PUBKEY,
+                }
+            ).rpc()
+        // build collected
+        const lastCollectedAuthority = authority;
+        lastCollectedAuthority.accounts.mint = lastCollected.mint;
+        lastCollectedAuthority.accounts.ata = {
+            balance: 1
+        };
+        const collected = collectedButLast.concat([lastCollectedAuthority]);
+        // fetch collections & set global
+        let global;
+        try {
+            const creatorPda = await deriveCreatorPda(
+                provider,
+                programs.dap
+            );
+            const creator = await getCreatorPda(
+                programs.dap,
+                creatorPda
+            );
+            const fetchedHandle = await getHandlePda(
+                programs.dap,
+                creator.handle
+            );
+            const collections = await getManyAuthorityPdaForCreator(
+                programs.dap,
+                fetchedHandle
+            );
+            global = {
+                handle: fetchedHandle.handle,
+                wallet: provider.wallet.publicKey.toString(),
+                collections: collections,
+                collected: collected
+            };
+        } catch (error) {
+            console.log("could not find creator on-chain");
+            global = {
+                wallet: provider.wallet.publicKey.toString(),
+                collected: collected
             }
-        ).rpc()
+        }
+        // send success to elm
+        app.ports.success.send(
+            JSON.stringify(
+                {
+                    listener: "collector-collection-marked",
+                    more: JSON.stringify(
+                        {
+                            master: authority,
+                            copied: lastCollectedAuthority,
+                            global: global
+                        }
+                    )
+                }
+            )
+        );
+    } catch (error) {
+        console.log(error);
+        // send caught exception to elm
+        app.ports.exception.send(
+            "caught exception marking collection!"
+        );
+    }
 }

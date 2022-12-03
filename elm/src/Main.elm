@@ -268,7 +268,7 @@ update msg model =
                                       -- prepare image form events
                                     )
 
-                        FromExistingCreator.CreateNewCollection metaForm ->
+                        FromExistingCreator.CreateNewNft metaForm ->
                             let
                                 form =
                                     { step = 1
@@ -297,7 +297,7 @@ update msg model =
                                     }
                             )
 
-                        FromExistingCreator.MarkNewCollection collection ->
+                        FromExistingCreator.CreateNewCollection collection ->
                             ( { model
                                 | state =
                                     { local = model.state.local
@@ -473,7 +473,7 @@ update msg model =
 
                                                         ToCreator.Existing existing ->
                                                             case existing of
-                                                                ToExistingCreator.CreatingNewCollection ->
+                                                                ToExistingCreator.CreatingNewNft ->
                                                                     let
                                                                         f decoded =
                                                                             ( { model
@@ -495,14 +495,14 @@ update msg model =
                                                                                         Sender.Create <|
                                                                                             FromCreator.Existing
                                                                                                 decoded.global
-                                                                                                (FromExistingCreator.CreateNewCollection decoded.form.meta)
+                                                                                                (FromExistingCreator.CreateNewNft decoded.form.meta)
                                                                                     , more = NewCollection.encode decoded.form
                                                                                     }
                                                                             )
                                                                     in
                                                                     Listener.decode2 model json NewCollection.decode f
 
-                                                                ToExistingCreator.CreatedNewCollection ->
+                                                                ToExistingCreator.CreatedNewNft ->
                                                                     let
                                                                         f withCollection =
                                                                             { model
@@ -522,7 +522,7 @@ update msg model =
                                                                     in
                                                                     Listener.decode model json WithCollectionForCreator.decode f
 
-                                                                ToExistingCreator.MarkedNewCollection ->
+                                                                ToExistingCreator.CreatedNewCollection ->
                                                                     let
                                                                         f withCollection =
                                                                             { model
@@ -640,7 +640,38 @@ update msg model =
                                                             in
                                                             Listener.decode model json Collection.decode f
 
-                                                        ToCollector.CollectionPurchased ->
+                                                        ToCollector.CollectionPrinted ->
+                                                            let
+                                                                update_ master copied global =
+                                                                    { model
+                                                                        | state =
+                                                                            { local =
+                                                                                Local.Collect <|
+                                                                                    Collector.SelectedCollection
+                                                                                        (Just copied)
+                                                                                        master
+                                                                            , global = global
+                                                                            , exception = Exception.Closed
+                                                                            }
+                                                                    }
+
+                                                                f withCollection =
+                                                                    case withCollection.global of
+                                                                        WithCollectionForCollector.HasWallet hasWallet ->
+                                                                            update_
+                                                                                withCollection.master
+                                                                                withCollection.copied
+                                                                                (Global.HasWallet hasWallet)
+
+                                                                        WithCollectionForCollector.HasWalletAndHandle hasWalletAndHandle ->
+                                                                            update_
+                                                                                withCollection.master
+                                                                                withCollection.copied
+                                                                                (Global.HasWalletAndHandle hasWalletAndHandle)
+                                                            in
+                                                            Listener.decode model json WithCollectionForCollector.decode f
+
+                                                        ToCollector.CollectionMarked ->
                                                             let
                                                                 update_ collection global =
                                                                     { model
@@ -658,12 +689,12 @@ update msg model =
                                                                     case withCollection.global of
                                                                         WithCollectionForCollector.HasWallet g ->
                                                                             update_
-                                                                                withCollection.collection
+                                                                                withCollection.master
                                                                                 (Global.HasWallet g)
 
                                                                         WithCollectionForCollector.HasWalletAndHandle g ->
                                                                             update_
-                                                                                withCollection.collection
+                                                                                withCollection.master
                                                                                 (Global.HasWalletAndHandle g)
                                                             in
                                                             Listener.decode model json WithCollectionForCollector.decode f

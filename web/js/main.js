@@ -14,7 +14,7 @@ import {
 } from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
 import {createCollection, creatNft} from "./anchor/methods/create-nft";
-import {mintNewCopy} from "./anchor/methods/mint-new-copy";
+import {addNewCopyToCollection, mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 
@@ -127,8 +127,8 @@ export async function main(app, json) {
                     reader.readAsDataURL(file);
                 }
             });
-            // or creator create new collection
-        } else if (sender === "creator-create-new-collection") {
+            // or creator create new nft
+        } else if (sender === "creator-create-new-nft") {
             // get provider & program
             const pp = getPP(phantom);
             // parse more json
@@ -138,7 +138,7 @@ export async function main(app, json) {
             const creator = await getCreatorPda(pp.programs.dap, creatorPda);
             // fetch handle
             const handle = await getHandlePda(pp.programs.dap, creator.handle);
-            // invoke rpc
+            // invoke create-nft
             await creatNft(
                 app,
                 pp.provider,
@@ -147,8 +147,8 @@ export async function main(app, json) {
                 handle,
                 more
             );
-            // or creator mark new collection
-        } else if (sender === "creator-mark-new-collection") {
+            // or creator create new collection
+        } else if (sender === "creator-create-new-collection") {
             // get provider & program
             const pp = getPP(phantom);
             // parse more json
@@ -235,7 +235,7 @@ export async function main(app, json) {
                     );
                 }
             }
-            // or collector purchase collection
+            // or collector print copy
         } else if (sender === "collector-print-copy") {
             // get phantom
             phantom = await getPhantom(app);
@@ -253,6 +253,20 @@ export async function main(app, json) {
                     more.index
                 )
             }
+            // or collector mark copy
+        } else if (sender === "collector-mark-copy") {
+            // get provider & program
+            const pp = getPP(phantom);
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            // invoke rpc
+            await addNewCopyToCollection(
+                app,
+                pp.provider,
+                pp.programs,
+                more.handle,
+                more.index
+            )
             // or throw error
         } else {
             const msg = "invalid role sent to js: " + sender;

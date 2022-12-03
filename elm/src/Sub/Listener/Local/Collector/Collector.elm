@@ -10,7 +10,8 @@ type
       -- select collection
     | CollectionSelected
       -- purchase collection
-    | CollectionPurchased
+    | CollectionPrinted
+    | CollectionMarked
 
 
 fromString : String -> Maybe ToCollector
@@ -28,8 +29,11 @@ fromString string =
         "collector-collection-found" ->
             Just CollectionSelected
 
-        "collector-collection-purchased" ->
-            Just CollectionPurchased
+        "collector-collection-printed" ->
+            Just CollectionPrinted
+
+        "collector-collection-marked" ->
+            Just CollectionMarked
 
         _ ->
             Nothing
