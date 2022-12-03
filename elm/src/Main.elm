@@ -675,14 +675,19 @@ update msg model =
                                                     let
                                                         local =
                                                             case model.state.local of
-                                                                -- TODO; repeat for selected-collection
-                                                                --  and on connect. this is disconnect
                                                                 Local.Collect (Collector.SelectedCreator _ withCollections) ->
                                                                     Local.Collect <|
                                                                         Collector.SelectedCreator
                                                                             []
                                                                             -- no intersection
                                                                             withCollections
+
+                                                                Local.Collect (Collector.SelectedCollection _ selected) ->
+                                                                    Local.Collect <|
+                                                                        Collector.SelectedCollection
+                                                                            Nothing
+                                                                            -- no intersection
+                                                                            selected
 
                                                                 _ ->
                                                                     model.state.local
@@ -722,6 +727,16 @@ update msg model =
                                                                             )
                                                                             withCollections
 
+                                                                -- find selected collection in new global state
+                                                                Local.Collect (Collector.SelectedCollection _ selected) ->
+                                                                    Local.Collect <|
+                                                                        Collector.SelectedCollection
+                                                                            (Collection.find
+                                                                                selected
+                                                                                collections
+                                                                            )
+                                                                            selected
+
                                                                 _ ->
                                                                     model.state.local
 
@@ -749,6 +764,16 @@ update msg model =
                                                                                 collections
                                                                             )
                                                                             withCollections
+
+                                                                -- find selected collection in new global state
+                                                                Local.Collect (Collector.SelectedCollection _ selected) ->
+                                                                    Local.Collect <|
+                                                                        Collector.SelectedCollection
+                                                                            (Collection.find
+                                                                                selected
+                                                                                collections
+                                                                            )
+                                                                            selected
 
                                                                 _ ->
                                                                     model.state.local
