@@ -217,7 +217,7 @@ export type DapCool = {
         },
         {
           "name": "metadata",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -755,7 +755,7 @@ export const IDL: DapCool = {
         },
         {
           "name": "metadata",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {

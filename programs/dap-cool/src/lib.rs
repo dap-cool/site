@@ -253,7 +253,7 @@ pub struct MintNewCopy<'info> {
     owner = token_program.key()
     )]
     pub mint: Account<'info, Mint>,
-    #[account(mut,
+    #[account(
     seeds = [
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),
