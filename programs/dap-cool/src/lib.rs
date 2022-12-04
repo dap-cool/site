@@ -237,8 +237,7 @@ pub struct MintNewCopy<'info> {
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()
-    ], bump,
-    constraint = handle.authority == payer.key()
+    ], bump
     )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut,
@@ -249,12 +248,11 @@ pub struct MintNewCopy<'info> {
     ], bump,
     )]
     pub authority: Box<Account<'info, Authority>>,
-    #[account(mut,
+    #[account(
     address = authority.mint,
     owner = token_program.key()
     )]
     pub mint: Account<'info, Mint>,
-    // TODO: check if mut needed
     #[account(mut,
     seeds = [
     PREFIX.as_bytes(),
@@ -363,8 +361,7 @@ pub struct AddNewCopyToCollection<'info> {
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()
-    ], bump,
-    constraint = handle.authority == payer.key()
+    ], bump
     )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut, seeds = [
