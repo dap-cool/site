@@ -6,6 +6,7 @@ use crate::{Collector, MintNewCopy, pda};
 use crate::error::CustomErrors;
 
 // TODO; freeze until marking as part of collection
+// TODO; pass pda-seed explicitly
 pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
     // assert latest copy in collections is marked
     let collector: &mut Collector = &mut ctx.accounts.collector;
