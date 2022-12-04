@@ -394,11 +394,10 @@ pub struct AddNewCopyToCollection<'info> { // TODO -- check these mut annotation
     )]
     /// CHECK: collection master-edition
     pub collection_master_edition: UncheckedAccount<'info>,
-    #[account(mut,
+    #[account(
     address = collection_pda.mint.key(),
     owner = token_program.key()
     )]
-    // TODO: drop mut here ??
     pub new_mint: Account<'info, Mint>,
     #[account(mut,
     seeds = [
