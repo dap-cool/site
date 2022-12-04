@@ -349,7 +349,6 @@ export async function addNewCopyToCollection(
                     collectionPda: lastCollectionPda,
                     handle: handlePda,
                     authority: authority.accounts.pda,
-                    mint: authority.accounts.mint,
                     collection: authority.accounts.collection,
                     collectionMetadata: collectionMetadata,
                     collectionMasterEdition: collectionMasterEdition,

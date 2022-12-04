@@ -317,11 +317,6 @@ export type DapCool = {
           "isSigner": false
         },
         {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "collection",
           "isMut": true,
           "isSigner": false
@@ -851,11 +846,6 @@ export const IDL: DapCool = {
         },
         {
           "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
           "isMut": true,
           "isSigner": false
         },

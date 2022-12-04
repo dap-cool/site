@@ -369,11 +369,6 @@ pub struct AddNewCopyToCollection<'info> { // TODO -- check these mut annotation
     ], bump)]
     pub authority: Box<Account<'info, Authority>>,
     #[account(mut,
-    address = authority.mint,
-    owner = token_program.key()
-    )]
-    pub mint: Account<'info, Mint>,
-    #[account(mut,
     address = authority.collection,
     owner = token_program.key()
     )]
