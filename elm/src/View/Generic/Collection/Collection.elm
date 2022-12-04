@@ -37,7 +37,12 @@ view_ collection select =
                     Html.div
                         [ class "has-border-2 px-2 py-2 mb-2"
                         ]
-                        [ Html.text <| String.fromInt ata.balance
+                        [ Html.text <|
+                            String.concat
+                                [ "ata balance:"
+                                , " "
+                                , String.fromInt ata.balance
+                                ]
                         ]
 
                 Nothing ->
@@ -80,4 +85,14 @@ view_ collection select =
                     ]
             ]
         , ataDiv
+        , Html.div
+            [ class "has-border-2 px-2 py-2 mb-2"
+            ]
+            [ Html.text <|
+                String.concat
+                    [ "num-minted:"
+                    , " "
+                    , String.fromInt collection.meta.numMinted
+                    ]
+            ]
         ]

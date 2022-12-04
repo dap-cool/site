@@ -190,6 +190,8 @@ export async function mintNewCopy(
         lastCollectedAuthority.accounts.ata = {
             balance: 1
         };
+        // increment num-minted
+        lastCollectedAuthority.meta.numMinted = n;
         // build collected
         if (collectorNextCollectionIndex === 1) {
             collected = [lastCollectedAuthority];

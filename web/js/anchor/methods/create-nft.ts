@@ -64,8 +64,8 @@ export async function creatNft(
     // derive key-pair for mint
     const mint = Keypair.generate();
     // derive metadata
-    let metadata, _;
-    [metadata, _] = await PublicKey.findProgramAddress(
+    let metadataPda, _;
+    [metadataPda, _] = await PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -74,8 +74,8 @@ export async function creatNft(
         MPL_TOKEN_METADATA_PROGRAM_ID
     );
     // derive master-edition
-    let masterEdition;
-    [masterEdition, _] = await PublicKey.findProgramAddress(
+    let masterEditionPda;
+    [masterEditionPda, _] = await PublicKey.findProgramAddress(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -233,7 +233,7 @@ export async function creatNft(
             const url = buildUrl(
                 form.shdw.account
             );
-            const metadataUrl = url + metadata.name;
+            const metadataUrl = url + "meta.json";
             // invoke rpc
             await programs.dap.methods
                 .createNft(
@@ -247,8 +247,8 @@ export async function creatNft(
                         handle: handlePda,
                         authority: authorityPda,
                         mint: mint.publicKey,
-                        metadata: metadata,
-                        masterEdition: masterEdition,
+                        metadata: metadataPda,
+                        masterEdition: masterEditionPda,
                         masterEditionAta: masterEditionAta,
                         payer: provider.wallet.publicKey,
                         tokenProgram: SPL_TOKEN_PROGRAM_ID,
