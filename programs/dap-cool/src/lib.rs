@@ -341,7 +341,7 @@ pub struct MintNewCopy<'info> {
 
 #[derive(Accounts)]
 #[instruction(n: u8)]
-pub struct AddNewCopyToCollection<'info> {
+pub struct AddNewCopyToCollection<'info> { // TODO -- check these mut annotations
     #[account(mut,
     seeds = [
     pda::collector::SEED.as_bytes(),
