@@ -165,11 +165,6 @@ pub struct CreateCollection<'info> {
     ], bump
     )]
     pub authority: Box<Account<'info, Authority>>,
-    #[account(mut,
-    address = authority.mint,
-    owner = token_program.key()
-    )]
-    pub mint: Account<'info, Mint>,
     #[account(init,
     mint::authority = authority,
     mint::freeze_authority = authority,

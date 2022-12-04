@@ -393,7 +393,6 @@ export async function createCollection(
                 {
                     handle: creator.handle,
                     authority: authority.accounts.pda,
-                    mint: authority.accounts.mint,
                     collection: collection.publicKey,
                     collectionMetadata: collectionMetadata,
                     collectionMasterEdition: collectionMasterEdition,
