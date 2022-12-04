@@ -13,7 +13,7 @@ pub mod pda;
 pub mod ix;
 pub mod error;
 
-declare_id!("7d7GwsxLyyVjK9qmhvZ83iD47oTFFoSmiqAMdxNzq9qU");
+declare_id!("5WTssczryQ5qadagy4MXiHynSbuPe5TwHmBfAjCk5vkw");
 
 #[program]
 pub mod dap_cool {
@@ -50,7 +50,7 @@ pub mod dap_cool {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Impl ////////////////////////////////////////////////////////////////////////////////////////////
+// Accounts ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Accounts)]
 #[instruction(handle: String)]
@@ -349,7 +349,8 @@ pub struct MintNewCopy<'info> {
 #[derive(Accounts)]
 #[instruction(n: u8)]
 pub struct AddNewCopyToCollection<'info> {
-    #[account(seeds = [
+    #[account(mut,
+    seeds = [
     pda::collector::SEED.as_bytes(),
     payer.key().as_ref()
     ], bump

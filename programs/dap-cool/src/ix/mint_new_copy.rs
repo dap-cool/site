@@ -73,6 +73,9 @@ pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
         ],
         signer_seeds,
     )?;
+    // increment
+    let authority = &mut ctx.accounts.authority;
+    authority.num_minted = increment;
     // collector
     collector.num_collected += 1;
     collector.latest_marked = false;
