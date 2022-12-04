@@ -274,7 +274,6 @@ pub struct MintNewCopy<'info> {
     )]
     /// CHECK: master-edition
     pub master_edition: UncheckedAccount<'info>,
-    // TODO: check if mut needed
     #[account(mut,
     associated_token::mint = mint,
     associated_token::authority = authority
