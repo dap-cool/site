@@ -242,7 +242,9 @@ pub struct MintNewCopy<'info> {
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()
-    ], bump)]
+    ], bump,
+    constraint = handle.authority == payer.key()
+    )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut,
     seeds = [
@@ -366,8 +368,9 @@ pub struct AddNewCopyToCollection<'info> {
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()
-    ], bump)]
-    // TODO: assert authority
+    ], bump,
+    constraint = handle.authority == payer.key()
+    )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut, seeds = [
     pda::authority::SEED.as_bytes(),
