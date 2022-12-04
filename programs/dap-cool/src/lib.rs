@@ -383,7 +383,7 @@ pub struct AddNewCopyToCollection<'info> { // TODO -- check these mut annotation
     )]
     /// CHECK: initialized metadata
     pub collection_metadata: UncheckedAccount<'info>,
-    #[account(mut,
+    #[account(
     seeds = [
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),

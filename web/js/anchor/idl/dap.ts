@@ -328,7 +328,7 @@ export type DapCool = {
         },
         {
           "name": "collectionMasterEdition",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -861,7 +861,7 @@ export const IDL: DapCool = {
         },
         {
           "name": "collectionMasterEdition",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {
