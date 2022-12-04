@@ -341,7 +341,8 @@ pub struct MintNewCopy<'info> {
 
 #[derive(Accounts)]
 #[instruction(n: u8)]
-pub struct AddNewCopyToCollection<'info> { // TODO -- check these mut annotations
+pub struct AddNewCopyToCollection<'info> {
+    // TODO -- check these mut annotations
     #[account(mut,
     seeds = [
     pda::collector::SEED.as_bytes(),
@@ -413,13 +414,10 @@ pub struct AddNewCopyToCollection<'info> { // TODO -- check these mut annotation
     pub payer: Signer<'info>,
     // token program
     pub token_program: Program<'info, Token>,
-    // TODO; need ?
     // metadata program
     pub metadata_program: Program<'info, MetadataProgram>,
     // system program
     pub system_program: Program<'info, System>,
-    // rent program
-    pub rent: Sysvar<'info, Rent>, // TODO; need ?
 }
 
 #[derive(Clone)]

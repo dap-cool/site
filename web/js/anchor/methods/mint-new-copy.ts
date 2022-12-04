@@ -358,7 +358,6 @@ export async function addNewCopyToCollection(
                     tokenProgram: SPL_TOKEN_PROGRAM_ID,
                     metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
                     systemProgram: SystemProgram.programId,
-                    rent: SYSVAR_RENT_PUBKEY,
                 }
             ).rpc()
         // build collected

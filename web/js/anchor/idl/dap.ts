@@ -360,11 +360,6 @@ export type DapCool = {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
         }
       ],
       "args": [
@@ -891,11 +886,6 @@ export const IDL: DapCool = {
         },
         {
           "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
           "isMut": false,
           "isSigner": false
         }
