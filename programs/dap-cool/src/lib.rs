@@ -368,7 +368,7 @@ pub struct AddNewCopyToCollection<'info> { // TODO -- check these mut annotation
     & [n]
     ], bump)]
     pub authority: Box<Account<'info, Authority>>,
-    #[account(mut,
+    #[account(
     address = authority.collection,
     owner = token_program.key()
     )]
