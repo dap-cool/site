@@ -274,12 +274,11 @@ pub struct MintNewCopy<'info> {
     )]
     /// CHECK: master-edition
     pub master_edition: UncheckedAccount<'info>,
-    #[account(mut,
+    #[account(
     associated_token::mint = mint,
     associated_token::authority = authority
     )]
     pub master_edition_ata: Box<Account<'info, TokenAccount>>,
-    // TODO: check if mut needed
     #[account(init,
     mint::authority = authority,
     mint::freeze_authority = authority,
