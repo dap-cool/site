@@ -123,6 +123,7 @@ export async function getManyAuthorityPdaForCollector(
     // replace master-mint with copied-mint
     // replace master-collection with copied-collection
     // set ata to derivation
+    // TODO; double-check this logic. duplicate copied-mint showing up.
     return authorityPdaArray.map(obj => {
             // find collection-authority matching copied-mint
             const foundAuthority = authorityArray.find(ca =>
