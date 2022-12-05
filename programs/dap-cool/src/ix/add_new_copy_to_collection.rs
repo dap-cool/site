@@ -52,6 +52,7 @@ pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
     Ok(())
 }
 
+// TODO; is pda-derivation not already enough ??
 fn assert_is_verified(verified: &Verified) -> Result<()> {
     if verified.verified {
         Ok(())
