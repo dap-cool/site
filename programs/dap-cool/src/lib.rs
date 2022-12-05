@@ -5,6 +5,7 @@ use mpl_token_metadata::state::{PREFIX, EDITION, EDITION_MARKER_BIT_SIZE};
 use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
     init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection,
+    create_nft::CreateNftBumps
 };
 use crate::pda::collector::{Collection, Collector};
 use crate::pda::creator::Creator;
@@ -14,7 +15,7 @@ pub mod pda;
 pub mod ix;
 pub mod error;
 
-declare_id!("A5pjLntDMQckPb68K3BPbKeeMBEwJx4c3C3BBV8FNXJ");
+declare_id!("4euCoLCJj9ZB3qVeuzegz9bwrjwwPXQMbA3tbPQXF9dm");
 
 #[program]
 pub mod dap_cool {
@@ -29,12 +30,13 @@ pub mod dap_cool {
 
     pub fn create_nft(
         ctx: Context<CreateNFT>,
+        bumps: CreateNftBumps,
         name: String,
         symbol: String,
         uri: String,
         size: u64,
     ) -> Result<()> {
-        create_nft::ix(ctx, name, symbol, uri, size)
+        create_nft::ix(ctx, bumps, name, symbol, uri, size)
     }
 
     pub fn create_collection(ctx: Context<CreateCollection>, n: u8) -> Result<()> {
@@ -81,12 +83,14 @@ pub struct InitNewCreator<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(bumps: CreateNftBumps)]
 pub struct CreateNFT<'info> {
     #[account(mut,
     seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()
-    ], bump,
+    ],
+    bump = bumps.handle,
     constraint = handle.authority == payer.key()
     )]
     pub handle: Box<Account<'info, Handle>>,
@@ -112,7 +116,8 @@ pub struct CreateNFT<'info> {
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),
     mint.key().as_ref()
-    ], bump,
+    ],
+    bump = bumps.metadata,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: uninitialized metadata
@@ -123,7 +128,8 @@ pub struct CreateNFT<'info> {
     metadata_program.key().as_ref(),
     mint.key().as_ref(),
     EDITION.as_bytes()
-    ], bump,
+    ],
+    bump = bumps.master_edition,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: uninitialized master-edition

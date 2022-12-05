@@ -99,6 +99,12 @@ export type DapCool = {
       ],
       "args": [
         {
+          "name": "bumps",
+          "type": {
+            "defined": "CreateNftBumps"
+          }
+        },
+        {
           "name": "name",
           "type": "string"
         },
@@ -522,6 +528,30 @@ export type DapCool = {
   ],
   "types": [
     {
+      "name": "CreateNftBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "metadata",
+            "type": "u8"
+          },
+          {
+            "name": "masterEdition",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "Pinned",
       "type": {
         "kind": "struct",
@@ -544,11 +574,6 @@ export type DapCool = {
       "code": 6001,
       "name": "EveryCollectionMustBeMarked",
       "msg": "Your previous collection must be marked before purchasing another."
-    },
-    {
-      "code": 6002,
-      "name": "CopiedMintMustBeVerified",
-      "msg": "Only verified editions can be marked as such."
     }
   ]
 };
@@ -654,6 +679,12 @@ export const IDL: DapCool = {
       ],
       "args": [
         {
+          "name": "bumps",
+          "type": {
+            "defined": "CreateNftBumps"
+          }
+        },
+        {
           "name": "name",
           "type": "string"
         },
@@ -1077,6 +1108,30 @@ export const IDL: DapCool = {
   ],
   "types": [
     {
+      "name": "CreateNftBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "metadata",
+            "type": "u8"
+          },
+          {
+            "name": "masterEdition",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "Pinned",
       "type": {
         "kind": "struct",
@@ -1099,11 +1154,6 @@ export const IDL: DapCool = {
       "code": 6001,
       "name": "EveryCollectionMustBeMarked",
       "msg": "Your previous collection must be marked before purchasing another."
-    },
-    {
-      "code": 6002,
-      "name": "CopiedMintMustBeVerified",
-      "msg": "Only verified editions can be marked as such."
     }
   ]
 };

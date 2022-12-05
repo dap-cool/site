@@ -25,7 +25,7 @@ export async function initNewHandle(
         .accounts(
             {
                 handlePda: handlePda,
-                creator: creatorPda,
+                creator: creatorPda.address,
                 payer: provider.wallet.publicKey,
                 systemProgram: SystemProgram.programId,
             }

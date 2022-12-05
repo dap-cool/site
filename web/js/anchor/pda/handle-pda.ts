@@ -2,6 +2,11 @@ import {PublicKey} from "@solana/web3.js";
 import {Program} from "@project-serum/anchor";
 import {DapCool} from "../idl/dap";
 
+export interface HandlePda {
+    address: PublicKey
+    bump: number
+}
+
 export interface Handle {
     handle: string
     authority: PublicKey
@@ -13,17 +18,19 @@ export interface Pinned {
     collections: number[]
 }
 
-export async function deriveHandlePda(program: Program<DapCool>, handle: string): Promise<PublicKey> {
-    // derive pda
-    let pda, _;
-    [pda, _] = await PublicKey.findProgramAddress(
+export async function deriveHandlePda(program: Program<DapCool>, handle: string): Promise<HandlePda> {
+    let pda, bump;
+    [pda, bump] = await PublicKey.findProgramAddress(
         [
             Buffer.from(SEED),
             Buffer.from(handle)
         ],
         program.programId
     );
-    return pda
+    return {
+        address: pda,
+        bump
+    }
 }
 
 const SEED = "handle";
@@ -48,7 +55,7 @@ export async function assertHandlePdaDoesNotExistAlready(
     // fetch pda
     let handlePda: PublicKey | null;
     try {
-        await getHandlePda(program, pda);
+        await getHandlePda(program, pda.address);
         const msg = "handle exists already: " + handle;
         console.log(msg);
         app.ports.success.send(
@@ -63,7 +70,7 @@ export async function assertHandlePdaDoesNotExistAlready(
     } catch (error) {
         const msg = "handle is still available: " + handle;
         console.log(msg);
-        handlePda = pda;
+        handlePda = pda.address;
     }
     return handlePda
 }
@@ -87,7 +94,7 @@ async function assertHandlePdaDoesExistAlready(
     // fetch pda
     let handlePda: Handle | null;
     try {
-        handlePda = await getHandlePda(program, pda);
+        handlePda = await getHandlePda(program, pda.address);
         const msg = "found handle: " + handle;
         console.log(msg);
     } catch (error) {

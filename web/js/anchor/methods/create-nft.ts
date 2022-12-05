@@ -2,7 +2,7 @@ import {AnchorProvider, BN, Program, SplToken} from "@project-serum/anchor";
 import {Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
 import {buildClient, buildUrl, provision, uploadMultipleFiles} from "@dap-cool/sdk";
 import {ShdwDrive} from "@shadow-drive/sdk";
-import {getHandlePda, Handle} from "../pda/handle-pda";
+import {deriveHandlePda, getHandlePda, Handle} from "../pda/handle-pda";
 import {
     CollectionAuthority,
     deriveAuthorityPda,
@@ -41,31 +41,56 @@ export async function creatNft(
         dap: Program<DapCool>,
         token: Program<SplToken>
     },
-    handlePda: PublicKey,
     handle: Handle,
     form: Form
 ) {
     // fetch all collections from handle
-    let collections = await getManyAuthorityPdaForCreator(programs.dap, handle);
+    let collections = await getManyAuthorityPdaForCreator(
+        programs.dap,
+        handle
+    );
     // fetch all collected from creator pda
     let collected;
     try {
-        const collectorPda = await deriveCollectorPda(provider, programs.dap);
-        const collector = await getCollectorPda(programs.dap, collectorPda);
-        const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
-        collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
+        const collectorPda = await deriveCollectorPda(
+            provider,
+            programs.dap
+        );
+        const collector = await getCollectorPda(
+            programs.dap,
+            collectorPda
+        );
+        const collectedPda = await getAllCollectionPda(
+            provider,
+            programs.dap,
+            collector
+        );
+        collected = await getManyAuthorityPdaForCollector(
+            provider,
+            programs,
+            collectedPda
+        );
     } catch (error) {
         console.log("could not find collector on-chain");
         collected = [];
     }
+    // derive handle pda with bump
+    let handlePda = await deriveHandlePda(
+        programs.dap,
+        handle.handle
+    );
     // derive authority pda
     const authorityIndex: number = handle.numCollections + 1;
-    const authorityPda: PublicKey = await deriveAuthorityPda(programs.dap, handle.handle, authorityIndex);
+    const authorityPda = await deriveAuthorityPda(
+        programs.dap,
+        handle.handle,
+        authorityIndex
+    );
     // derive key-pair for mint
     const mint = Keypair.generate();
     // derive metadata
-    let metadataPda, _;
-    [metadataPda, _] = await PublicKey.findProgramAddress(
+    let metadataPda, metadataBump;
+    [metadataPda, metadataBump] = PublicKey.findProgramAddressSync(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -74,8 +99,8 @@ export async function creatNft(
         MPL_TOKEN_METADATA_PROGRAM_ID
     );
     // derive master-edition
-    let masterEditionPda;
-    [masterEditionPda, _] = await PublicKey.findProgramAddress(
+    let masterEditionPda, masterEditionBump;
+    [masterEditionPda, masterEditionBump] = PublicKey.findProgramAddressSync(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -85,10 +110,10 @@ export async function creatNft(
         MPL_TOKEN_METADATA_PROGRAM_ID
     );
     // derive master-edition-ata
-    let masterEditionAta;
+    let masterEditionAta, _;
     [masterEditionAta, _] = await PublicKey.findProgramAddress(
         [
-            authorityPda.toBuffer(),
+            authorityPda.address.toBuffer(),
             SPL_TOKEN_PROGRAM_ID.toBuffer(),
             mint.publicKey.toBuffer()
         ],
@@ -234,9 +259,17 @@ export async function creatNft(
                 form.shdw.account
             );
             const metadataUrl = url + "meta.json";
+            // bump bumps
+            const bumps = {
+                handle: handlePda.bump,
+                authority: authorityPda.bump,
+                metadata: metadataBump,
+                masterEdition: masterEditionBump
+            }
             // invoke rpc
             await programs.dap.methods
                 .createNft(
+                    bumps as any,
                     form.meta.name as any,
                     form.meta.symbol as any,
                     metadataUrl as any,
@@ -244,8 +277,8 @@ export async function creatNft(
                 )
                 .accounts(
                     {
-                        handle: handlePda,
-                        authority: authorityPda,
+                        handle: handlePda.address,
+                        authority: authorityPda.address,
                         mint: mint.publicKey,
                         metadata: metadataPda,
                         masterEdition: masterEditionPda,
@@ -273,7 +306,7 @@ export async function creatNft(
                     numMinted: 0,
                 },
                 accounts: {
-                    pda: authorityPda,
+                    pda: authorityPda.address,
                     mint: mint.publicKey,
                     collection: null,
                     ata: null
@@ -339,7 +372,9 @@ export async function createCollection(
 ) {
     try {
         // fetch handle obj
-        const handle = await getHandlePda(programs.dap, creator.handle);
+        const handle = await getHandlePda(
+            programs.dap, creator.handle
+        );
         // fetch all collections from handle
         let collections = await getManyAuthorityPdaForCreator(programs.dap, handle);
         // fetch all collected from creator pda

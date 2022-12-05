@@ -2,12 +2,17 @@ import {Program} from "@project-serum/anchor";
 import {DapCool} from "../idl/dap";
 import {PublicKey} from "@solana/web3.js";
 
+export interface VerifiedPda {
+    address: PublicKey
+    bump: number
+}
+
 export interface Verified {
     verified: boolean
 }
 
-export async function getVerifiedPda(program: Program<DapCool>, pda: PublicKey): Promise<Verified> {
-    return await program.account.verified.fetch(pda) as Verified;
+export async function getVerifiedPda(program: Program<DapCool>, pda: VerifiedPda): Promise<Verified> {
+    return await program.account.verified.fetch(pda.address) as Verified;
 }
 
 export function deriveVerifiedPda(
@@ -15,9 +20,9 @@ export function deriveVerifiedPda(
     handle: string,
     index: number,
     mint: PublicKey
-): PublicKey {
-    let pda: PublicKey, _;
-    [pda, _] = PublicKey.findProgramAddressSync(
+): VerifiedPda {
+    let pda, bump;
+    [pda, bump] = PublicKey.findProgramAddressSync(
         [
             Buffer.from(SEED),
             Buffer.from(handle),
@@ -26,7 +31,10 @@ export function deriveVerifiedPda(
         ],
         program.programId
     )
-    return pda
+    return {
+        address: pda,
+        bump
+    }
 }
 
 const SEED = "verified";

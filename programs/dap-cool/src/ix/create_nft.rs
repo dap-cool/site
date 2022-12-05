@@ -1,5 +1,4 @@
-use anchor_lang::{Key, ToAccountInfo};
-use anchor_lang::prelude::{Context, CpiContext, Result};
+use anchor_lang::prelude::*;
 use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::{
     create_master_edition_v3, create_metadata_accounts_v3, sign_metadata,
@@ -8,20 +7,19 @@ use crate::{CreateNFT, pda};
 
 pub fn ix(
     ctx: Context<CreateNFT>,
+    bumps: CreateNftBumps,
     name: String,
     symbol: String,
     uri: String,
     size: u64,
 ) -> Result<()> {
-    // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
     // increment collection
     let increment = ctx.accounts.handle.num_collections + 1;
     // build signer seeds
     let seeds = &[
         pda::authority::SEED.as_bytes(),
         ctx.accounts.handle.handle.as_bytes(), &[increment],
-        &[authority_bump]
+        &[bumps.authority]
     ];
     let signer_seeds = &[&seeds[..]];
     // build metadata instruction
@@ -134,4 +132,12 @@ pub fn ix(
     let handle = &mut ctx.accounts.handle;
     handle.num_collections = increment;
     Ok(())
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct CreateNftBumps {
+    pub handle: u8,
+    pub authority: u8,
+    pub metadata: u8,
+    pub master_edition: u8,
 }

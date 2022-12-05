@@ -8,6 +8,11 @@ import {
 } from "../util/constants";
 import {Handle} from "./handle-pda";
 
+export interface AuthorityPda {
+    address: PublicKey
+    bump: number
+}
+
 export interface CollectionAuthority {
     // meta
     meta: {
@@ -92,7 +97,7 @@ export async function getManyAuthorityPdaForCollector(
     collections: Collection[]
 ): Promise<CollectionAuthority[]> {
     // derive all authority pda
-    const authorityPdaArray: { authorityPda: PublicKey; collection: Collection }[] = await Promise.all(
+    const authorityPdaArray: { authorityPda: AuthorityPda; collection: Collection }[] = await Promise.all(
         collections.map(async (collection) => {
                 const authorityPda = await deriveAuthorityPda(programs.dap, collection.handle, collection.index);
                 return {
@@ -102,7 +107,7 @@ export async function getManyAuthorityPdaForCollector(
             }
         )
     );
-    const derived0: PublicKey[] = authorityPdaArray.map(obj =>
+    const derived0: AuthorityPda[] = authorityPdaArray.map(obj =>
         obj.authorityPda
     );
     // derive associated-token-account array
@@ -127,7 +132,7 @@ export async function getManyAuthorityPdaForCollector(
     return authorityPdaArray.map(obj => {
             // find collection-authority matching copied-mint
             const foundAuthority = authorityArray.find(ca =>
-                ca.accounts.pda.equals(obj.authorityPda)
+                ca.accounts.pda.equals(obj.authorityPda.address)
             )
             // find associated-token-account matching copied-mint
             const foundAta = ataArray.find(ata =>
@@ -166,7 +171,7 @@ export async function getManyAuthorityPdaForCreator(
     handle: Handle
 ): Promise<CollectionAuthority[]> {
     // derive pda array
-    const pdaArray: PublicKey[] = await Promise.all(
+    const pdaArray: AuthorityPda[] = await Promise.all(
         Array.from(new Array(handle.numCollections), async (_, ix) => {
                 // derive authority for each collection
                 const index = ix + 1;
@@ -182,10 +187,12 @@ export async function getManyAuthorityPdaForCreator(
 
 async function getManyAuthorityPda(
     program: Program<DapCool>,
-    authorityPdaArray: PublicKey[]
+    authorityPdaArray: AuthorityPda[]
 ): Promise<CollectionAuthority[]> {
     // fetch many collection authorities
-    const authorityArray = await program.account.authority.fetchMultiple(authorityPdaArray);
+    const authorityArray = await program.account.authority.fetchMultiple(
+        authorityPdaArray.map(pda => pda.address)
+    );
     return await Promise.all(
         authorityArray.map(async (obj) => {
                 const raw = obj as RawCollectionAuthority;
@@ -200,7 +207,7 @@ async function getManyAuthorityPda(
                         numMinted: raw.numMinted.toNumber(),
                     },
                     accounts: {
-                        pda: pda,
+                        pda: pda.address,
                         mint: raw.mint,
                         collection: raw.collection,
                         ata: null // replaced later with on-chain token-balance fetched in bulk
@@ -216,8 +223,8 @@ export async function getAuthorityPda(
     handle: string,
     index: number
 ): Promise<CollectionAuthority> {
-    const pda: PublicKey = await deriveAuthorityPda(program, handle, index);
-    const authority = await program.account.authority.fetch(pda) as RawCollectionAuthority;
+    const pda: AuthorityPda = await deriveAuthorityPda(program, handle, index);
+    const authority = await program.account.authority.fetch(pda.address) as RawCollectionAuthority;
     console.log(authority);
     return {
         meta: {
@@ -229,7 +236,7 @@ export async function getAuthorityPda(
             numMinted: authority.numMinted.toNumber(),
         },
         accounts: {
-            pda: pda,
+            pda: pda.address,
             mint: authority.mint,
             collection: authority.collection,
             ata: null // no ata because this is the master-edition
@@ -241,11 +248,9 @@ export async function deriveAuthorityPda(
     program: Program<DapCool>,
     handle: string,
     index: number
-): Promise<PublicKey> {
-    console.log(index);
-    // derive pda
-    let pda, _;
-    [pda, _] = await PublicKey.findProgramAddress(
+): Promise<AuthorityPda> {
+    let pda, bump;
+    [pda, bump] = await PublicKey.findProgramAddress(
         [
             Buffer.from(SEED),
             Buffer.from(handle),
@@ -253,7 +258,10 @@ export async function deriveAuthorityPda(
         ],
         program.programId
     );
-    return pda
+    return {
+        address: pda,
+        bump
+    }
 }
 
 const SEED = "authority";

@@ -144,7 +144,6 @@ export async function main(app, json) {
                 app,
                 pp.provider,
                 pp.programs,
-                creator.handle,
                 handle,
                 more
             );

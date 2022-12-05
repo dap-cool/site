@@ -2,6 +2,16 @@ import {PublicKey} from "@solana/web3.js";
 import {AnchorProvider, Program} from "@project-serum/anchor";
 import {DapCool} from "../idl/dap";
 
+export interface CollectorPda {
+    address: PublicKey
+    bump: number
+}
+
+export interface CollectionPda {
+    address: PublicKey
+    bump: number
+}
+
 export interface Collector {
     numCollected: number,
 }
@@ -13,15 +23,15 @@ export interface Collection {
     index: number,
 }
 
-export async function getCollectorPda(program: Program<DapCool>, pda: PublicKey): Promise<Collector> {
-    const fetched = await program.account.collector.fetch(pda);
+export async function getCollectorPda(program: Program<DapCool>, pda: CollectorPda): Promise<Collector> {
+    const fetched = await program.account.collector.fetch(pda.address);
     return {
         numCollected: fetched.numCollected
     }
 }
 
-export async function getCollectionPda(program: Program<DapCool>, pda: PublicKey): Promise<Collection> {
-    return (await program.account.collection.fetch(pda)) as Collection
+export async function getCollectionPda(program: Program<DapCool>, pda: CollectionPda): Promise<Collection> {
+    return (await program.account.collection.fetch(pda.address)) as Collection
 }
 
 export async function getAllCollectionPda(
@@ -29,7 +39,7 @@ export async function getAllCollectionPda(
     program: Program<DapCool>,
     collector: Collector
 ): Promise<Collection[]> {
-    const derived: PublicKey[] = await Promise.all(
+    const derived: CollectionPda[] = await Promise.all(
         Array.from(new Array(collector.numCollected), async (_, i) =>
             await deriveCollectionPda(provider, program, i + 1)
         )
@@ -42,7 +52,7 @@ export async function getAllButLastCollectionPda(
     program: Program<DapCool>,
     collector: Collector
 ): Promise<Collection[]> {
-    const derived: PublicKey[] = (await Promise.all(
+    const derived: CollectionPda[] = (await Promise.all(
         Array.from(new Array(collector.numCollected), async (_, i) => {
                 const index = i + 1;
                 if (index === collector.numCollected) {
@@ -58,10 +68,10 @@ export async function getAllButLastCollectionPda(
 
 async function getManyCollectionPda(
     program: Program<DapCool>,
-    derived: PublicKey[]
+    derived: CollectionPda[]
 ): Promise<Collection[]> {
     const fetched = await program.account.collection.fetchMultiple(
-        derived
+        derived.map(pda => pda.address)
     );
     console.log("fetched -->", fetched);
     return fetched.map(obj => {
@@ -70,27 +80,28 @@ async function getManyCollectionPda(
     )
 }
 
-export async function deriveCollectorPda(provider: AnchorProvider, program: Program<DapCool>): Promise<PublicKey> {
-    // derive collector pda
-    let collectorPda: PublicKey, _;
-    [collectorPda, _] = await PublicKey.findProgramAddress(
+export async function deriveCollectorPda(provider: AnchorProvider, program: Program<DapCool>): Promise<CollectorPda> {
+    let pda, bump
+    [pda, bump] = await PublicKey.findProgramAddress(
         [
             Buffer.from(SEED),
             provider.wallet.publicKey.toBuffer()
         ],
         program.programId
     );
-    return collectorPda
+    return {
+        address: pda,
+        bump
+    }
 }
 
 export async function deriveCollectionPda(
     provider: AnchorProvider,
     program: Program<DapCool>,
     index: number
-): Promise<PublicKey> {
-    // derive collection pda
-    let collectionPda: PublicKey, _;
-    [collectionPda, _] = await PublicKey.findProgramAddress(
+): Promise<CollectionPda> {
+    let pda, bump;
+    [pda, bump] = await PublicKey.findProgramAddress(
         [
             Buffer.from(SEED),
             provider.wallet.publicKey.toBuffer(),
@@ -98,7 +109,10 @@ export async function deriveCollectionPda(
         ],
         program.programId
     );
-    return collectionPda
+    return {
+        address: pda,
+        bump
+    }
 }
 
 const SEED = "collector";

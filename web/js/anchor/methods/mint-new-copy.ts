@@ -37,7 +37,7 @@ export async function mintNewCopy(
 ) {
     try {
         // derive collector pda
-        const collectorPda: PublicKey = await deriveCollectorPda(
+        const collectorPda = await deriveCollectorPda(
             provider,
             programs.dap
         );
@@ -60,7 +60,7 @@ export async function mintNewCopy(
             collectorNextCollectionIndex = 1;
         }
         // derive collection pda
-        const collectionPda: PublicKey = await deriveCollectionPda(
+        const collectionPda = await deriveCollectionPda(
             provider,
             programs.dap,
             collectorNextCollectionIndex
@@ -68,14 +68,14 @@ export async function mintNewCopy(
         // derive key-pair for new-edition-mint
         const newMint: Keypair = Keypair.generate();
         // derive verified pda
-        const verifiedPda: PublicKey = deriveVerifiedPda(
+        const verifiedPda = deriveVerifiedPda(
             programs.dap,
             handle,
             index,
             newMint.publicKey
         );
         // derive handle pda
-        const handlePda: PublicKey = await deriveHandlePda(
+        const handlePda = await deriveHandlePda(
             programs.dap,
             handle
         );
@@ -167,10 +167,10 @@ export async function mintNewCopy(
             .mintNewCopy(index as any)
             .accounts(
                 {
-                    collector: collectorPda,
-                    collectionPda: collectionPda,
-                    verified: verifiedPda,
-                    handle: handlePda,
+                    collector: collectorPda.address,
+                    collectionPda: collectionPda.address,
+                    verified: verifiedPda.address,
+                    handle: handlePda.address,
                     authority: authority.accounts.pda,
                     mint: authority.accounts.mint,
                     metadata: metadata,
@@ -275,7 +275,7 @@ export async function addNewCopyToCollection(
 ): Promise<void> {
     try {
         // derive collector pda
-        const collectorPda: PublicKey = await deriveCollectorPda(
+        const collectorPda = await deriveCollectorPda(
             provider,
             programs.dap
         );
@@ -297,7 +297,7 @@ export async function addNewCopyToCollection(
             collectedPda
         );
         // derive last collected pda
-        const lastCollectionPda: PublicKey = await deriveCollectionPda(
+        const lastCollectionPda = await deriveCollectionPda(
             provider,
             programs.dap,
             collector.numCollected
@@ -308,14 +308,14 @@ export async function addNewCopyToCollection(
             lastCollectionPda
         );
         // derive verified pda
-        const verifiedPda: PublicKey = deriveVerifiedPda(
+        const verifiedPda = deriveVerifiedPda(
             programs.dap,
             handle,
             index,
             lastCollected.mint
         );
         // derive handle pda
-        const handlePda: PublicKey = await deriveHandlePda(
+        const handlePda = await deriveHandlePda(
             programs.dap,
             handle
         );
@@ -361,10 +361,10 @@ export async function addNewCopyToCollection(
             .addNewCopyToCollection(index as any)
             .accounts(
                 {
-                    collector: collectorPda,
-                    collectionPda: lastCollectionPda,
-                    verified: verifiedPda,
-                    handle: handlePda,
+                    collector: collectorPda.address,
+                    collectionPda: lastCollectionPda.address,
+                    verified: verifiedPda.address,
+                    handle: handlePda.address,
                     authority: authority.accounts.pda,
                     collection: authority.accounts.collection,
                     collectionMetadata: collectionMetadata,
