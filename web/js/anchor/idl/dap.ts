@@ -201,6 +201,11 @@ export type DapCool = {
           "isSigner": false
         },
         {
+          "name": "verified",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -493,6 +498,18 @@ export type DapCool = {
             "type": {
               "defined": "Pinned"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "verified",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "verified",
+            "type": "bool"
           }
         ]
       }
@@ -729,6 +746,11 @@ export const IDL: DapCool = {
           "isSigner": false
         },
         {
+          "name": "verified",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -1021,6 +1043,18 @@ export const IDL: DapCool = {
             "type": {
               "defined": "Pinned"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "verified",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "verified",
+            "type": "bool"
           }
         ]
       }

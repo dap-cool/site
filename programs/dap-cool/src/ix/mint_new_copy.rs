@@ -86,6 +86,9 @@ pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
     collection.marked = false;
     collection.handle = ctx.accounts.handle.handle.clone();
     collection.index = n;
+    // verified
+    let verified = &mut ctx.accounts.verified;
+    verified.verified = true;
     Ok(())
 }
 

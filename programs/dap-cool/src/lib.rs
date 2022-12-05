@@ -8,12 +8,13 @@ use crate::ix::{
 };
 use crate::pda::collector::{Collection, Collector};
 use crate::pda::creator::Creator;
+use crate::pda::verified::Verified;
 
 pub mod pda;
 pub mod ix;
 pub mod error;
 
-declare_id!("5WTssczryQ5qadagy4MXiHynSbuPe5TwHmBfAjCk5vkw");
+declare_id!("A5pjLntDMQckPb68K3BPbKeeMBEwJx4c3C3BBV8FNXJ");
 
 #[program]
 pub mod dap_cool {
@@ -234,6 +235,17 @@ pub struct MintNewCopy<'info> {
     payer = payer,
     )]
     pub collection_pda: Box<Account<'info, Collection>>,
+    #[account(init,
+    seeds = [
+    pda::verified::SEED.as_bytes(),
+    handle.handle.as_bytes(),
+    & [n],
+    new_mint.key().as_ref(),
+    ], bump,
+    space = pda::verified::VERIFIED_SIZE,
+    payer = payer,
+    )]
+    pub verified: Box<Account<'info, Verified>>,
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()

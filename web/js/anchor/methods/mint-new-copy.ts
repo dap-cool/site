@@ -23,6 +23,7 @@ import {
     getCollectorPda
 } from "../pda/collector-pda";
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
+import {deriveVerifiedPda} from "../pda/verified-pda";
 
 export async function mintNewCopy(
     app,
@@ -63,6 +64,15 @@ export async function mintNewCopy(
             provider,
             programs.dap,
             collectorNextCollectionIndex
+        );
+        // derive key-pair for new-edition-mint
+        const newMint: Keypair = Keypair.generate();
+        // derive verified pda
+        const verifiedPda: PublicKey = deriveVerifiedPda(
+            programs.dap,
+            handle,
+            index,
+            newMint.publicKey
         );
         // derive handle pda
         const handlePda: PublicKey = await deriveHandlePda(
@@ -106,8 +116,6 @@ export async function mintNewCopy(
             ],
             SPL_ASSOCIATED_TOKEN_PROGRAM_ID
         )
-        // derive key-pair for new-edition-mint
-        const newMint: Keypair = Keypair.generate();
         // derive new-metadata
         let newMetadata: PublicKey;
         [newMetadata, _] = await PublicKey.findProgramAddress(
@@ -161,6 +169,7 @@ export async function mintNewCopy(
                 {
                     collector: collectorPda,
                     collectionPda: collectionPda,
+                    verified: verifiedPda,
                     handle: handlePda,
                     authority: authority.accounts.pda,
                     mint: authority.accounts.mint,
