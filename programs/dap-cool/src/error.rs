@@ -6,4 +6,6 @@ pub enum CustomErrors {
     HandleTooLong,
     #[msg("Your previous collection must be marked before purchasing another.")]
     EveryCollectionMustBeMarked,
+    #[msg("Only verified editions can be marked as such.")]
+    CopiedMintMustBeVerified,
 }

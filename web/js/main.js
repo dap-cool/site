@@ -61,6 +61,7 @@ export async function main(app, json) {
             }
             // or listen for disconnect
         } else if (sender === "disconnect") {
+            // TODO; href to top
             phantom.windowSolana.disconnect();
             phantom = null;
             app.ports.success.send(

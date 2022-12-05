@@ -312,6 +312,11 @@ export type DapCool = {
           "isSigner": false
         },
         {
+          "name": "verified",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -539,6 +544,11 @@ export type DapCool = {
       "code": 6001,
       "name": "EveryCollectionMustBeMarked",
       "msg": "Your previous collection must be marked before purchasing another."
+    },
+    {
+      "code": 6002,
+      "name": "CopiedMintMustBeVerified",
+      "msg": "Only verified editions can be marked as such."
     }
   ]
 };
@@ -857,6 +867,11 @@ export const IDL: DapCool = {
           "isSigner": false
         },
         {
+          "name": "verified",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -1084,6 +1099,11 @@ export const IDL: DapCool = {
       "code": 6001,
       "name": "EveryCollectionMustBeMarked",
       "msg": "Your previous collection must be marked before purchasing another."
+    },
+    {
+      "code": 6002,
+      "name": "CopiedMintMustBeVerified",
+      "msg": "Only verified editions can be marked as such."
     }
   ]
 };

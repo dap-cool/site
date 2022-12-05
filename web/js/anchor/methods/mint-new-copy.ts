@@ -307,6 +307,13 @@ export async function addNewCopyToCollection(
             programs.dap,
             lastCollectionPda
         );
+        // derive verified pda
+        const verifiedPda: PublicKey = deriveVerifiedPda(
+            programs.dap,
+            handle,
+            index,
+            lastCollected.mint
+        );
         // derive handle pda
         const handlePda: PublicKey = await deriveHandlePda(
             programs.dap,
@@ -356,6 +363,7 @@ export async function addNewCopyToCollection(
                 {
                     collector: collectorPda,
                     collectionPda: lastCollectionPda,
+                    verified: verifiedPda,
                     handle: handlePda,
                     authority: authority.accounts.pda,
                     collection: authority.accounts.collection,

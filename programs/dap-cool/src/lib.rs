@@ -368,6 +368,15 @@ pub struct AddNewCopyToCollection<'info> {
     ], bump
     )]
     pub collection_pda: Box<Account<'info, Collection>>,
+    #[account(
+    seeds = [
+    pda::verified::SEED.as_bytes(),
+    handle.handle.as_bytes(),
+    & [n],
+    collection_pda.mint.key().as_ref(),
+    ], bump,
+    )]
+    pub verified: Box<Account<'info, Verified>>,
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()

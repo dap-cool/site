@@ -240,7 +240,7 @@ export async function creatNft(
                     form.meta.name as any,
                     form.meta.symbol as any,
                     metadataUrl as any,
-                    new BN(2) // TODO; supply
+                    new BN(10) // TODO; supply
                 )
                 .accounts(
                     {

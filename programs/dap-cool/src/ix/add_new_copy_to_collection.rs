@@ -1,9 +1,13 @@
 use anchor_lang::{Key, ToAccountInfo};
 use anchor_lang::prelude::{Context, Result};
 use mpl_token_metadata::instruction::set_and_verify_sized_collection_item;
-use crate::{AddNewCopyToCollection, pda};
+use crate::{AddNewCopyToCollection, pda, Verified};
+use crate::error::CustomErrors;
 
 pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
+    // assert is-verified
+    let verified: &Verified = &ctx.accounts.verified;
+    assert_is_verified(verified)?;
     // unwrap authority bump
     let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
     // build signer seeds
@@ -46,4 +50,12 @@ pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
     let collection_pda = &mut ctx.accounts.collection_pda;
     collection_pda.marked = true;
     Ok(())
+}
+
+fn assert_is_verified(verified: &Verified) -> Result<()> {
+    if verified.verified {
+        Ok(())
+    } else {
+        Err(CustomErrors::CopiedMintMustBeVerified.into())
+    }
 }
