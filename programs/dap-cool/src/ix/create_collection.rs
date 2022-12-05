@@ -1,5 +1,4 @@
-use anchor_lang::{Key, ToAccountInfo};
-use anchor_lang::prelude::{Context, CpiContext, Result};
+use anchor_lang::prelude::*;
 use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::{
     create_master_edition_v3, create_metadata_accounts_v3, sign_metadata,
@@ -7,14 +6,12 @@ use mpl_token_metadata::instruction::{
 use mpl_token_metadata::state::CollectionDetails;
 use crate::{CreateCollection, pda};
 
-pub fn ix(ctx: Context<CreateCollection>, n: u8) -> Result<()> {
-    // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
+pub fn ix(ctx: Context<CreateCollection>, bumps: CreateCollectionBumps, n: u8) -> Result<()> {
     // build signer seeds
     let seeds = &[
         pda::authority::SEED.as_bytes(),
         ctx.accounts.handle.handle.as_bytes(), &[n],
-        &[authority_bump]
+        &[bumps.authority]
     ];
     let signer_seeds = &[&seeds[..]];
     // build collection metadata instruction for collection
@@ -117,4 +114,12 @@ pub fn ix(ctx: Context<CreateCollection>, n: u8) -> Result<()> {
     let authority = &mut ctx.accounts.authority;
     authority.collection = ctx.accounts.collection.key();
     Ok(())
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct CreateCollectionBumps {
+    pub handle: u8,
+    pub authority: u8,
+    pub collection_metadata: u8,
+    pub collection_master_edition: u8,
 }

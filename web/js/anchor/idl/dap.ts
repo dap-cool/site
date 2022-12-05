@@ -188,6 +188,12 @@ export type DapCool = {
       ],
       "args": [
         {
+          "name": "bumps",
+          "type": {
+            "defined": "CreateCollectionBumps"
+          }
+        },
+        {
           "name": "n",
           "type": "u8"
         }
@@ -527,6 +533,30 @@ export type DapCool = {
     }
   ],
   "types": [
+    {
+      "name": "CreateCollectionBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMasterEdition",
+            "type": "u8"
+          }
+        ]
+      }
+    },
     {
       "name": "CreateNftBumps",
       "type": {
@@ -768,6 +798,12 @@ export const IDL: DapCool = {
       ],
       "args": [
         {
+          "name": "bumps",
+          "type": {
+            "defined": "CreateCollectionBumps"
+          }
+        },
+        {
           "name": "n",
           "type": "u8"
         }
@@ -1107,6 +1143,30 @@ export const IDL: DapCool = {
     }
   ],
   "types": [
+    {
+      "name": "CreateCollectionBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMasterEdition",
+            "type": "u8"
+          }
+        ]
+      }
+    },
     {
       "name": "CreateNftBumps",
       "type": {

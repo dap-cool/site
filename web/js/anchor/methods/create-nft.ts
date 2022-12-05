@@ -390,9 +390,20 @@ export async function createCollection(
         }
         // derive key-pair for collection
         const collection = Keypair.generate();
+        // derive handle-pda with bump
+        const handlePda = await deriveHandlePda(
+            programs.dap,
+            handle.handle
+        );
+        // derive authority-pda with bump
+        const authorityPda = await deriveAuthorityPda(
+            programs.dap,
+            authority.meta.handle,
+            authority.meta.index
+        );
         // derive collection metadata
-        let collectionMetadata, _;
-        [collectionMetadata, _] = await PublicKey.findProgramAddress(
+        let collectionMetadata, collectionMetadataBump;
+        [collectionMetadata, collectionMetadataBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -401,8 +412,8 @@ export async function createCollection(
             MPL_TOKEN_METADATA_PROGRAM_ID
         )
         // derive collection master-edition
-        let collectionMasterEdition;
-        [collectionMasterEdition, _] = await PublicKey.findProgramAddress(
+        let collectionMasterEdition, collectionMasterEditionBump;
+        [collectionMasterEdition, collectionMasterEditionBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -412,8 +423,8 @@ export async function createCollection(
             MPL_TOKEN_METADATA_PROGRAM_ID
         )
         // derive collection master-edition-ata
-        let collectionMasterEditionAta;
-        [collectionMasterEditionAta, _] = await PublicKey.findProgramAddress(
+        let collectionMasterEditionAta, _;
+        [collectionMasterEditionAta, _] = PublicKey.findProgramAddressSync(
             [
                 authority.accounts.pda.toBuffer(),
                 SPL_TOKEN_PROGRAM_ID.toBuffer(),
@@ -421,13 +432,23 @@ export async function createCollection(
             ],
             SPL_ASSOCIATED_TOKEN_PROGRAM_ID
         )
+        // builds bumps
+        const bumps = {
+            handle: handlePda.bump,
+            authority: authorityPda.bump,
+            collectionMetadata: collectionMetadataBump,
+            collectionMasterEdition: collectionMasterEditionBump
+        }
         // invoke rpc
         await programs.dap.methods
-            .createCollection(authority.meta.index as any)
+            .createCollection(
+                bumps as any,
+                authority.meta.index as any
+            )
             .accounts(
                 {
-                    handle: creator.handle,
-                    authority: authority.accounts.pda,
+                    handle: handlePda.address,
+                    authority: authorityPda.address,
                     collection: collection.publicKey,
                     collectionMetadata: collectionMetadata,
                     collectionMasterEdition: collectionMasterEdition,
