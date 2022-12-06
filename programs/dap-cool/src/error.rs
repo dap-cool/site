@@ -6,4 +6,6 @@ pub enum CustomErrors {
     HandleTooLong,
     #[msg("Your previous collection must be marked before purchasing another.")]
     EveryCollectionMustBeMarked,
+    #[msg("Could not deserialize metadata that should have been initialized already.")]
+    CouldNotDeserializeMetadata,
 }

@@ -1,7 +1,8 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
-use mpl_token_metadata::state::{PREFIX, EDITION, EDITION_MARKER_BIT_SIZE};
+use mpl_token_metadata::state::{PREFIX, EDITION, EDITION_MARKER_BIT_SIZE, Metadata};
+use crate::error::CustomErrors;
 use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
     init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection,
@@ -286,7 +287,7 @@ pub struct MintNewCopy<'info> {
     owner = token_program.key()
     )]
     pub mint: Account<'info, Mint>,
-    #[account(
+    #[account(mut,
     seeds = [
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),
@@ -296,7 +297,7 @@ pub struct MintNewCopy<'info> {
     seeds::program = metadata_program.key()
     )]
     /// CHECK: initialized metadata
-    pub metadata: UncheckedAccount<'info>,
+    pub metadata: Box<Account<'info, AnchorMetadata>>,
     #[account(mut,
     seeds = [
     PREFIX.as_bytes(),
@@ -480,6 +481,30 @@ pub struct MetadataProgram;
 
 impl anchor_lang::Id for MetadataProgram {
     fn id() -> Pubkey {
+        mpl_token_metadata::ID
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct AnchorMetadata(Metadata);
+
+impl anchor_lang::AccountDeserialize for AnchorMetadata {
+    fn try_deserialize_unchecked(buf: &mut &[u8]) -> Result<Self> {
+        match Metadata::deserialize(buf) {
+            Ok(metadata) => {
+                Ok(AnchorMetadata(metadata))
+            }
+            Err(_) => {
+                Err(CustomErrors::CouldNotDeserializeMetadata.into())
+            }
+        }
+    }
+}
+
+impl anchor_lang::AccountSerialize for AnchorMetadata {}
+
+impl anchor_lang::Owner for AnchorMetadata {
+    fn owner() -> Pubkey {
         mpl_token_metadata::ID
     }
 }

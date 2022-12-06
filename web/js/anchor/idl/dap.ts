@@ -234,7 +234,7 @@ export type DapCool = {
         },
         {
           "name": "metadata",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -692,6 +692,11 @@ export type DapCool = {
       "code": 6001,
       "name": "EveryCollectionMustBeMarked",
       "msg": "Your previous collection must be marked before purchasing another."
+    },
+    {
+      "code": 6002,
+      "name": "CouldNotDeserializeMetadata",
+      "msg": "Could not deserialize metadata that should have been initialized already."
     }
   ]
 };
@@ -932,7 +937,7 @@ export const IDL: DapCool = {
         },
         {
           "name": "metadata",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1390,6 +1395,11 @@ export const IDL: DapCool = {
       "code": 6001,
       "name": "EveryCollectionMustBeMarked",
       "msg": "Your previous collection must be marked before purchasing another."
+    },
+    {
+      "code": 6002,
+      "name": "CouldNotDeserializeMetadata",
+      "msg": "Could not deserialize metadata that should have been initialized already."
     }
   ]
 };

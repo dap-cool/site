@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{mint_to, MintTo};
-use mpl_token_metadata::instruction::mint_new_edition_from_master_edition_via_token;
+use mpl_token_metadata::instruction::{mint_new_edition_from_master_edition_via_token, update_metadata_accounts_v2};
+use mpl_token_metadata::state::{Data, DataV2};
 use crate::{Collector, MintNewCopy, pda};
 use crate::error::CustomErrors;
 
@@ -16,6 +17,32 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
         &[bumps.authority]
     ];
     let signer_seeds = &[&seeds[..]];
+    // edit metadata with new uri
+    let old_data: &Data = &ctx.accounts.metadata.0.data;
+    let old_url = old_data.uri.clone();
+    msg!("{}{}", "0",&old_url);
+    let two = &mut old_url.replace("meta.json", "");
+    msg!("{}{}", "1",&two);
+    two.push_str("reta.json");
+    msg!("{}{}", "2",&two);
+    let new_data: DataV2 = DataV2 {
+        name: old_data.name.clone(),
+        symbol: old_data.symbol.clone(),
+        uri: two.clone(),
+        seller_fee_basis_points: old_data.seller_fee_basis_points,
+        creators: old_data.creators.clone(),
+        collection: None,
+        uses: None,
+    };
+    let ix_update_metadata = update_metadata_accounts_v2(
+        ctx.accounts.metadata_program.key(),
+        ctx.accounts.metadata.key(),
+        ctx.accounts.authority.key(),
+        None,
+        Some(new_data),
+        None,
+        None,
+    );
     // build ata new-edition instruction
     let ata_cpi_accounts = MintTo {
         mint: ctx.accounts.new_mint.to_account_info(),
@@ -43,6 +70,15 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
         ctx.accounts.mint.key(),
         increment,
     );
+    // invoke update metadata
+    anchor_lang::solana_program::program::invoke_signed(
+        &ix_update_metadata,
+        &[
+            ctx.accounts.metadata.to_account_info(),
+            ctx.accounts.authority.to_account_info()
+        ],
+        signer_seeds,
+    )?;
     // invoke mint-to ata new-edition
     mint_to(
         ata_cpi_context.with_signer(
@@ -95,7 +131,6 @@ fn assert_latest_copy_is_marked(collector: &Collector) -> Result<()> {
         Err(CustomErrors::EveryCollectionMustBeMarked.into())
     }
 }
-
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct MintNewCopyBumps {
