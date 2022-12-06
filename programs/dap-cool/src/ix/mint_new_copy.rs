@@ -1,23 +1,19 @@
-use anchor_lang::{Key, ToAccountInfo};
-use anchor_lang::prelude::{Context, CpiContext, Result};
+use anchor_lang::prelude::*;
 use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::mint_new_edition_from_master_edition_via_token;
 use crate::{Collector, MintNewCopy, pda};
 use crate::error::CustomErrors;
 
 // TODO; freeze until marking as part of collection
-// TODO; pass pda-seed explicitly
-pub fn ix(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
+pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<()> {
     // assert latest copy in collections is marked
     let collector: &mut Collector = &mut ctx.accounts.collector;
     assert_latest_copy_is_marked(collector)?;
-    // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
     // build signer seeds
     let seeds = &[
         pda::authority::SEED.as_bytes(),
         ctx.accounts.handle.handle.as_bytes(), &[n],
-        &[authority_bump]
+        &[bumps.authority]
     ];
     let signer_seeds = &[&seeds[..]];
     // build ata new-edition instruction
@@ -98,4 +94,16 @@ fn assert_latest_copy_is_marked(collector: &Collector) -> Result<()> {
     } else {
         Err(CustomErrors::EveryCollectionMustBeMarked.into())
     }
+}
+
+
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct MintNewCopyBumps {
+    pub handle: u8,
+    pub authority: u8,
+    pub metadata: u8,
+    pub master_edition: u8,
+    pub new_metadata: u8,
+    pub new_edition: u8,
+    pub new_edition_mark: u8,
 }

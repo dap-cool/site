@@ -6,6 +6,7 @@ use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
     init_new_creator, create_nft, create_collection, mint_new_copy, add_new_copy_to_collection,
     create_nft::CreateNftBumps, create_collection::CreateCollectionBumps,
+    mint_new_copy::MintNewCopyBumps, add_new_copy_to_collection::AddNewCopyToCollectionBumps,
 };
 use crate::pda::collector::{Collection, Collector};
 use crate::pda::creator::Creator;
@@ -47,12 +48,16 @@ pub mod dap_cool {
         create_collection::ix(ctx, bumps, n)
     }
 
-    pub fn mint_new_copy(ctx: Context<MintNewCopy>, n: u8) -> Result<()> {
-        mint_new_copy::ix(ctx, n)
+    pub fn mint_new_copy(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<()> {
+        mint_new_copy::ix(ctx, bumps, n)
     }
 
-    pub fn add_new_copy_to_collection(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
-        add_new_copy_to_collection::ix(ctx, n)
+    pub fn add_new_copy_to_collection(
+        ctx: Context<AddNewCopyToCollection>,
+        bumps: AddNewCopyToCollectionBumps,
+        n: u8,
+    ) -> Result<()> {
+        add_new_copy_to_collection::ix(ctx, bumps, n)
     }
 }
 
@@ -229,7 +234,7 @@ pub struct CreateCollection<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(n: u8)]
+#[instruction(bumps: MintNewCopyBumps, n: u8)]
 pub struct MintNewCopy<'info> {
     #[account(init_if_needed,
     seeds = [
@@ -263,7 +268,8 @@ pub struct MintNewCopy<'info> {
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()
-    ], bump
+    ],
+    bump = bumps.handle
     )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut,
@@ -271,7 +277,8 @@ pub struct MintNewCopy<'info> {
     pda::authority::SEED.as_bytes(),
     handle.handle.as_bytes(),
     & [n]
-    ], bump,
+    ],
+    bump = bumps.authority,
     )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(
@@ -284,7 +291,8 @@ pub struct MintNewCopy<'info> {
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),
     mint.key().as_ref()
-    ], bump,
+    ],
+    bump = bumps.metadata,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: initialized metadata
@@ -295,7 +303,8 @@ pub struct MintNewCopy<'info> {
     metadata_program.key().as_ref(),
     mint.key().as_ref(),
     EDITION.as_bytes()
-    ], bump,
+    ],
+    bump = bumps.master_edition,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: master-edition
@@ -317,7 +326,8 @@ pub struct MintNewCopy<'info> {
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),
     new_mint.key().as_ref()
-    ], bump,
+    ],
+    bump = bumps.new_metadata,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: uninitialized new-metadata
@@ -328,7 +338,8 @@ pub struct MintNewCopy<'info> {
     metadata_program.key().as_ref(),
     new_mint.key().as_ref(),
     EDITION.as_bytes()
-    ], bump,
+    ],
+    bump = bumps.new_edition,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: uninitialized new-edition
@@ -340,7 +351,8 @@ pub struct MintNewCopy<'info> {
     mint.key().as_ref(),
     EDITION.as_bytes(),
     (authority.num_minted + 1).checked_div(EDITION_MARKER_BIT_SIZE).unwrap().to_string().as_bytes()
-    ], bump,
+    ],
+    bump = bumps.new_edition_mark,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: uninitialized new-edition-mark
@@ -366,20 +378,22 @@ pub struct MintNewCopy<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(n: u8)]
+#[instruction(bumps: AddNewCopyToCollectionBumps, n: u8)]
 pub struct AddNewCopyToCollection<'info> {
     #[account(mut,
     seeds = [
     pda::collector::SEED.as_bytes(),
     payer.key().as_ref()
-    ], bump
+    ],
+    bump = bumps.collector
     )]
     pub collector: Box<Account<'info, Collector>>,
     #[account(mut,
     seeds = [
     pda::collector::SEED.as_bytes(),
     payer.key().as_ref(), & [collector.num_collected]
-    ], bump
+    ],
+    bump = bumps.collection_pda
     )]
     pub collection_pda: Box<Account<'info, Collection>>,
     #[account(
@@ -388,20 +402,24 @@ pub struct AddNewCopyToCollection<'info> {
     handle.handle.as_bytes(),
     & [n],
     collection_pda.mint.key().as_ref(),
-    ], bump,
+    ],
+    bump = bumps.verified
     )]
     pub verified: Box<Account<'info, Verified>>,
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()
-    ], bump
+    ],
+    bump = bumps.handle
     )]
     pub handle: Box<Account<'info, Handle>>,
     #[account(mut, seeds = [
     pda::authority::SEED.as_bytes(),
     handle.handle.as_bytes(),
     & [n]
-    ], bump)]
+    ],
+    bump = bumps.authority
+    )]
     pub authority: Box<Account<'info, Authority>>,
     #[account(
     address = authority.collection,
@@ -413,7 +431,8 @@ pub struct AddNewCopyToCollection<'info> {
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),
     collection.key().as_ref()
-    ], bump,
+    ],
+    bump = bumps.collection_metadata,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: initialized metadata
@@ -424,7 +443,8 @@ pub struct AddNewCopyToCollection<'info> {
     metadata_program.key().as_ref(),
     collection.key().as_ref(),
     EDITION.as_bytes()
-    ], bump,
+    ],
+    bump = bumps.collection_master_edition,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: collection master-edition
@@ -439,7 +459,8 @@ pub struct AddNewCopyToCollection<'info> {
     PREFIX.as_bytes(),
     metadata_program.key().as_ref(),
     new_mint.key().as_ref()
-    ], bump,
+    ],
+    bump = bumps.new_metadata,
     seeds::program = metadata_program.key()
     )]
     /// CHECK: initialized new-metadata

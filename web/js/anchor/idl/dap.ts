@@ -305,6 +305,12 @@ export type DapCool = {
       ],
       "args": [
         {
+          "name": "bumps",
+          "type": {
+            "defined": "MintNewCopyBumps"
+          }
+        },
+        {
           "name": "n",
           "type": "u8"
         }
@@ -385,6 +391,12 @@ export type DapCool = {
         }
       ],
       "args": [
+        {
+          "name": "bumps",
+          "type": {
+            "defined": "AddNewCopyToCollectionBumps"
+          }
+        },
         {
           "name": "n",
           "type": "u8"
@@ -534,6 +546,46 @@ export type DapCool = {
   ],
   "types": [
     {
+      "name": "AddNewCopyToCollectionBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collector",
+            "type": "u8"
+          },
+          {
+            "name": "collectionPda",
+            "type": "u8"
+          },
+          {
+            "name": "verified",
+            "type": "u8"
+          },
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMasterEdition",
+            "type": "u8"
+          },
+          {
+            "name": "newMetadata",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "CreateCollectionBumps",
       "type": {
         "kind": "struct",
@@ -576,6 +628,42 @@ export type DapCool = {
           },
           {
             "name": "masterEdition",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintNewCopyBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "metadata",
+            "type": "u8"
+          },
+          {
+            "name": "masterEdition",
+            "type": "u8"
+          },
+          {
+            "name": "newMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "newEdition",
+            "type": "u8"
+          },
+          {
+            "name": "newEditionMark",
             "type": "u8"
           }
         ]
@@ -915,6 +1003,12 @@ export const IDL: DapCool = {
       ],
       "args": [
         {
+          "name": "bumps",
+          "type": {
+            "defined": "MintNewCopyBumps"
+          }
+        },
+        {
           "name": "n",
           "type": "u8"
         }
@@ -995,6 +1089,12 @@ export const IDL: DapCool = {
         }
       ],
       "args": [
+        {
+          "name": "bumps",
+          "type": {
+            "defined": "AddNewCopyToCollectionBumps"
+          }
+        },
         {
           "name": "n",
           "type": "u8"
@@ -1144,6 +1244,46 @@ export const IDL: DapCool = {
   ],
   "types": [
     {
+      "name": "AddNewCopyToCollectionBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collector",
+            "type": "u8"
+          },
+          {
+            "name": "collectionPda",
+            "type": "u8"
+          },
+          {
+            "name": "verified",
+            "type": "u8"
+          },
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMasterEdition",
+            "type": "u8"
+          },
+          {
+            "name": "newMetadata",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "CreateCollectionBumps",
       "type": {
         "kind": "struct",
@@ -1186,6 +1326,42 @@ export const IDL: DapCool = {
           },
           {
             "name": "masterEdition",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintNewCopyBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "metadata",
+            "type": "u8"
+          },
+          {
+            "name": "masterEdition",
+            "type": "u8"
+          },
+          {
+            "name": "newMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "newEdition",
+            "type": "u8"
+          },
+          {
+            "name": "newEditionMark",
             "type": "u8"
           }
         ]

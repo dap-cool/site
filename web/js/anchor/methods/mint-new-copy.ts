@@ -1,7 +1,7 @@
 import {AnchorProvider, BN, Program, SplToken} from "@project-serum/anchor";
 import {Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
 import {
-    CollectionAuthority,
+    CollectionAuthority, deriveAuthorityPda,
     getAuthorityPda,
     getManyAuthorityPdaForCollector,
     getManyAuthorityPdaForCreator
@@ -79,6 +79,12 @@ export async function mintNewCopy(
             programs.dap,
             handle
         );
+        // derive authority pda with bump
+        const authorityPda = await deriveAuthorityPda(
+            programs.dap,
+            handle,
+            index
+        );
         // get authority pda
         const authority: CollectionAuthority = await getAuthorityPda(
             programs.dap,
@@ -86,8 +92,8 @@ export async function mintNewCopy(
             index
         );
         // derive metadata
-        let metadata: PublicKey, _;
-        [metadata, _] = await PublicKey.findProgramAddress(
+        let metadata, metadataBump;
+        [metadata, metadataBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -96,8 +102,8 @@ export async function mintNewCopy(
             MPL_TOKEN_METADATA_PROGRAM_ID
         )
         // derive master-edition
-        let masterEdition: PublicKey;
-        [masterEdition, _] = await PublicKey.findProgramAddress(
+        let masterEdition, masterEditionBump
+        [masterEdition, masterEditionBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -107,8 +113,8 @@ export async function mintNewCopy(
             MPL_TOKEN_METADATA_PROGRAM_ID
         )
         // derive master-edition-ata
-        let masterEditionAta: PublicKey;
-        [masterEditionAta, _] = await PublicKey.findProgramAddress(
+        let masterEditionAta: PublicKey, _;
+        [masterEditionAta, _] = PublicKey.findProgramAddressSync(
             [
                 authority.accounts.pda.toBuffer(),
                 SPL_TOKEN_PROGRAM_ID.toBuffer(),
@@ -117,8 +123,8 @@ export async function mintNewCopy(
             SPL_ASSOCIATED_TOKEN_PROGRAM_ID
         )
         // derive new-metadata
-        let newMetadata: PublicKey;
-        [newMetadata, _] = await PublicKey.findProgramAddress(
+        let newMetadata, newMetadataBump;
+        [newMetadata, newMetadataBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -127,8 +133,8 @@ export async function mintNewCopy(
             MPL_TOKEN_METADATA_PROGRAM_ID
         )
         // derive new-edition
-        let newEdition: PublicKey;
-        [newEdition, _] = await PublicKey.findProgramAddress(
+        let newEdition, newEditionBump;
+        [newEdition, newEditionBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -140,8 +146,8 @@ export async function mintNewCopy(
         // derive new-edition-mark
         const n = authority.meta.numMinted + 1;
         const newEditionMarkLiteral = (new BN(n)).div(new BN(248)).toString();
-        let newEditionMark: PublicKey;
-        [newEditionMark, _] = await PublicKey.findProgramAddress(
+        let newEditionMark, newEditionMarkBump;
+        [newEditionMark, newEditionMarkBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -160,18 +166,31 @@ export async function mintNewCopy(
                 newMint.publicKey.toBuffer()
             ],
             SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-        )
+        );
+        // build bumps
+        const bumps = {
+            handle: handlePda.bump,
+            authority: authorityPda.bump,
+            metadata: metadataBump,
+            masterEdition: masterEditionBump,
+            newMetadata: newMetadataBump,
+            newEdition: newEditionBump,
+            newEditionMark: newEditionMarkBump
+        }
         // invoke rpc
         console.log("minting new copy");
         await programs.dap.methods
-            .mintNewCopy(index as any)
+            .mintNewCopy(
+                bumps as any,
+                index as any
+            )
             .accounts(
                 {
                     collector: collectorPda.address,
                     collectionPda: collectionPda.address,
                     verified: verifiedPda.address,
                     handle: handlePda.address,
-                    authority: authority.accounts.pda,
+                    authority: authorityPda.address,
                     mint: authority.accounts.mint,
                     metadata: metadata,
                     masterEdition: masterEdition,
@@ -319,6 +338,12 @@ export async function addNewCopyToCollection(
             programs.dap,
             handle
         );
+        // derive authority pda with bump
+        const authorityPda = await deriveAuthorityPda(
+            programs.dap,
+            handle,
+            index
+        );
         // get authority pda
         const authority: CollectionAuthority = await getAuthorityPda(
             programs.dap,
@@ -326,8 +351,8 @@ export async function addNewCopyToCollection(
             index
         );
         // derive collection metadata
-        let collectionMetadata: PublicKey, _;
-        [collectionMetadata, _] = await PublicKey.findProgramAddress(
+        let collectionMetadata, collectionMetadataBump;
+        [collectionMetadata, collectionMetadataBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -336,8 +361,8 @@ export async function addNewCopyToCollection(
             MPL_TOKEN_METADATA_PROGRAM_ID
         );
         // derive collection master-edition
-        let collectionMasterEdition: PublicKey;
-        [collectionMasterEdition, _] = await PublicKey.findProgramAddress(
+        let collectionMasterEdition, collectionMasterEditionBump;
+        [collectionMasterEdition, collectionMasterEditionBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -347,8 +372,8 @@ export async function addNewCopyToCollection(
             MPL_TOKEN_METADATA_PROGRAM_ID
         );
         // derive new-metadata
-        let newMetadata: PublicKey;
-        [newMetadata, _] = await PublicKey.findProgramAddress(
+        let newMetadata, newMetadataBump;
+        [newMetadata, newMetadataBump] = PublicKey.findProgramAddressSync(
             [
                 Buffer.from(MPL_PREFIX),
                 MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -356,9 +381,23 @@ export async function addNewCopyToCollection(
             ],
             MPL_TOKEN_METADATA_PROGRAM_ID
         )
+        // build bumps
+        const bumps = {
+            collector: collectorPda.bump,
+            collectionPda: lastCollectionPda.bump,
+            verified: verifiedPda.bump,
+            handle: handlePda.bump,
+            authority: authorityPda.bump,
+            collectionMetadata: collectionMetadataBump,
+            collectionMasterEdition: collectionMasterEditionBump,
+            newMetadata: newMetadataBump
+        }
         // invoke rpc
         await programs.dap.methods
-            .addNewCopyToCollection(index as any)
+            .addNewCopyToCollection(
+                bumps as any,
+                index as any
+            )
             .accounts(
                 {
                     collector: collectorPda.address,

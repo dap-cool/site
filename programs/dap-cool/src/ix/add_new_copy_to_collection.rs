@@ -1,16 +1,17 @@
-use anchor_lang::{Key, ToAccountInfo};
-use anchor_lang::prelude::{Context, Result};
+use anchor_lang::prelude::*;
 use mpl_token_metadata::instruction::set_and_verify_sized_collection_item;
 use crate::{AddNewCopyToCollection, pda};
 
-pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
-    // unwrap authority bump
-    let authority_bump = *ctx.bumps.get(pda::authority::SEED).unwrap();
+pub fn ix(
+    ctx: Context<AddNewCopyToCollection>,
+    bumps: AddNewCopyToCollectionBumps,
+    n: u8,
+) -> Result<()> {
     // build signer seeds
     let seeds = &[
         pda::authority::SEED.as_bytes(),
         ctx.accounts.handle.handle.as_bytes(), &[n],
-        &[authority_bump]
+        &[bumps.authority]
     ];
     let signer_seeds = &[&seeds[..]];
     // build set-collection instruction
@@ -46,4 +47,16 @@ pub fn ix(ctx: Context<AddNewCopyToCollection>, n: u8) -> Result<()> {
     let collection_pda = &mut ctx.accounts.collection_pda;
     collection_pda.marked = true;
     Ok(())
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct AddNewCopyToCollectionBumps {
+    pub collector: u8,
+    pub collection_pda: u8,
+    pub verified: u8,
+    pub handle: u8,
+    pub authority: u8,
+    pub collection_metadata: u8,
+    pub collection_master_edition: u8,
+    pub new_metadata: u8,
 }
