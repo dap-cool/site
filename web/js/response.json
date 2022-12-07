@@ -1,0 +1,182 @@
+{
+  "jsonrpc": "2.0",
+  "id": 67,
+  "result": {
+    "owner": "Bww36uH9u7nokMAahHEVq6zhHuXK2gqHcvZJszJLUdjG",
+    "assets": [
+      {
+        "name": "Collection, Another",
+        "collectionName": "Unknown",
+        "tokenAddress": "2ekdp3Btm3x92bHT44393UBRgT1SGbppczfW4pfskBss",
+        "collectionAddress": "2BP4NBmDyypCi18mZQkoJdvaD6zAiZWrkRoYHL5iHW1z",
+        "imageUrl": "https://shdw-drive.genesysgo.net/BX1J6LSNirv32LwNaPW389gB6uwfKPor9QuhNojTLy6k/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Collection Another, My",
+        "collectionName": "Unknown",
+        "tokenAddress": "2rUgM4bbxQ5v8oufu4gyH87NpVekHCVQCraHC8GLDvxB",
+        "collectionAddress": "DoC1rSSu3CnUrCDXo8jxzNsER6dHaK9jW2nUakaDg6kn",
+        "imageUrl": "https://shdw-drive.genesysgo.net/9vY8SKuHwNt1XSp6VL3hMvxtnP38zMgnPdtGbDRQ3kv1/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Yet Another Another Collection",
+        "collectionName": "Unknown",
+        "tokenAddress": "2rtXLzBgMPeqB6BZaeWTvjpdoAMtu3hhdhg3qEayASJY",
+        "collectionAddress": "BChMXQua9eFjPapGHbWBq5LFcX8xvDYTBTiK9YzNQiYX",
+        "imageUrl": "https://shdw-drive.genesysgo.net/9CYVR1Stsfsn4Gc4Ph7H6eFjxSVCrk4AnShGAoLw12S4/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Not Another Collection",
+        "collectionName": "Unknown",
+        "tokenAddress": "2s1qZ9dxRARy3Av2juuyPxm62KKmTqGLnRj3Ru8zWdm7",
+        "collectionAddress": "6KiC2AJXqqz2hS1bdUvzoCsLsZoAa5v62UfD2sJnL7vq",
+        "imageUrl": "https://shdw-drive.genesysgo.net/FNF6UNUUXA8gWPJFwnq37FiKqesEMVTHNeaaWJMqTRNg/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Collection, Yet Another Another",
+        "collectionName": "Unknown",
+        "tokenAddress": "3modjpUDpXdGy4hgSfsGvMSbbe9scCgdVLqvWWaDvCvm",
+        "collectionAddress": "66yZpTb1QcYHgHZNAvJuLjFURx8mSXGst4HjvfKAXZgF",
+        "imageUrl": "https://shdw-drive.genesysgo.net/EfChcfHDQa31PMXhtcNDBBy3dXwY3hJJ3F1aAd6hcGuZ/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Collection Another, My",
+        "collectionName": "Unknown",
+        "tokenAddress": "4EVRNEMCZ2r7mJFXctAihuJgQLMnnBKESf8tUqgY2neU",
+        "collectionAddress": "DoC1rSSu3CnUrCDXo8jxzNsER6dHaK9jW2nUakaDg6kn",
+        "imageUrl": "https://shdw-drive.genesysgo.net/9vY8SKuHwNt1XSp6VL3hMvxtnP38zMgnPdtGbDRQ3kv1/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Collection, Another",
+        "collectionName": "Unknown",
+        "tokenAddress": "5sNmuqNx3CBkT2Cwe6df4hCrhdesa3Z8sb6ErViyYFnv",
+        "collectionAddress": "2BP4NBmDyypCi18mZQkoJdvaD6zAiZWrkRoYHL5iHW1z",
+        "imageUrl": "https://shdw-drive.genesysgo.net/BX1J6LSNirv32LwNaPW389gB6uwfKPor9QuhNojTLy6k/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Another Collection",
+        "collectionName": "Unknown",
+        "tokenAddress": "66jLktiKZ2qP79antBM1VwWfyNu5mAaewXFH9fKsF7Kc",
+        "collectionAddress": "2HCv31wUvKQ8rRP55zSJyNS4ScEyyT793UKTeJvMHrdF",
+        "imageUrl": "https://shdw-drive.genesysgo.net/7CTvuh5s8BFXrdCmK4gBoVqtQRb1VfbbUQGy6hJTyew9/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "GG8E7PgGrZqu3nD4nMPrvWZGT9SUmkAPS3uubP8KG2zc",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Collection, My",
+        "collectionName": "Unknown",
+        "tokenAddress": "6fwHkmknizciBReuRQHp3v5aKYpFNpAUWuzi7S1ccYrF",
+        "collectionAddress": "4sTUiAtcuVPr5Nn6zxQZHU1FvBSStXQVbaFncBZkJw6i",
+        "imageUrl": "https://shdw-drive.genesysgo.net/6W46cHd2ALcz2uss5F3Piqp5MsehpR8Z5Ki5mgPvGRaS/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      },
+      {
+        "name": "Not Another Collection",
+        "collectionName": "Unknown",
+        "tokenAddress": "6iEB63SSebF8CfjN1dQBoxuVFCH1me8m31WjujQWhhJS",
+        "collectionAddress": "6KiC2AJXqqz2hS1bdUvzoCsLsZoAa5v62UfD2sJnL7vq",
+        "imageUrl": "https://shdw-drive.genesysgo.net/FNF6UNUUXA8gWPJFwnq37FiKqesEMVTHNeaaWJMqTRNg/logo.jpeg",
+        "chain": "SOL",
+        "creators": [
+          {
+            "address": "3XEuQQzBCZam4EfhLjF6sACBovq6VxR4PgB8ekk1enNQ",
+            "verified": 1,
+            "share": 100
+          }
+        ],
+        "network": "mainnet beta",
+        "description": "description"
+      }
+    ],
+    "totalPages": 4,
+    "pageNumber": 1,
+    "totalItems": 10
+  }
+}

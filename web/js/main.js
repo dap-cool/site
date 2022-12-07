@@ -8,13 +8,12 @@ import {
     getHandlePda
 } from "./anchor/pda/handle-pda";
 import {
-    decodeAuthorityPda,
     getAuthorityPda,
     getManyAuthorityPdaForCreator
 } from "./anchor/pda/authority-pda";
 import {initNewHandle} from "./anchor/methods/init-new-handle";
-import {createCollection, creatNft} from "./anchor/methods/create-nft";
-import {addNewCopyToCollection, mintNewCopy} from "./anchor/methods/mint-new-copy";
+import {creatNft} from "./anchor/methods/create-nft";
+import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 
@@ -147,25 +146,6 @@ export async function main(app, json) {
                 handle,
                 more
             );
-            // or creator create new collection
-        } else if (sender === "creator-create-new-collection") {
-            // get provider & program
-            const pp = getPP(phantom);
-            // parse more json
-            const more = JSON.parse(parsed.more);
-            // derive & fetch creator pda
-            const creatorPda = await deriveCreatorPda(pp.provider, pp.programs.dap);
-            const creator = await getCreatorPda(pp.programs.dap, creatorPda);
-            // decode authority pda
-            const authority = decodeAuthorityPda(more);
-            // invoke create-collection
-            await createCollection(
-                app,
-                pp.provider,
-                pp.programs,
-                creator,
-                authority
-            );
             // or collector search collector
         } else if (sender === "collector-search-handle") {
             // parse more json
@@ -253,20 +233,6 @@ export async function main(app, json) {
                     more.index
                 )
             }
-            // or collector mark copy
-        } else if (sender === "collector-mark-copy") {
-            // get provider & program
-            const pp = getPP(phantom);
-            // parse more json
-            const more = JSON.parse(parsed.more);
-            // invoke rpc
-            await addNewCopyToCollection(
-                app,
-                pp.provider,
-                pp.programs,
-                more.handle,
-                more.index
-            )
             // or throw error
         } else {
             const msg = "invalid role sent to js: " + sender;

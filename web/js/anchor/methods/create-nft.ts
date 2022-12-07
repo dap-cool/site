@@ -2,7 +2,7 @@ import {AnchorProvider, BN, Program, SplToken} from "@project-serum/anchor";
 import {Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
 import {buildClient, buildUrl, provision, uploadMultipleFiles} from "@dap-cool/sdk";
 import {ShdwDrive} from "@shadow-drive/sdk";
-import {deriveHandlePda, getHandlePda, Handle} from "../pda/handle-pda";
+import {deriveHandlePda, Handle} from "../pda/handle-pda";
 import {
     CollectionAuthority,
     deriveAuthorityPda,
@@ -10,16 +10,14 @@ import {
     getManyAuthorityPdaForCreator
 } from "../pda/authority-pda";
 import {
-    MPL_PREFIX,
     MPL_EDITION,
-    MPL_TOKEN_METADATA_PROGRAM_ID,
-    SPL_TOKEN_PROGRAM_ID,
-    SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+    MPL_PREFIX,
+    MPL_TOKEN_METADATA_PROGRAM_ID, SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
+    SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {buildMetaData, readLogo} from "../../shdw/shdw";
 import {DapCool} from "../idl/dap";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
-import {Creator} from "../pda/creator-pda";
 
 export interface Form {
     step: number
@@ -88,6 +86,8 @@ export async function creatNft(
     );
     // derive key-pair for mint
     const mint = Keypair.generate();
+    // derive key-pair for collection
+    const collection = Keypair.generate();
     // derive metadata
     let metadataPda, metadataBump;
     [metadataPda, metadataBump] = PublicKey.findProgramAddressSync(
@@ -98,24 +98,34 @@ export async function creatNft(
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
     );
-    // derive master-edition
-    let masterEditionPda, masterEditionBump;
-    [masterEditionPda, masterEditionBump] = PublicKey.findProgramAddressSync(
+    // derive collection metadata
+    let collectionMetadata, collectionMetadataBump;
+    [collectionMetadata, collectionMetadataBump] = PublicKey.findProgramAddressSync(
         [
             Buffer.from(MPL_PREFIX),
             MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            mint.publicKey.toBuffer(),
+            collection.publicKey.toBuffer()
+        ],
+        MPL_TOKEN_METADATA_PROGRAM_ID
+    );
+    // derive collection master-edition
+    let collectionMasterEdition, collectionMasterEditionBump;
+    [collectionMasterEdition, collectionMasterEditionBump] = PublicKey.findProgramAddressSync(
+        [
+            Buffer.from(MPL_PREFIX),
+            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+            collection.publicKey.toBuffer(),
             Buffer.from(MPL_EDITION),
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
     );
-    // derive master-edition-ata
-    let masterEditionAta, _;
-    [masterEditionAta, _] = await PublicKey.findProgramAddress(
+    // derive collection master-edition-ata
+    let collectionMasterEditionAta, _;
+    [collectionMasterEditionAta, _] = PublicKey.findProgramAddressSync(
         [
             authorityPda.address.toBuffer(),
             SPL_TOKEN_PROGRAM_ID.toBuffer(),
-            mint.publicKey.toBuffer()
+            collection.publicKey.toBuffer()
         ],
         SPL_ASSOCIATED_TOKEN_PROGRAM_ID
     );
@@ -264,7 +274,8 @@ export async function creatNft(
                 handle: handlePda.bump,
                 authority: authorityPda.bump,
                 metadata: metadataBump,
-                masterEdition: masterEditionBump
+                collectionMetadata: collectionMetadataBump,
+                collectionMasterEdition: collectionMasterEditionBump
             }
             // invoke rpc
             await programs.dap.methods
@@ -281,8 +292,10 @@ export async function creatNft(
                         authority: authorityPda.address,
                         mint: mint.publicKey,
                         metadata: metadataPda,
-                        masterEdition: masterEditionPda,
-                        masterEditionAta: masterEditionAta,
+                        collection: collection.publicKey,
+                        collectionMetadata: collectionMetadata,
+                        collectionMasterEdition: collectionMasterEdition,
+                        collectionMasterEditionAta: collectionMasterEditionAta,
                         payer: provider.wallet.publicKey,
                         tokenProgram: SPL_TOKEN_PROGRAM_ID,
                         associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -291,7 +304,7 @@ export async function creatNft(
                         rent: SYSVAR_RENT_PUBKEY,
                     }
                 )
-                .signers([mint])
+                .signers([mint, collection])
                 .rpc()
             // fetch pda
             console.log("mint", mint.publicKey.toString());
@@ -308,7 +321,7 @@ export async function creatNft(
                 accounts: {
                     pda: authorityPda.address,
                     mint: mint.publicKey,
-                    collection: null,
+                    collection: collection.publicKey,
                     ata: null
                 }
             } as CollectionAuthority;
@@ -357,151 +370,5 @@ export async function creatNft(
                 )
             );
         }
-    }
-}
-
-export async function createCollection(
-    app,
-    provider: AnchorProvider,
-    programs: {
-        dap: Program<DapCool>,
-        token: Program<SplToken>
-    },
-    creator: Creator,
-    authority: CollectionAuthority
-) {
-    try {
-        // fetch handle obj
-        const handle = await getHandlePda(
-            programs.dap, creator.handle
-        );
-        // fetch all collections from handle
-        let collections = await getManyAuthorityPdaForCreator(programs.dap, handle);
-        // fetch all collected from creator pda
-        let collected;
-        try {
-            const collectorPda = await deriveCollectorPda(provider, programs.dap);
-            const collector = await getCollectorPda(programs.dap, collectorPda);
-            const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
-            collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
-        } catch (error) {
-            console.log("could not find collector on-chain");
-            collected = [];
-        }
-        // derive key-pair for collection
-        const collection = Keypair.generate();
-        // derive handle-pda with bump
-        const handlePda = await deriveHandlePda(
-            programs.dap,
-            handle.handle
-        );
-        // derive authority-pda with bump
-        const authorityPda = await deriveAuthorityPda(
-            programs.dap,
-            authority.meta.handle,
-            authority.meta.index
-        );
-        // derive collection metadata
-        let collectionMetadata, collectionMetadataBump;
-        [collectionMetadata, collectionMetadataBump] = PublicKey.findProgramAddressSync(
-            [
-                Buffer.from(MPL_PREFIX),
-                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                collection.publicKey.toBuffer(),
-            ],
-            MPL_TOKEN_METADATA_PROGRAM_ID
-        )
-        // derive collection master-edition
-        let collectionMasterEdition, collectionMasterEditionBump;
-        [collectionMasterEdition, collectionMasterEditionBump] = PublicKey.findProgramAddressSync(
-            [
-                Buffer.from(MPL_PREFIX),
-                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                collection.publicKey.toBuffer(),
-                Buffer.from(MPL_EDITION),
-            ],
-            MPL_TOKEN_METADATA_PROGRAM_ID
-        )
-        // derive collection master-edition-ata
-        let collectionMasterEditionAta, _;
-        [collectionMasterEditionAta, _] = PublicKey.findProgramAddressSync(
-            [
-                authority.accounts.pda.toBuffer(),
-                SPL_TOKEN_PROGRAM_ID.toBuffer(),
-                collection.publicKey.toBuffer()
-            ],
-            SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-        )
-        // builds bumps
-        const bumps = {
-            handle: handlePda.bump,
-            authority: authorityPda.bump,
-            collectionMetadata: collectionMetadataBump,
-            collectionMasterEdition: collectionMasterEditionBump
-        }
-        // invoke rpc
-        await programs.dap.methods
-            .createCollection(
-                bumps as any,
-                authority.meta.index as any
-            )
-            .accounts(
-                {
-                    handle: handlePda.address,
-                    authority: authorityPda.address,
-                    collection: collection.publicKey,
-                    collectionMetadata: collectionMetadata,
-                    collectionMasterEdition: collectionMasterEdition,
-                    collectionMasterEditionAta: collectionMasterEditionAta,
-                    payer: provider.wallet.publicKey,
-                    tokenProgram: SPL_TOKEN_PROGRAM_ID,
-                    associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
-                    metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
-                    systemProgram: SystemProgram.programId,
-                    rent: SYSVAR_RENT_PUBKEY,
-                }
-            )
-            .signers([collection])
-            .rpc()
-        console.log("collection", collection.publicKey.toString());
-        // build response for elm
-        const justMarked = {
-            meta: authority.meta,
-            accounts: {
-                pda: authority.accounts.pda,
-                mint: authority.accounts.mint,
-                collection: collection.publicKey,
-                ata: null
-            }
-        } as CollectionAuthority;
-        // filter out before-marked
-        collections = collections.filter(c => !c.accounts.mint.equals(authority.accounts.mint));
-        // concat
-        collections = collections.concat([justMarked]);
-        // send success to elm
-        app.ports.success.send(
-            JSON.stringify(
-                {
-                    listener: "creator-created-new-collection",
-                    more: JSON.stringify(
-                        {
-                            global: {
-                                handle: handle.handle,
-                                wallet: provider.wallet.publicKey.toString(),
-                                collections: collections,
-                                collected: collected,
-                            },
-                            collection: justMarked
-                        }
-                    )
-                }
-            )
-        );
-    } catch (error) {
-        console.log(error);
-        // send caught exception to elm
-        app.ports.exception.send(
-            "caught exception creating new collection!"
-        );
     }
 }

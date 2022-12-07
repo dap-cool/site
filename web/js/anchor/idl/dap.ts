@@ -57,12 +57,22 @@ export type DapCool = {
           "isSigner": false
         },
         {
-          "name": "masterEdition",
+          "name": "collection",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "collectionMetadata",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "masterEditionAta",
+          "name": "collectionMasterEdition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMasterEditionAta",
           "isMut": true,
           "isSigner": false
         },
@@ -123,83 +133,6 @@ export type DapCool = {
       ]
     },
     {
-      "name": "createCollection",
-      "accounts": [
-        {
-          "name": "handle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEditionAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "bumps",
-          "type": {
-            "defined": "CreateCollectionBumps"
-          }
-        },
-        {
-          "name": "n",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "mintNewCopy",
       "accounts": [
         {
@@ -209,11 +142,6 @@ export type DapCool = {
         },
         {
           "name": "collectionPda",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "verified",
           "isMut": true,
           "isSigner": false
         },
@@ -238,12 +166,17 @@ export type DapCool = {
           "isSigner": false
         },
         {
-          "name": "masterEdition",
+          "name": "collection",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMetadata",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "masterEditionAta",
+          "name": "collectionMasterEdition",
           "isMut": false,
           "isSigner": false
         },
@@ -258,32 +191,12 @@ export type DapCool = {
           "isSigner": false
         },
         {
-          "name": "newEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEditionMark",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEditionAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "payer",
           "isMut": true,
           "isSigner": true
         },
         {
           "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
         },
@@ -308,93 +221,6 @@ export type DapCool = {
           "name": "bumps",
           "type": {
             "defined": "MintNewCopyBumps"
-          }
-        },
-        {
-          "name": "n",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "addNewCopyToCollection",
-      "accounts": [
-        {
-          "name": "collector",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionPda",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "verified",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "handle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "newMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "newMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "bumps",
-          "type": {
-            "defined": "AddNewCopyToCollectionBumps"
           }
         },
         {
@@ -457,10 +283,6 @@ export type DapCool = {
           {
             "name": "numCollected",
             "type": "u8"
-          },
-          {
-            "name": "latestMarked",
-            "type": "bool"
           }
         ]
       }
@@ -473,10 +295,6 @@ export type DapCool = {
           {
             "name": "mint",
             "type": "publicKey"
-          },
-          {
-            "name": "marked",
-            "type": "bool"
           },
           {
             "name": "handle",
@@ -530,85 +348,9 @@ export type DapCool = {
           }
         ]
       }
-    },
-    {
-      "name": "verified",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "verified",
-            "type": "bool"
-          }
-        ]
-      }
     }
   ],
   "types": [
-    {
-      "name": "AddNewCopyToCollectionBumps",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "collector",
-            "type": "u8"
-          },
-          {
-            "name": "collectionPda",
-            "type": "u8"
-          },
-          {
-            "name": "verified",
-            "type": "u8"
-          },
-          {
-            "name": "handle",
-            "type": "u8"
-          },
-          {
-            "name": "authority",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMasterEdition",
-            "type": "u8"
-          },
-          {
-            "name": "newMetadata",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "CreateCollectionBumps",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "handle",
-            "type": "u8"
-          },
-          {
-            "name": "authority",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMasterEdition",
-            "type": "u8"
-          }
-        ]
-      }
-    },
     {
       "name": "CreateNftBumps",
       "type": {
@@ -627,7 +369,11 @@ export type DapCool = {
             "type": "u8"
           },
           {
-            "name": "masterEdition",
+            "name": "collectionMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMasterEdition",
             "type": "u8"
           }
         ]
@@ -651,19 +397,15 @@ export type DapCool = {
             "type": "u8"
           },
           {
-            "name": "masterEdition",
+            "name": "collectionMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMasterEdition",
             "type": "u8"
           },
           {
             "name": "newMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "newEdition",
-            "type": "u8"
-          },
-          {
-            "name": "newEditionMark",
             "type": "u8"
           }
         ]
@@ -760,12 +502,22 @@ export const IDL: DapCool = {
           "isSigner": false
         },
         {
-          "name": "masterEdition",
+          "name": "collection",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "collectionMetadata",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "masterEditionAta",
+          "name": "collectionMasterEdition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMasterEditionAta",
           "isMut": true,
           "isSigner": false
         },
@@ -826,83 +578,6 @@ export const IDL: DapCool = {
       ]
     },
     {
-      "name": "createCollection",
-      "accounts": [
-        {
-          "name": "handle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEditionAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "bumps",
-          "type": {
-            "defined": "CreateCollectionBumps"
-          }
-        },
-        {
-          "name": "n",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "mintNewCopy",
       "accounts": [
         {
@@ -912,11 +587,6 @@ export const IDL: DapCool = {
         },
         {
           "name": "collectionPda",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "verified",
           "isMut": true,
           "isSigner": false
         },
@@ -941,12 +611,17 @@ export const IDL: DapCool = {
           "isSigner": false
         },
         {
-          "name": "masterEdition",
+          "name": "collection",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMetadata",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "masterEditionAta",
+          "name": "collectionMasterEdition",
           "isMut": false,
           "isSigner": false
         },
@@ -961,32 +636,12 @@ export const IDL: DapCool = {
           "isSigner": false
         },
         {
-          "name": "newEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEditionMark",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEditionAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "payer",
           "isMut": true,
           "isSigner": true
         },
         {
           "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
         },
@@ -1011,93 +666,6 @@ export const IDL: DapCool = {
           "name": "bumps",
           "type": {
             "defined": "MintNewCopyBumps"
-          }
-        },
-        {
-          "name": "n",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "addNewCopyToCollection",
-      "accounts": [
-        {
-          "name": "collector",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionPda",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "verified",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "handle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "newMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "newMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "bumps",
-          "type": {
-            "defined": "AddNewCopyToCollectionBumps"
           }
         },
         {
@@ -1160,10 +728,6 @@ export const IDL: DapCool = {
           {
             "name": "numCollected",
             "type": "u8"
-          },
-          {
-            "name": "latestMarked",
-            "type": "bool"
           }
         ]
       }
@@ -1176,10 +740,6 @@ export const IDL: DapCool = {
           {
             "name": "mint",
             "type": "publicKey"
-          },
-          {
-            "name": "marked",
-            "type": "bool"
           },
           {
             "name": "handle",
@@ -1233,85 +793,9 @@ export const IDL: DapCool = {
           }
         ]
       }
-    },
-    {
-      "name": "verified",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "verified",
-            "type": "bool"
-          }
-        ]
-      }
     }
   ],
   "types": [
-    {
-      "name": "AddNewCopyToCollectionBumps",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "collector",
-            "type": "u8"
-          },
-          {
-            "name": "collectionPda",
-            "type": "u8"
-          },
-          {
-            "name": "verified",
-            "type": "u8"
-          },
-          {
-            "name": "handle",
-            "type": "u8"
-          },
-          {
-            "name": "authority",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMasterEdition",
-            "type": "u8"
-          },
-          {
-            "name": "newMetadata",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "CreateCollectionBumps",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "handle",
-            "type": "u8"
-          },
-          {
-            "name": "authority",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMasterEdition",
-            "type": "u8"
-          }
-        ]
-      }
-    },
     {
       "name": "CreateNftBumps",
       "type": {
@@ -1330,7 +814,11 @@ export const IDL: DapCool = {
             "type": "u8"
           },
           {
-            "name": "masterEdition",
+            "name": "collectionMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMasterEdition",
             "type": "u8"
           }
         ]
@@ -1354,19 +842,15 @@ export const IDL: DapCool = {
             "type": "u8"
           },
           {
-            "name": "masterEdition",
+            "name": "collectionMetadata",
+            "type": "u8"
+          },
+          {
+            "name": "collectionMasterEdition",
             "type": "u8"
           },
           {
             "name": "newMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "newEdition",
-            "type": "u8"
-          },
-          {
-            "name": "newEditionMark",
             "type": "u8"
           }
         ]

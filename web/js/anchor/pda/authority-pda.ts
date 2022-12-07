@@ -70,7 +70,8 @@ interface FromElm {
     }
 }
 
-export function decodeAuthorityPda(fromElm: FromElm): CollectionAuthority {
+// todo; delete
+function decodeAuthorityPda(fromElm: FromElm): CollectionAuthority {
     let maybeCollection;
     if (fromElm.accounts.collection) {
         maybeCollection = new PublicKey(fromElm.accounts.collection);
@@ -126,7 +127,6 @@ export async function getManyAuthorityPdaForCollector(
         obj as RawSplToken
     );
     // replace master-mint with copied-mint
-    // replace master-collection with copied-collection
     // set ata to derivation
     // TODO; double-check this logic. duplicate copied-mint showing up.
     return authorityPdaArray.map(obj => {
@@ -139,14 +139,11 @@ export async function getManyAuthorityPdaForCollector(
                 ata.mint.equals(obj.collection.mint)
             )
             console.log(foundAta);
-            foundAuthority.accounts.mint = obj.collection.mint // replace master-mint with copied-mint
-            if (obj.collection.marked) {
-                // don't change anything because master-collection == copied-collection
-            } else {
-                foundAuthority.accounts.collection = null; // nullify master-collection to represent empty copied-collection
-            }
+            // replace master-mint with copied-mint
+            foundAuthority.accounts.mint = obj.collection.mint
+            // replace ata
             foundAuthority.accounts.ata = {
-                balance: foundAta.amount.toNumber() // replace ata
+                balance: foundAta.amount.toNumber()
             }
             return foundAuthority
         }

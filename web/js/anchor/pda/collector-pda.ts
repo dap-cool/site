@@ -18,7 +18,6 @@ export interface Collector {
 
 export interface Collection {
     mint: PublicKey,
-    marked: boolean,
     handle: string,
     index: number,
 }
