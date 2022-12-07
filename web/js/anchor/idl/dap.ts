@@ -186,6 +186,11 @@ export type DapCool = {
           "isSigner": true
         },
         {
+          "name": "newMintAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "newMetadata",
           "isMut": true,
           "isSigner": false
@@ -197,6 +202,11 @@ export type DapCool = {
         },
         {
           "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
         },
@@ -631,6 +641,11 @@ export const IDL: DapCool = {
           "isSigner": true
         },
         {
+          "name": "newMintAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "newMetadata",
           "isMut": true,
           "isSigner": false
@@ -642,6 +657,11 @@ export const IDL: DapCool = {
         },
         {
           "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
         },

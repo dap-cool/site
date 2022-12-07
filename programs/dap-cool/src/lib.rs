@@ -250,6 +250,12 @@ pub struct MintNewCopy<'info> {
     payer = payer
     )]
     pub new_mint: Box<Account<'info, Mint>>,
+    #[account(init,
+    associated_token::mint = new_mint,
+    associated_token::authority = payer,
+    payer = payer
+    )]
+    pub new_mint_ata: Box<Account<'info, TokenAccount>>,
     #[account(mut,
     seeds = [
     PREFIX.as_bytes(),
@@ -265,6 +271,8 @@ pub struct MintNewCopy<'info> {
     pub payer: Signer<'info>,
     // token program
     pub token_program: Program<'info, Token>,
+    // associated token program
+    pub associated_token_program: Program<'info, AssociatedToken>,
     // metadata program
     pub metadata_program: Program<'info, MetadataProgram>,
     // system program

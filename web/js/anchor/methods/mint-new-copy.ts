@@ -82,6 +82,16 @@ export async function mintNewCopy(
             handle,
             index
         );
+        // derive associated-token-account
+        let newMintAta, _;
+        [newMintAta, _] = PublicKey.findProgramAddressSync(
+            [
+                provider.wallet.publicKey.toBuffer(),
+                SPL_TOKEN_PROGRAM_ID.toBuffer(),
+                newMint.publicKey.toBuffer()
+            ],
+            SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+        );
         // derive metadata
         let metadata, metadataBump;
         [metadata, metadataBump] = PublicKey.findProgramAddressSync(
@@ -151,9 +161,11 @@ export async function mintNewCopy(
                     collectionMetadata: collectionMetadata,
                     collectionMasterEdition: collectionMasterEdition,
                     newMint: newMint.publicKey,
+                    newMintAta: newMintAta,
                     newMetadata: newMetadata,
                     payer: provider.wallet.publicKey,
                     tokenProgram: SPL_TOKEN_PROGRAM_ID,
+                    associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
                     metadataProgram: MPL_TOKEN_METADATA_PROGRAM_ID,
                     systemProgram: SystemProgram.programId,
                     rent: SYSVAR_RENT_PUBKEY,

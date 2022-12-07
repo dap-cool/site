@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::{
     create_metadata_accounts_v3,
     set_and_verify_sized_collection_item,
@@ -14,6 +15,16 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
         &[bumps.authority]
     ];
     let signer_seeds = &[&seeds[..]];
+    // build mint-to associated-token-account instruction
+    let new_mint_ata_cpi_accounts = MintTo {
+        mint: ctx.accounts.new_mint.to_account_info(),
+        to: ctx.accounts.new_mint_ata.to_account_info(),
+        authority: ctx.accounts.authority.to_account_info(),
+    };
+    let new_mint_ata_cpi_context = CpiContext::new(
+        ctx.accounts.token_program.to_account_info(),
+        new_mint_ata_cpi_accounts,
+    );
     // build metadata instruction
     let old_data: &Data = &ctx.accounts.metadata.0.data;
     let ix_metadata = create_metadata_accounts_v3(
@@ -46,6 +57,13 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
         ctx.accounts.collection_master_edition.key(),
         None,
     );
+    // invoke mint-to associated-token-account
+    mint_to(
+        new_mint_ata_cpi_context.with_signer(
+            signer_seeds
+        ),
+        1,
+    )?;
     // invoke create new metadata
     anchor_lang::solana_program::program::invoke_signed(
         &ix_metadata,
@@ -74,7 +92,6 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
         ],
         signer_seeds,
     )?;
-
     // increment
     let authority = &mut ctx.accounts.authority;
     authority.num_minted +=1;
