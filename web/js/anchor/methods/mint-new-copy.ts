@@ -126,6 +126,7 @@ export async function mintNewCopy(
         // build last-collected
         const lastCollectedAuthority = authority;
         // add associated-token-account balance
+        // TODO: fetch token-balance before-hand
         lastCollectedAuthority.accounts.ata = {
             balance: lastCollectedAuthority.accounts.ata.balance + 1
         };
