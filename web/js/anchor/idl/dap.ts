@@ -157,41 +157,11 @@ export type DapCool = {
         },
         {
           "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadata",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "collection",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "newMint",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "newMintAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newMetadata",
+          "name": "mintAta",
           "isMut": true,
           "isSigner": false
         },
@@ -400,22 +370,6 @@ export type DapCool = {
           },
           {
             "name": "authority",
-            "type": "u8"
-          },
-          {
-            "name": "metadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMasterEdition",
-            "type": "u8"
-          },
-          {
-            "name": "newMetadata",
             "type": "u8"
           }
         ]
@@ -612,41 +566,11 @@ export const IDL: DapCool = {
         },
         {
           "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadata",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "collection",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "newMint",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "newMintAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newMetadata",
+          "name": "mintAta",
           "isMut": true,
           "isSigner": false
         },
@@ -855,22 +779,6 @@ export const IDL: DapCool = {
           },
           {
             "name": "authority",
-            "type": "u8"
-          },
-          {
-            "name": "metadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMasterEdition",
-            "type": "u8"
-          },
-          {
-            "name": "newMetadata",
             "type": "u8"
           }
         ]

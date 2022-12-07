@@ -1,5 +1,5 @@
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
-import {Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
+import {PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY} from "@solana/web3.js";
 import {
     CollectionAuthority, deriveAuthorityPda,
     getAuthorityPda,
@@ -8,8 +8,6 @@ import {
 } from "../pda/authority-pda";
 import {deriveHandlePda, getHandlePda} from "../pda/handle-pda";
 import {
-    MPL_EDITION,
-    MPL_PREFIX,
     MPL_TOKEN_METADATA_PROGRAM_ID,
     SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
     SPL_TOKEN_PROGRAM_ID
@@ -63,8 +61,6 @@ export async function mintNewCopy(
             programs.dap,
             collectorNextCollectionIndex
         );
-        // derive key-pair for new-edition-mint
-        const newMint: Keypair = Keypair.generate();
         // derive handle pda
         const handlePda = await deriveHandlePda(
             programs.dap,
@@ -83,67 +79,28 @@ export async function mintNewCopy(
             index
         );
         // derive associated-token-account
-        let newMintAta, _;
-        [newMintAta, _] = PublicKey.findProgramAddressSync(
+        let mintAta, _;
+        [mintAta, _] = PublicKey.findProgramAddressSync(
             [
                 provider.wallet.publicKey.toBuffer(),
                 SPL_TOKEN_PROGRAM_ID.toBuffer(),
-                newMint.publicKey.toBuffer()
+                authority.accounts.mint.toBuffer()
             ],
             SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-        );
-        // derive metadata
-        let metadata, metadataBump;
-        [metadata, metadataBump] = PublicKey.findProgramAddressSync(
-            [
-                Buffer.from(MPL_PREFIX),
-                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                authority.accounts.mint.toBuffer(),
-            ],
-            MPL_TOKEN_METADATA_PROGRAM_ID
-        );
-        // derive collection metadata
-        let collectionMetadata, collectionMetadataBump;
-        [collectionMetadata, collectionMetadataBump] = PublicKey.findProgramAddressSync(
-            [
-                Buffer.from(MPL_PREFIX),
-                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                authority.accounts.collection.toBuffer(),
-            ],
-            MPL_TOKEN_METADATA_PROGRAM_ID
-        );
-        // derive collection master-edition
-        let collectionMasterEdition, collectionMasterEditionBump;
-        [collectionMasterEdition, collectionMasterEditionBump] = PublicKey.findProgramAddressSync(
-            [
-                Buffer.from(MPL_PREFIX),
-                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                authority.accounts.collection.toBuffer(),
-                Buffer.from(MPL_EDITION),
-            ],
-            MPL_TOKEN_METADATA_PROGRAM_ID
-        );
-        // derive new-metadata
-        let newMetadata, newMetadataBump;
-        [newMetadata, newMetadataBump] = PublicKey.findProgramAddressSync(
-            [
-                Buffer.from(MPL_PREFIX),
-                MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                newMint.publicKey.toBuffer(),
-            ],
-            MPL_TOKEN_METADATA_PROGRAM_ID
         );
         // build bumps
         const bumps = {
             handle: handlePda.bump,
             authority: authorityPda.bump,
-            metadata: metadataBump,
-            collectionMetadata: collectionMetadataBump,
-            collectionMasterEdition: collectionMasterEditionBump,
-            newMetadata: newMetadataBump,
         }
         // invoke rpc
         console.log("minting new copy");
+        console.log(collectorPda.address.toString());
+        console.log(collectionPda.address.toString());
+        console.log(handlePda.address.toString());
+        console.log(authorityPda.address.toString());
+        console.log(authority.accounts.mint.toString());
+        console.log(mintAta.toString());
         await programs.dap.methods
             .mintNewCopy(
                 bumps as any,
@@ -156,13 +113,7 @@ export async function mintNewCopy(
                     handle: handlePda.address,
                     authority: authorityPda.address,
                     mint: authority.accounts.mint,
-                    metadata: metadata,
-                    collection: authority.accounts.collection,
-                    collectionMetadata: collectionMetadata,
-                    collectionMasterEdition: collectionMasterEdition,
-                    newMint: newMint.publicKey,
-                    newMintAta: newMintAta,
-                    newMetadata: newMetadata,
+                    mintAta: mintAta,
                     payer: provider.wallet.publicKey,
                     tokenProgram: SPL_TOKEN_PROGRAM_ID,
                     associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -170,16 +121,13 @@ export async function mintNewCopy(
                     systemProgram: SystemProgram.programId,
                     rent: SYSVAR_RENT_PUBKEY,
                 }
-            ).signers([newMint])
+            )
             .rpc();
-        // replace master-mint with copied-mint
+        // build last-collected
         const lastCollectedAuthority = authority;
-        lastCollectedAuthority.accounts.mint = newMint.publicKey;
-        // replace master-copy with null (unmarked)
-        lastCollectedAuthority.accounts.collection = null;
         // add associated-token-account balance
         lastCollectedAuthority.accounts.ata = {
-            balance: 1
+            balance: lastCollectedAuthority.accounts.ata.balance + 1
         };
         // increment num-minted
         lastCollectedAuthority.meta.numMinted = authority.meta.numMinted + 1;

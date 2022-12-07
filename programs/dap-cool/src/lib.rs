@@ -1,8 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
-use mpl_token_metadata::state::{PREFIX, EDITION, Metadata};
-use crate::error::CustomErrors;
+use mpl_token_metadata::state::{PREFIX, EDITION};
 use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
     init_new_creator, create_nft, mint_new_copy,
@@ -201,72 +200,17 @@ pub struct MintNewCopy<'info> {
     bump = bumps.authority,
     )]
     pub authority: Box<Account<'info, Authority>>,
-    #[account(
+    #[account(mut,
     address = authority.mint,
     owner = token_program.key()
     )]
     pub mint: Account<'info, Mint>,
-    #[account(mut,
-    seeds = [
-    PREFIX.as_bytes(),
-    metadata_program.key().as_ref(),
-    mint.key().as_ref()
-    ],
-    bump = bumps.metadata,
-    seeds::program = metadata_program.key()
-    )]
-    pub metadata: Box<Account<'info, AnchorMetadata>>,
-    #[account(
-    address = authority.collection,
-    owner = token_program.key()
-    )]
-    pub collection: Account<'info, Mint>,
-    #[account(mut,
-    seeds = [
-    PREFIX.as_bytes(),
-    metadata_program.key().as_ref(),
-    collection.key().as_ref()
-    ],
-    bump = bumps.collection_metadata,
-    seeds::program = metadata_program.key()
-    )]
-    pub collection_metadata: Box<Account<'info, AnchorMetadata>>,
-    #[account(
-    seeds = [
-    PREFIX.as_bytes(),
-    metadata_program.key().as_ref(),
-    collection.key().as_ref(),
-    EDITION.as_bytes()
-    ],
-    bump = bumps.collection_master_edition,
-    seeds::program = metadata_program.key()
-    )]
-    /// CHECK: collection master-edition
-    pub collection_master_edition: UncheckedAccount<'info>,
-    #[account(init,
-    mint::authority = authority,
-    mint::freeze_authority = authority,
-    mint::decimals = 0,
-    payer = payer
-    )]
-    pub new_mint: Box<Account<'info, Mint>>,
-    #[account(init,
-    associated_token::mint = new_mint,
+    #[account(init_if_needed,
+    associated_token::mint = mint,
     associated_token::authority = payer,
     payer = payer
     )]
-    pub new_mint_ata: Box<Account<'info, TokenAccount>>,
-    #[account(mut,
-    seeds = [
-    PREFIX.as_bytes(),
-    metadata_program.key().as_ref(),
-    new_mint.key().as_ref()
-    ],
-    bump = bumps.new_metadata,
-    seeds::program = metadata_program.key()
-    )]
-    /// CHECK: uninitialized new-metadata
-    pub new_metadata: UncheckedAccount<'info>,
+    pub mint_ata: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program
@@ -286,30 +230,6 @@ pub struct MetadataProgram;
 
 impl anchor_lang::Id for MetadataProgram {
     fn id() -> Pubkey {
-        mpl_token_metadata::ID
-    }
-}
-
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct AnchorMetadata(Metadata);
-
-impl anchor_lang::AccountDeserialize for AnchorMetadata {
-    fn try_deserialize_unchecked(buf: &mut &[u8]) -> Result<Self> {
-        match Metadata::deserialize(buf) {
-            Ok(metadata) => {
-                Ok(AnchorMetadata(metadata))
-            }
-            Err(_) => {
-                Err(CustomErrors::CouldNotDeserializeMetadata.into())
-            }
-        }
-    }
-}
-
-impl anchor_lang::AccountSerialize for AnchorMetadata {}
-
-impl anchor_lang::Owner for AnchorMetadata {
-    fn owner() -> Pubkey {
         mpl_token_metadata::ID
     }
 }
