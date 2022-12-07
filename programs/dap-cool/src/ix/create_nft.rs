@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::{
-    create_master_edition_v3, create_metadata_accounts_v3,
+    create_master_edition_v3, create_metadata_accounts_v3, sign_metadata,
 };
 use mpl_token_metadata::state::CollectionDetails;
 use crate::{CreateNFT, pda};
@@ -48,7 +48,7 @@ pub fn ix(
         None,
         None,
     );
-    // build collection metadata instruction for collection
+    // build collection metadata instruction
     let ix_collection_metadata = create_metadata_accounts_v3(
         ctx.accounts.metadata_program.key(),
         ctx.accounts.collection_metadata.key(),
@@ -72,6 +72,12 @@ pub fn ix(
         None,
         None,
         Some(CollectionDetails::V1 { size }),
+    );
+    // build sign collection metadata instruction
+    let ix_sign_collection_metadata = sign_metadata(
+        ctx.accounts.metadata_program.key(),
+        ctx.accounts.collection_metadata.key(),
+        ctx.accounts.payer.key(),
     );
     // build ata collection master-edition instruction
     let collection_ata_cpi_accounts = MintTo {
@@ -121,6 +127,14 @@ pub fn ix(
             ctx.accounts.rent.to_account_info()
         ],
         signer_seeds,
+    )?;
+    // invoke sign collection metadata
+    anchor_lang::solana_program::program::invoke(
+        &ix_sign_collection_metadata,
+        &[
+            ctx.accounts.collection_metadata.to_account_info(),
+            ctx.accounts.payer.to_account_info()
+        ],
     )?;
     // invoke ata collection master-edition
     mint_to(
