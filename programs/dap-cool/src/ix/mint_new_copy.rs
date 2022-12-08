@@ -38,13 +38,9 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
         1,
     )?;
     // authority
-    msg!("{}", &authority_increment);
     authority.num_minted = authority_increment;
-    msg!("{}", &authority.num_minted);
     // collector
-    msg!("{}", &collector_increment);
     collector.num_collected = collector_increment;
-    msg!("{}", &collector.num_collected);
     // collection
     let collection = &mut ctx.accounts.collection_pda;
     collection.mint = ctx.accounts.mint.key();
