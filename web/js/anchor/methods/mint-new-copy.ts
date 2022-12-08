@@ -17,7 +17,7 @@ import {
     deriveCollectedPda,
     deriveCollectionPda,
     deriveCollectorPda,
-    getAllCollectionPda,
+    getAllCollectionPda, getCollectedPda,
     getCollectorPda
 } from "../pda/collector-pda";
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
@@ -39,7 +39,7 @@ export async function mintNewCopy(
             programs.dap
         );
         // try getting collector
-        let collected: CollectionAuthority[]
+        let collectorArray: CollectionAuthority[]
         let collectorNextCollectionIndex: number;
         try {
             // fetch collector
@@ -48,8 +48,16 @@ export async function mintNewCopy(
                 collectorPda
             );
             // fetch all collected
-            const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
-            collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
+            const collectedPda = await getAllCollectionPda(
+                provider,
+                programs.dap,
+                collector
+            );
+            collectorArray = await getManyAuthorityPdaForCollector(
+                provider,
+                programs,
+                collectedPda
+            );
             // increment
             collectorNextCollectionIndex = collector.numCollected + 1;
         } catch (error) {
@@ -85,6 +93,18 @@ export async function mintNewCopy(
             programs.dap,
             authority.accounts.mint
         );
+        // get collected pda
+        let collectedBefore;
+        try {
+            const fetched = await getCollectedPda(
+                programs.dap,
+                collectedPda
+            );
+            collectedBefore = fetched.collected;
+        } catch (error) {
+            console.log("first time collecting this item")
+            collectedBefore = false;
+        }
         // derive associated-token-account
         let mintAta, _;
         [mintAta, _] = PublicKey.findProgramAddressSync(
@@ -135,9 +155,22 @@ export async function mintNewCopy(
         lastCollectedAuthority.meta.numMinted = authority.meta.numMinted + 1;
         // build collected
         if (collectorNextCollectionIndex === 1) {
-            collected = [lastCollectedAuthority];
+            collectorArray = [lastCollectedAuthority];
         } else {
-            collected.concat([lastCollectedAuthority]);
+            if (collectedBefore) {
+                // update existing collection
+                collectorArray = collectorArray.map(ca => {
+                        if (ca.accounts.mint.equals(lastCollectedAuthority.accounts.mint)) {
+                            return lastCollectedAuthority
+                        } else {
+                            return ca
+                        }
+                    }
+                );
+            } else {
+                // concat new collection
+                collectorArray.concat([lastCollectedAuthority]);
+            }
         }
         // fetch collections & set global
         let global;
@@ -163,13 +196,13 @@ export async function mintNewCopy(
                 handle: fetchedHandle.handle,
                 wallet: provider.wallet.publicKey.toString(),
                 collections: collections,
-                collected: collected
+                collected: collectorArray
             };
         } catch (error) {
             console.log("could not find creator on-chain");
             global = {
                 wallet: provider.wallet.publicKey.toString(),
-                collected: collected
+                collected: collectorArray
             }
         }
         // send success to elm

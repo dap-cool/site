@@ -27,6 +27,10 @@ export interface Collection {
     index: number,
 }
 
+export interface Collected {
+    collected: boolean
+}
+
 export async function getCollectorPda(program: Program<DapCool>, pda: CollectorPda): Promise<Collector> {
     const fetched = await program.account.collector.fetch(pda.address);
     return {
@@ -34,8 +38,8 @@ export async function getCollectorPda(program: Program<DapCool>, pda: CollectorP
     }
 }
 
-export async function getCollectionPda(program: Program<DapCool>, pda: CollectionPda): Promise<Collection> {
-    return (await program.account.collection.fetch(pda.address)) as Collection
+export async function getCollectedPda(program: Program<DapCool>, pda: CollectedPda): Promise<Collected> {
+    return (await program.account.collected.fetch(pda.address)) as Collected
 }
 
 export async function getAllCollectionPda(
@@ -48,25 +52,6 @@ export async function getAllCollectionPda(
             await deriveCollectionPda(provider, program, i + 1)
         )
     );
-    return await getManyCollectionPda(program, derived)
-}
-
-export async function getAllButLastCollectionPda(
-    provider: AnchorProvider,
-    program: Program<DapCool>,
-    collector: Collector
-): Promise<Collection[]> {
-    const derived: CollectionPda[] = (await Promise.all(
-        Array.from(new Array(collector.numCollected), async (_, i) => {
-                const index = i + 1;
-                if (index === collector.numCollected) {
-                    return null
-                } else {
-                    return await deriveCollectionPda(provider, program, index)
-                }
-            }
-        )
-    )).filter(Boolean);
     return await getManyCollectionPda(program, derived)
 }
 
