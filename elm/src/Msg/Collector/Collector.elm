@@ -7,7 +7,6 @@ type FromCollector
     = HandleForm Handle.Form
     | SelectCollection Handle Int
     | PrintCopy Handle Int
-    | MarkCopy Handle Int
 
 
 toString : FromCollector -> String
@@ -21,9 +20,6 @@ toString collector =
 
         PrintCopy _ _ ->
             "collector-print-copy"
-
-        MarkCopy _ _ ->
-            "collector-mark-copy"
 
         _ ->
             "no-op"

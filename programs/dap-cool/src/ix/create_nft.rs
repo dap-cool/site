@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::{
-    create_metadata_accounts_v3, sign_metadata,
+    create_metadata_accounts_v3, sign_metadata, update_primary_sale_happened_via_token,
 };
 use mpl_token_metadata::state::CollectionDetails;
 use crate::{CreateNFT, pda};
@@ -65,6 +65,13 @@ pub fn ix(
         ctx.accounts.token_program.to_account_info(),
         mint_ata_cpi_accounts,
     );
+    // build primary-sale-happened instruction
+    let ix_primary_sale = update_primary_sale_happened_via_token(
+        ctx.accounts.metadata_program.key(),
+        ctx.accounts.metadata.key(),
+        ctx.accounts.payer.key(),
+        ctx.accounts.mint_ata.key(),
+    );
     // invoke create metadata
     anchor_lang::solana_program::program::invoke_signed(
         &ix_metadata,
@@ -98,6 +105,15 @@ pub fn ix(
             signer_seeds
         ),
         creator_distribution,
+    )?;
+    // invoke primary-sale-happened
+    anchor_lang::solana_program::program::invoke(
+        &ix_primary_sale,
+        &[
+            ctx.accounts.metadata.to_account_info(),
+            ctx.accounts.payer.to_account_info(),
+            ctx.accounts.mint_ata.to_account_info()
+        ],
     )?;
     // init authority data
     let authority = &mut ctx.accounts.authority;

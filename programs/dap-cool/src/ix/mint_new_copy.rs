@@ -4,15 +4,13 @@ use crate::{MintNewCopy, pda};
 use crate::error::CustomErrors;
 
 pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<()> {
-    // increment
+    // assert supply remaining
     let authority = &mut ctx.accounts.authority;
     let authority_increment = authority.num_minted + 1;
     assert_supply_remaining(
         &authority.total_supply,
         &authority_increment,
     )?;
-    let collector = &mut ctx.accounts.collector;
-    let collector_increment = collector.num_collected + 1;
     // build signer seeds
     let seeds = &[
         pda::authority::SEED.as_bytes(),
@@ -39,13 +37,21 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
     )?;
     // authority
     authority.num_minted = authority_increment;
-    // collector
-    collector.num_collected = collector_increment;
-    // collection
-    let collection = &mut ctx.accounts.collection_pda;
-    collection.mint = ctx.accounts.mint.key();
-    collection.handle = ctx.accounts.handle.handle.clone();
-    collection.index = n;
+    // has this keypair collected this mint already?
+    let collected = &mut ctx.accounts.collected;
+    if !collected.collected {
+        // collector
+        let collector = &mut ctx.accounts.collector;
+        collector.num_collected += 1;
+        msg!("{}", &collector.num_collected);
+        // collection
+        let collection = &mut ctx.accounts.collection_pda;
+        collection.mint = ctx.accounts.mint.key();
+        collection.handle = ctx.accounts.handle.handle.clone();
+        collection.index = n;
+        // collected
+        collected.collected = true;
+    }
     Ok(())
 }
 

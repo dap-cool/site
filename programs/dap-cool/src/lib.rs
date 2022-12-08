@@ -7,7 +7,7 @@ use crate::ix::{
     init_new_creator, create_nft, mint_new_copy,
     create_nft::CreateNftBumps, mint_new_copy::MintNewCopyBumps,
 };
-use crate::pda::collector::{Collection, Collector};
+use crate::pda::collector::{Collected, Collection, Collector};
 use crate::pda::creator::Creator;
 
 pub mod pda;
@@ -145,7 +145,7 @@ pub struct MintNewCopy<'info> {
     payer = payer,
     )]
     pub collector: Box<Account<'info, Collector>>,
-    #[account(init,
+    #[account(init_if_needed,
     seeds = [
     pda::collector::SEED.as_bytes(),
     payer.key().as_ref(), & [collector.num_collected + 1]
@@ -154,6 +154,17 @@ pub struct MintNewCopy<'info> {
     payer = payer,
     )]
     pub collection_pda: Box<Account<'info, Collection>>,
+    #[account(init_if_needed,
+    seeds = [
+    pda::collector::SEED.as_bytes(),
+    payer.key().as_ref(),
+    authority.mint.as_ref()
+    ], bump,
+    space = pda::collector::COLLECTED_SIZE,
+    payer = payer,
+    )
+    ]
+    pub collected: Box<Account<'info, Collected>>,
     #[account(seeds = [
     pda::handle::SEED.as_bytes(),
     handle.handle.as_bytes()

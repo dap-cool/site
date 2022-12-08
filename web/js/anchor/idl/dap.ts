@@ -131,6 +131,11 @@ export type DapCool = {
           "isSigner": false
         },
         {
+          "name": "collected",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -264,6 +269,18 @@ export type DapCool = {
           {
             "name": "index",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collected",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collected",
+            "type": "bool"
           }
         ]
       }
@@ -513,6 +530,11 @@ export const IDL: DapCool = {
           "isSigner": false
         },
         {
+          "name": "collected",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -646,6 +668,18 @@ export const IDL: DapCool = {
           {
             "name": "index",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collected",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collected",
+            "type": "bool"
           }
         ]
       }

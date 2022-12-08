@@ -14,6 +14,7 @@ import {
 } from "../util/constants";
 import {DapCool} from "../idl/dap";
 import {
+    deriveCollectedPda,
     deriveCollectionPda,
     deriveCollectorPda,
     getAllCollectionPda,
@@ -78,6 +79,12 @@ export async function mintNewCopy(
             handle,
             index
         );
+        // derive collected pda
+        const collectedPda = deriveCollectedPda(
+            provider,
+            programs.dap,
+            authority.accounts.mint
+        );
         // derive associated-token-account
         let mintAta, _;
         [mintAta, _] = PublicKey.findProgramAddressSync(
@@ -110,6 +117,7 @@ export async function mintNewCopy(
                 {
                     collector: collectorPda.address,
                     collectionPda: collectionPda.address,
+                    collected: collectedPda.address,
                     handle: handlePda.address,
                     authority: authorityPda.address,
                     mint: authority.accounts.mint,

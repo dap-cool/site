@@ -14,8 +14,6 @@ type
       -- select collection
     | SelectedCreator Intersection WithCollections
     | SelectedCollection (Maybe CopiedEdition) MasterEdition
-      -- printed & marked collection
-    | PrintedAndMarked Collection
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int

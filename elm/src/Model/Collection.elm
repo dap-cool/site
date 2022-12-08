@@ -26,7 +26,6 @@ type alias Meta =
 type alias Accounts =
     { pda : Mint
     , mint : Mint
-    , collection : Maybe Mint
     , ata : Maybe Ata
     }
 
@@ -49,14 +48,6 @@ encode collection =
 encoder : Collection -> Encode.Value
 encoder collection =
     let
-        collectionEncoder =
-            case collection.accounts.collection of
-                Just mint ->
-                    Encode.string mint
-
-                Nothing ->
-                    Encode.null
-
         ataEncoder =
             case collection.accounts.ata of
                 Just ata ->
@@ -82,7 +73,6 @@ encoder collection =
           , Encode.object
                 [ ( "pda", Encode.string collection.accounts.pda )
                 , ( "mint", Encode.string collection.accounts.mint )
-                , ( "collection", collectionEncoder )
                 , ( "ata", ataEncoder )
                 ]
           )
@@ -112,10 +102,9 @@ decoder =
                 (Decode.field "numMinted" Decode.int)
         )
         (Decode.field "accounts" <|
-            Decode.map4 Accounts
+            Decode.map3 Accounts
                 (Decode.field "pda" Decode.string)
                 (Decode.field "mint" Decode.string)
-                (Decode.maybe <| Decode.field "collection" Decode.string)
                 (Decode.maybe <|
                     Decode.field "ata" <|
                         Decode.map Ata
@@ -126,17 +115,12 @@ decoder =
 
 isEmpty : Collection -> Bool
 isEmpty collection =
-    case collection.accounts.collection of
-        Just id ->
-            id == empty
+    case collection.accounts.ata of
+        Just ata ->
+            ata.balance == 0
 
         Nothing ->
             True
-
-
-empty : String
-empty =
-    "11111111111111111111111111111111"
 
 
 intersection : List Collection -> List Collection -> List Collection
@@ -144,13 +128,13 @@ intersection left right =
     let
         leftMintAddresses : Set.Set Mint
         leftMintAddresses =
-            List.map (\c -> c.accounts.pda) left
+            List.map (\c -> c.accounts.mint) left
                 |> Set.fromList
 
         intersection_ =
             List.filter
                 (\c ->
-                    Set.member ((\c_ -> c_.accounts.pda) c) leftMintAddresses
+                    Set.member ((\c_ -> c_.accounts.mint) c) leftMintAddresses
                 )
                 right
     in
@@ -161,7 +145,7 @@ find : Collection -> List Collection -> Maybe Collection
 find collection list =
     List.filter
         (\c ->
-            c.accounts.pda == collection.accounts.pda
+            c.accounts.mint == collection.accounts.mint
         )
         list
         |> List.head

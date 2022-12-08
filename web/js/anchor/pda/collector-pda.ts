@@ -12,6 +12,11 @@ export interface CollectionPda {
     bump: number
 }
 
+export interface CollectedPda {
+    address: PublicKey
+    bump: number
+}
+
 export interface Collector {
     numCollected: number,
 }
@@ -105,6 +110,26 @@ export async function deriveCollectionPda(
             Buffer.from(SEED),
             provider.wallet.publicKey.toBuffer(),
             Buffer.from([index])
+        ],
+        program.programId
+    );
+    return {
+        address: pda,
+        bump
+    }
+}
+
+export function deriveCollectedPda(
+    provider: AnchorProvider,
+    program: Program<DapCool>,
+    mint: PublicKey
+): CollectedPda {
+    let pda, bump;
+    [pda, bump] = PublicKey.findProgramAddressSync(
+        [
+            Buffer.from(SEED),
+            provider.wallet.publicKey.toBuffer(),
+            mint.toBuffer()
         ],
         program.programId
     );
