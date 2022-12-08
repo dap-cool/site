@@ -11,7 +11,6 @@ type
     | CollectionSelected
       -- purchase collection
     | CollectionPrinted
-    | CollectionMarked
 
 
 fromString : String -> Maybe ToCollector
@@ -31,9 +30,6 @@ fromString string =
 
         "collector-collection-printed" ->
             Just CollectionPrinted
-
-        "collector-collection-marked" ->
-            Just CollectionMarked
 
         _ ->
             Nothing

@@ -6,7 +6,7 @@ type
     -- creating collection
     = CreatingNewNft -- processing multi-part step-one
     | CreatedNewNft -- ready for step two
-    | CreatedNewCollection -- step two
+    | CreatedNewCollection -- step two -- TODO; delete
 
 
 fromString : String -> Maybe Existing

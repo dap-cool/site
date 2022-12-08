@@ -1,4 +1,4 @@
-module Model.Collector.Collector exposing (Collector(..))
+module Model.Collector.Collector exposing (AtaBalance(..), Collector(..), Found(..), MaybeCollected(..))
 
 import Model.Collection exposing (Collection)
 import Model.Collector.WithCollections exposing (WithCollections)
@@ -13,7 +13,7 @@ type
     | HandleDoesNotExist String
       -- select collection
     | SelectedCreator Intersection WithCollections
-    | SelectedCollection (Maybe CopiedEdition) MasterEdition
+    | SelectedCollection MaybeCollected Selected
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int
@@ -23,9 +23,20 @@ type alias Intersection =
     List Collection
 
 
-type alias MasterEdition =
+type alias Selected =
     Collection
 
 
-type alias CopiedEdition =
-    Collection
+type MaybeCollected
+    = NotLoggedInYet
+    | LoggedIn Found AtaBalance
+
+
+type Found
+    = Yes Collection
+    | No
+
+
+type AtaBalance
+    = Positive
+    | Zero

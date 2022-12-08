@@ -381,21 +381,6 @@ update msg model =
                             }
                     )
 
-                FromCollector.MarkCopy handle int ->
-                    ( { model
-                        | state =
-                            { local = model.state.local
-                            , global = model.state.global
-                            , exception = Exception.Waiting
-                            }
-                      }
-                    , sender <|
-                        Sender.encode <|
-                            { sender = Sender.Collect from
-                            , more = AlmostExistingCollection.encode { handle = handle, index = int }
-                            }
-                    )
-
         FromJs fromJsMsg ->
             case fromJsMsg of
                 -- JS sending success for decoding
@@ -610,20 +595,42 @@ update msg model =
 
                                                         ToCollector.CollectionSelected ->
                                                             let
-                                                                maybeCopiedEdition masterEdition =
+                                                                ata collection =
+                                                                    case collection.accounts.ata.balance == 0 of
+                                                                        True ->
+                                                                            Collector.Zero
+
+                                                                        False ->
+                                                                            Collector.Positive
+
+                                                                maybeCollected collection =
                                                                     case model.state.global of
                                                                         Global.HasWalletAndHandle g ->
-                                                                            Collection.find
-                                                                                masterEdition
-                                                                                g.collected
+                                                                            case Collection.find collection g.collected of
+                                                                                Just found ->
+                                                                                    Collector.LoggedIn
+                                                                                        (Collector.Yes found)
+                                                                                        (ata collection)
+
+                                                                                Nothing ->
+                                                                                    Collector.LoggedIn
+                                                                                        Collector.No
+                                                                                        (ata collection)
 
                                                                         Global.HasWallet g ->
-                                                                            Collection.find
-                                                                                masterEdition
-                                                                                g.collected
+                                                                            case Collection.find collection g.collected of
+                                                                                Just found ->
+                                                                                    Collector.LoggedIn
+                                                                                        (Collector.Yes found)
+                                                                                        (ata collection)
+
+                                                                                Nothing ->
+                                                                                    Collector.LoggedIn
+                                                                                        Collector.No
+                                                                                        (ata collection)
 
                                                                         _ ->
-                                                                            Nothing
+                                                                            Collector.NotLoggedInYet
 
                                                                 f collection =
                                                                     { model
@@ -631,7 +638,7 @@ update msg model =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCollection
-                                                                                        (maybeCopiedEdition collection)
+                                                                                        (maybeCollected collection)
                                                                                         collection
                                                                             , global = model.state.global
                                                                             , exception = Exception.Closed
@@ -648,7 +655,10 @@ update msg model =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCollection
-                                                                                        (Just copied)
+                                                                                        (Collector.LoggedIn
+                                                                                            (Collector.Yes copied)
+                                                                                            Collector.Positive
+                                                                                        )
                                                                                         master
                                                                             , global = global
                                                                             , exception = Exception.Closed
@@ -671,34 +681,6 @@ update msg model =
                                                             in
                                                             Listener.decode model json WithCollectionForCollector.decode f
 
-                                                        ToCollector.CollectionMarked ->
-                                                            let
-                                                                update_ collection global =
-                                                                    { model
-                                                                        | state =
-                                                                            { local =
-                                                                                Local.Collect <|
-                                                                                    Collector.PrintedAndMarked
-                                                                                        collection
-                                                                            , global = global
-                                                                            , exception = Exception.Closed
-                                                                            }
-                                                                    }
-
-                                                                f withCollection =
-                                                                    case withCollection.global of
-                                                                        WithCollectionForCollector.HasWallet g ->
-                                                                            update_
-                                                                                withCollection.master
-                                                                                (Global.HasWallet g)
-
-                                                                        WithCollectionForCollector.HasWalletAndHandle g ->
-                                                                            update_
-                                                                                withCollection.master
-                                                                                (Global.HasWalletAndHandle g)
-                                                            in
-                                                            Listener.decode model json WithCollectionForCollector.decode f
-
                                         -- found msg for global update
                                         Listener.Global toGlobal ->
                                             case toGlobal of
@@ -716,8 +698,7 @@ update msg model =
                                                                 Local.Collect (Collector.SelectedCollection _ selected) ->
                                                                     Local.Collect <|
                                                                         Collector.SelectedCollection
-                                                                            Nothing
-                                                                            -- no intersection
+                                                                            Collector.NotLoggedInYet
                                                                             selected
 
                                                                 _ ->
@@ -746,81 +727,137 @@ update msg model =
 
                                                 ToGlobal.FoundWallet ->
                                                     let
-                                                        local collections =
+                                                        state =
+                                                            model.state
+
+                                                        bumpedState hasWallet =
+                                                            { state
+                                                                | global =
+                                                                    Global.HasWallet
+                                                                        hasWallet
+                                                                , exception = model.state.exception
+                                                            }
+
+                                                        f hasWallet =
                                                             case model.state.local of
                                                                 -- compute intersection from new global state
                                                                 Local.Collect (Collector.SelectedCreator _ withCollections) ->
-                                                                    Local.Collect <|
-                                                                        Collector.SelectedCreator
-                                                                            (Collection.intersection
-                                                                                withCollections.collections
-                                                                                collections
-                                                                            )
-                                                                            withCollections
+                                                                    let
+                                                                        bumpedState_ =
+                                                                            bumpedState hasWallet
 
-                                                                -- find selected collection in new global state
+                                                                        bumpLocal local =
+                                                                            { bumpedState_
+                                                                                | local = local
+                                                                            }
+                                                                    in
+                                                                    ( { model
+                                                                        | state =
+                                                                            bumpLocal
+                                                                                (Local.Collect <|
+                                                                                    Collector.SelectedCreator
+                                                                                        (Collection.intersection
+                                                                                            withCollections.collections
+                                                                                            hasWallet.collected
+                                                                                        )
+                                                                                        withCollections
+                                                                                )
+                                                                      }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                                -- go back to js for ata balance
                                                                 Local.Collect (Collector.SelectedCollection _ selected) ->
-                                                                    Local.Collect <|
-                                                                        Collector.SelectedCollection
-                                                                            (Collection.find
-                                                                                selected
-                                                                                collections
-                                                                            )
-                                                                            selected
+                                                                    ( { model | state = bumpedState hasWallet }
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.SelectCollection
+                                                                                        selected.meta.handle
+                                                                                        selected.meta.index
+                                                                            , more =
+                                                                                AlmostExistingCollection.encode
+                                                                                    { handle = selected.meta.handle
+                                                                                    , index = selected.meta.index
+                                                                                    }
+                                                                            }
+                                                                    )
 
+                                                                -- update global & move on
                                                                 _ ->
-                                                                    model.state.local
-
-                                                        f hasWallet =
-                                                            { model
-                                                                | state =
-                                                                    { local = local hasWallet.collected
-                                                                    , global = Global.HasWallet hasWallet
-                                                                    , exception = model.state.exception
-                                                                    }
-                                                            }
+                                                                    ( { model | state = bumpedState hasWallet }
+                                                                    , Cmd.none
+                                                                    )
                                                     in
-                                                    Listener.decode model json HasWallet.decode f
+                                                    Listener.decode2 model json HasWallet.decode f
 
                                                 ToGlobal.FoundWalletAndHandle ->
                                                     let
-                                                        local collections =
+                                                        state =
+                                                            model.state
+
+                                                        bumpedState hasWalletAndHandle =
+                                                            { state
+                                                                | global =
+                                                                    Global.HasWalletAndHandle
+                                                                        hasWalletAndHandle
+                                                                , exception = model.state.exception
+                                                            }
+
+                                                        f hasWalletAndHandle =
                                                             case model.state.local of
                                                                 -- compute intersection from new global state
                                                                 Local.Collect (Collector.SelectedCreator _ withCollections) ->
-                                                                    Local.Collect <|
-                                                                        Collector.SelectedCreator
-                                                                            (Collection.intersection
-                                                                                withCollections.collections
-                                                                                collections
-                                                                            )
-                                                                            withCollections
+                                                                    let
+                                                                        bumpedState_ =
+                                                                            bumpedState hasWalletAndHandle
 
-                                                                -- find selected collection in new global state
+                                                                        bumpLocal local =
+                                                                            { bumpedState_
+                                                                                | local = local
+                                                                            }
+                                                                    in
+                                                                    ( { model
+                                                                        | state =
+                                                                            bumpLocal
+                                                                                (Local.Collect <|
+                                                                                    Collector.SelectedCreator
+                                                                                        (Collection.intersection
+                                                                                            withCollections.collections
+                                                                                            hasWalletAndHandle.collected
+                                                                                        )
+                                                                                        withCollections
+                                                                                )
+                                                                      }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                                -- go back to js for ata balance
                                                                 Local.Collect (Collector.SelectedCollection _ selected) ->
-                                                                    Local.Collect <|
-                                                                        Collector.SelectedCollection
-                                                                            (Collection.find
-                                                                                selected
-                                                                                collections
-                                                                            )
-                                                                            selected
+                                                                    ( { model | state = bumpedState hasWalletAndHandle }
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.SelectCollection
+                                                                                        selected.meta.handle
+                                                                                        selected.meta.index
+                                                                            , more =
+                                                                                AlmostExistingCollection.encode
+                                                                                    { handle = selected.meta.handle
+                                                                                    , index = selected.meta.index
+                                                                                    }
+                                                                            }
+                                                                    )
 
+                                                                -- update global & move on
                                                                 _ ->
-                                                                    model.state.local
-
-                                                        f hasWalletAndHandle =
-                                                            { model
-                                                                | state =
-                                                                    { local = local hasWalletAndHandle.collected
-                                                                    , global =
-                                                                        Global.HasWalletAndHandle
-                                                                            hasWalletAndHandle
-                                                                    , exception = model.state.exception
-                                                                    }
-                                                            }
+                                                                    ( { model | state = bumpedState hasWalletAndHandle }
+                                                                    , Cmd.none
+                                                                    )
                                                     in
-                                                    Listener.decode model json HasWalletAndHandle.decode f
+                                                    Listener.decode2 model json HasWalletAndHandle.decode f
 
                                 -- undefined role
                                 Nothing ->

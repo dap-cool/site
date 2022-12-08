@@ -26,7 +26,7 @@ type alias Meta =
 type alias Accounts =
     { pda : Mint
     , mint : Mint
-    , ata : Maybe Ata
+    , ata : Ata
     }
 
 
@@ -47,17 +47,6 @@ encode collection =
 
 encoder : Collection -> Encode.Value
 encoder collection =
-    let
-        ataEncoder =
-            case collection.accounts.ata of
-                Just ata ->
-                    Encode.object
-                        [ ( "balance", Encode.int ata.balance )
-                        ]
-
-                Nothing ->
-                    Encode.null
-    in
     Encode.object
         [ ( "meta"
           , Encode.object
@@ -73,7 +62,11 @@ encoder collection =
           , Encode.object
                 [ ( "pda", Encode.string collection.accounts.pda )
                 , ( "mint", Encode.string collection.accounts.mint )
-                , ( "ata", ataEncoder )
+                , ( "ata"
+                  , Encode.object
+                        [ ( "balance", Encode.int collection.accounts.ata.balance )
+                        ]
+                  )
                 ]
           )
         ]
@@ -105,22 +98,16 @@ decoder =
             Decode.map3 Accounts
                 (Decode.field "pda" Decode.string)
                 (Decode.field "mint" Decode.string)
-                (Decode.maybe <|
-                    Decode.field "ata" <|
-                        Decode.map Ata
-                            (Decode.field "balance" Decode.int)
+                (Decode.field "ata" <|
+                    Decode.map Ata
+                        (Decode.field "balance" Decode.int)
                 )
         )
 
 
 isEmpty : Collection -> Bool
 isEmpty collection =
-    case collection.accounts.ata of
-        Just ata ->
-            ata.balance == 0
-
-        Nothing ->
-            True
+    collection.accounts.ata.balance == 0
 
 
 intersection : List Collection -> List Collection -> List Collection
