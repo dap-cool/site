@@ -197,24 +197,29 @@ export async function main(app, json) {
                 more.handle
             );
             if (validated) {
-                // get ephemeral provider & program
-                const ephemeralPP = getEphemeralPP();
+                // get provider & program
+                let pp;
+                if (phantom) {
+                    pp = getPP(phantom);
+                } else {
+                    pp = getEphemeralPP();
+                }
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
-                    ephemeralPP.programs.dap,
+                    pp.programs.dap,
                     validated
                 );
                 if (handle) {
                     // derive & fetch collection
                     const authorityPda = await deriveAuthorityPda(
-                        ephemeralPP.programs.dap,
+                        pp.programs.dap,
                         validated,
                         more.index
                     );
                     const collection = await getAuthorityPda(
-                        ephemeralPP.provider,
-                        ephemeralPP.programs,
+                        pp.provider,
+                        pp.programs,
                         authorityPda
                     );
                     app.ports.success.send(
