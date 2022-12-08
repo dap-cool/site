@@ -75,9 +75,9 @@ export async function mintNewCopy(
         );
         // get authority pda
         const authority: CollectionAuthority = await getAuthorityPda(
-            programs.dap,
-            handle,
-            index
+            provider,
+            programs,
+            authorityPda
         );
         // derive collected pda
         const collectedPda = deriveCollectedPda(
@@ -102,12 +102,6 @@ export async function mintNewCopy(
         }
         // invoke rpc
         console.log("minting new copy");
-        console.log(collectorPda.address.toString());
-        console.log(collectionPda.address.toString());
-        console.log(handlePda.address.toString());
-        console.log(authorityPda.address.toString());
-        console.log(authority.accounts.mint.toString());
-        console.log(mintAta.toString());
         await programs.dap.methods
             .mintNewCopy(
                 bumps as any,
@@ -134,9 +128,8 @@ export async function mintNewCopy(
         // build last-collected
         const lastCollectedAuthority = authority;
         // add associated-token-account balance
-        // TODO: fetch token-balance before-hand
         lastCollectedAuthority.accounts.ata = {
-            balance: 1
+            balance: authority.accounts.ata.balance + 1
         };
         // increment num-minted
         lastCollectedAuthority.meta.numMinted = authority.meta.numMinted + 1;
@@ -162,7 +155,8 @@ export async function mintNewCopy(
                 creator.handle
             );
             const collections = await getManyAuthorityPdaForCreator(
-                programs.dap,
+                provider,
+                programs,
                 fetchedHandle
             );
             global = {

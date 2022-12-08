@@ -18,7 +18,6 @@ import {
 import {buildMetaData, readLogo} from "../../shdw/shdw";
 import {DapCool} from "../idl/dap";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
-import {min} from "bn.js";
 
 export interface Form {
     step: number
@@ -45,7 +44,8 @@ export async function creatNft(
 ) {
     // fetch all collections from handle
     let collections = await getManyAuthorityPdaForCreator(
-        programs.dap,
+        provider,
+        programs,
         handle
     );
     // fetch all collected from creator pda
@@ -294,8 +294,9 @@ export async function creatNft(
                 accounts: {
                     pda: authorityPda.address,
                     mint: mint.publicKey,
-                    collection: null,
-                    ata: null
+                    ata: {
+                        balance: 1 // TODO; creator-distribution?
+                    }
                 }
             } as CollectionAuthority;
             // concat

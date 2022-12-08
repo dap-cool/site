@@ -27,11 +27,10 @@ export interface CollectionAuthority {
     accounts: {
         pda: PublicKey
         mint: PublicKey
-        collection: PublicKey | null
         // associated-token-account
         ata: {
             balance: number
-        } | null
+        }
     }
 }
 
@@ -50,44 +49,6 @@ interface RawSplToken {
     amount: BN.BN
 }
 
-interface FromElm {
-    meta: {
-        handle: string
-        name: string
-        symbol: string
-        index: number
-        uri: string
-        numMinted: number
-    }
-    accounts: {
-        pda: string
-        mint: string
-        collection: string
-        ata: {
-            balance: number
-        } | null
-    }
-}
-
-// todo; delete
-function decodeAuthorityPda(fromElm: FromElm): CollectionAuthority {
-    let maybeCollection;
-    if (fromElm.accounts.collection) {
-        maybeCollection = new PublicKey(fromElm.accounts.collection);
-    } else {
-        maybeCollection = null;
-    }
-    return {
-        meta: fromElm.meta,
-        accounts: {
-            pda: new PublicKey(fromElm.accounts.pda),
-            mint: new PublicKey(fromElm.accounts.mint),
-            collection: maybeCollection,
-            ata: fromElm.accounts.ata
-        }
-    }
-}
-
 export async function getManyAuthorityPdaForCollector(
     provider: AnchorProvider,
     programs: {
@@ -96,88 +57,60 @@ export async function getManyAuthorityPdaForCollector(
     },
     collections: Collection[]
 ): Promise<CollectionAuthority[]> {
-    // derive all authority pda
-    const authorityPdaArray: { authorityPda: AuthorityPda; collection: Collection }[] = await Promise.all(
-        collections.map(async (collection) => {
-                const authorityPda = await deriveAuthorityPda(programs.dap, collection.handle, collection.index);
-                return {
-                    authorityPda,
-                    collection
-                }
-            }
-        )
-    );
-    const derived0: AuthorityPda[] = authorityPdaArray.map(obj =>
-        obj.authorityPda
-    );
-    // derive associated-token-account array
-    const ataPdaArray: PublicKey[] = await Promise.all(
+    // derive authority pda array
+    const authorityPdaArray: AuthorityPda[] = await Promise.all(
         collections.map(async (collection) =>
-            await deriveAtaPda(provider, collection.mint)
+            await deriveAuthorityPda(programs.dap, collection.handle, collection.index)
         )
+    );
+    // derive associated-token-account pda array
+    const ataPdaArray: PublicKey[] = collections.map((collection: Collection) =>
+        deriveAtaPda(provider, collection.mint)
     );
     // fetch authority array
     const authorityArray: CollectionAuthority[] = await getManyAuthorityPda(
         programs.dap,
-        derived0
+        authorityPdaArray
     );
-    // fetch associated-token-account array
-    const ataArray: RawSplToken[] = (await programs.token.account.token.fetchMultiple(ataPdaArray)).map(obj =>
-        obj as RawSplToken
-    );
-    // replace master-mint with copied-mint
-    // set ata to derivation
-    // TODO; double-check this logic. duplicate copied-mint showing up.
-    return authorityPdaArray.map(obj => {
-            // find collection-authority matching copied-mint
-            const foundAuthority = authorityArray.find(ca =>
-                ca.accounts.pda.equals(obj.authorityPda.address)
-            )
-            // find associated-token-account matching copied-mint
-            const foundAta = ataArray.find(ata =>
-                ata.mint.equals(obj.collection.mint)
-            )
-            console.log(foundAta);
-            // replace master-mint with copied-mint
-            foundAuthority.accounts.mint = obj.collection.mint
-            // replace ata
-            foundAuthority.accounts.ata = {
-                balance: foundAta.amount.toNumber()
-            }
-            return foundAuthority
-        }
+    // join
+    return await joinAtaWithAuthority(
+        programs.token,
+        authorityArray,
+        ataPdaArray
     )
-}
-
-async function deriveAtaPda(provider: AnchorProvider, mint: PublicKey): Promise<PublicKey> {
-    let ataPda: PublicKey, _;
-    [ataPda, _] = await PublicKey.findProgramAddress(
-        [
-            provider.publicKey.toBuffer(),
-            SPL_TOKEN_PROGRAM_ID.toBuffer(),
-            mint.toBuffer()
-        ],
-        SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-    )
-    return ataPda
 }
 
 export async function getManyAuthorityPdaForCreator(
-    program: Program<DapCool>,
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>,
+        token: Program<SplToken>
+    },
     handle: Handle
 ): Promise<CollectionAuthority[]> {
-    // derive pda array
-    const pdaArray: AuthorityPda[] = await Promise.all(
+    // derive authority pda array
+    const authorityPdaArray: AuthorityPda[] = await Promise.all(
         Array.from(new Array(handle.numCollections), async (_, ix) => {
                 // derive authority for each collection
                 const index = ix + 1;
-                return await deriveAuthorityPda(program, handle.handle, index)
+                return await deriveAuthorityPda(programs.dap, handle.handle, index)
             }
         )
     );
-    return await getManyAuthorityPda(
-        program,
-        pdaArray
+    // fetch collection array
+    const authorityArray: CollectionAuthority[] = await getManyAuthorityPda(
+        programs.dap,
+        authorityPdaArray
+    );
+    // derive associated-token-account pda array
+    const ataPdaArray: PublicKey[] = authorityArray.map((authority: CollectionAuthority) =>
+        deriveAtaPda(provider, authority.accounts.mint)
+    );
+    // join
+    return await joinAtaWithAuthority(
+        programs.token,
+        authorityArray,
+        ataPdaArray
     )
 }
 
@@ -205,7 +138,6 @@ async function getManyAuthorityPda(
                     accounts: {
                         pda: pda.address,
                         mint: raw.mint,
-                        collection: null,
                         ata: null // replaced later with on-chain token-balance fetched in bulk
                     }
                 } as CollectionAuthority
@@ -214,14 +146,54 @@ async function getManyAuthorityPda(
     )
 }
 
+async function joinAtaWithAuthority(
+    program: Program<SplToken>,
+    authorityArray: CollectionAuthority[],
+    ataPdaArray: PublicKey[]
+): Promise<CollectionAuthority[]> {
+    // fetch associated-token-account array
+    const ataArray: RawSplToken[] = (await program.account.token.fetchMultiple(ataPdaArray)).map(obj =>
+        obj as RawSplToken
+    );
+    // join
+    return authorityArray.map((authority: CollectionAuthority) => {
+            const foundAta = ataArray.find(ata => ata.mint.equals(authority.accounts.mint));
+            authority.accounts.ata = {
+                balance: foundAta.amount.toNumber()
+            };
+            return authority
+        }
+    )
+}
+
 export async function getAuthorityPda(
-    program: Program<DapCool>,
-    handle: string,
-    index: number
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>,
+        token: Program<SplToken>
+    },
+    authorityPda: AuthorityPda,
 ): Promise<CollectionAuthority> {
-    const pda: AuthorityPda = await deriveAuthorityPda(program, handle, index);
-    const authority = await program.account.authority.fetch(pda.address) as RawCollectionAuthority;
-    console.log(authority);
+    // fetch authority
+    const authority: RawCollectionAuthority = await programs.dap.account.authority.fetch(
+        authorityPda.address
+    ) as RawCollectionAuthority;
+    // derive & fetch associated-token-account
+    const ataPda = deriveAtaPda(
+        provider,
+        authority.mint
+    );
+    let balance: number;
+    try {
+        const ata = await programs.token.account.token.fetch(
+            ataPda
+        ) as RawSplToken;
+        balance = ata.amount.toNumber;
+    } catch (error) {
+        console.log("provider does not have existing token balance.")
+        balance = 0;
+    }
+    // build collection authority
     return {
         meta: {
             handle: authority.handle,
@@ -232,12 +204,26 @@ export async function getAuthorityPda(
             numMinted: authority.numMinted.toNumber(),
         },
         accounts: {
-            pda: pda.address,
+            pda: authorityPda.address,
             mint: authority.mint,
-            collection: null,
-            ata: null // no ata because this is the master-edition
+            ata: {
+                balance: balance
+            }
         }
     } as CollectionAuthority
+}
+
+function deriveAtaPda(provider: AnchorProvider, mint: PublicKey): PublicKey {
+    let ataPda: PublicKey, _;
+    [ataPda, _] = PublicKey.findProgramAddressSync(
+        [
+            provider.publicKey.toBuffer(),
+            SPL_TOKEN_PROGRAM_ID.toBuffer(),
+            mint.toBuffer()
+        ],
+        SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+    return ataPda
 }
 
 export async function deriveAuthorityPda(

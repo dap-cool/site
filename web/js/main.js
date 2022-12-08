@@ -8,6 +8,7 @@ import {
     getHandlePda
 } from "./anchor/pda/handle-pda";
 import {
+    deriveAuthorityPda,
     getAuthorityPda,
     getManyAuthorityPdaForCreator
 } from "./anchor/pda/authority-pda";
@@ -166,7 +167,11 @@ export async function main(app, json) {
                 );
                 if (handle) {
                     // get collections
-                    const collections = await getManyAuthorityPdaForCreator(ephemeralPP.programs.dap, handle);
+                    const collections = await getManyAuthorityPdaForCreator(
+                        ephemeralPP.provider,
+                        ephemeralPP.programs,
+                        handle
+                    );
                     app.ports.success.send(
                         JSON.stringify(
                             {
@@ -201,8 +206,17 @@ export async function main(app, json) {
                     validated
                 );
                 if (handle) {
-                    // get collection
-                    const collection = await getAuthorityPda(ephemeralPP.programs.dap, validated, more.index);
+                    // derive & fetch collection
+                    const authorityPda = await deriveAuthorityPda(
+                        ephemeralPP.programs.dap,
+                        validated,
+                        more.index
+                    );
+                    const collection = await getAuthorityPda(
+                        ephemeralPP.provider,
+                        ephemeralPP.programs,
+                        authorityPda
+                    );
                     app.ports.success.send(
                         JSON.stringify(
                             {

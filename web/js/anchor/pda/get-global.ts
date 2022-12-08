@@ -14,25 +14,52 @@ export async function getGlobal(
     },
 ): Promise<void> {
     // derive creator pda
-    const creatorPda = await deriveCreatorPda(provider, programs.dap);
+    const creatorPda = await deriveCreatorPda(
+        provider,
+        programs.dap
+    );
     // derive collector pda
-    const collectorPda = await deriveCollectorPda(provider, programs.dap);
+    const collectorPda = await deriveCollectorPda(
+        provider,
+        programs.dap
+    );
     // get all collections collected by collector
     let collected: CollectionAuthority[];
     try {
-        const collector = await getCollectorPda(programs.dap, collectorPda);
-        const collectedPda = await getAllCollectionPda(provider, programs.dap, collector);
-        collected = await getManyAuthorityPdaForCollector(provider, programs, collectedPda);
+        const collector = await getCollectorPda(
+            programs.dap,
+            collectorPda
+        );
+        const collectedPda = await getAllCollectionPda(
+            provider,
+            programs.dap,
+            collector
+        );
+        collected = await getManyAuthorityPdaForCollector(
+            provider,
+            programs,
+            collectedPda
+        );
     } catch (error) {
         console.log("could not find collector on-chain");
         collected = []
     }
     try {
         // fetch creator
-        const creator = await getCreatorPda(programs.dap, creatorPda);
-        const handle = await getHandlePda(programs.dap, creator.handle);
+        const creator = await getCreatorPda(
+            programs.dap,
+            creatorPda
+        );
+        const handle = await getHandlePda(
+            programs.dap,
+            creator.handle
+        );
         // fetch collections
-        const collections = await getManyAuthorityPdaForCreator(programs.dap, handle);
+        const collections = await getManyAuthorityPdaForCreator(
+            provider,
+            programs,
+            handle
+        );
         // send success to elm
         app.ports.success.send(
             JSON.stringify(
