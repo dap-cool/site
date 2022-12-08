@@ -4,8 +4,8 @@ use anchor_lang::prelude::{error_code};
 pub enum CustomErrors {
     #[msg("Max handle length is 16 bytes.")]
     HandleTooLong,
-    #[msg("Your previous collection must be marked before purchasing another.")]
-    EveryCollectionMustBeMarked,
-    #[msg("Could not deserialize metadata that should have been initialized already.")]
-    CouldNotDeserializeMetadata,
+    #[msg("Creator distribution must be smaller than total supply.")]
+    CreatorDistributionTooLarge,
+    #[msg("Primary sale is sold out. Check secondary markets.")]
+    SoldOut,
 }

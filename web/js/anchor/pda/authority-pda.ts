@@ -42,7 +42,6 @@ interface RawCollectionAuthority {
     index: number
     uri: string
     mint: PublicKey
-    collection: PublicKey
     numMinted: BN.BN
 }
 
@@ -206,7 +205,7 @@ async function getManyAuthorityPda(
                     accounts: {
                         pda: pda.address,
                         mint: raw.mint,
-                        collection: raw.collection,
+                        collection: null,
                         ata: null // replaced later with on-chain token-balance fetched in bulk
                     }
                 } as CollectionAuthority
@@ -235,7 +234,7 @@ export async function getAuthorityPda(
         accounts: {
             pda: pda.address,
             mint: authority.mint,
-            collection: authority.collection,
+            collection: null,
             ata: null // no ata because this is the master-edition
         }
     } as CollectionAuthority

@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
-use mpl_token_metadata::state::{PREFIX, EDITION};
+use mpl_token_metadata::state::{PREFIX};
 use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
     init_new_creator, create_nft, mint_new_copy,
@@ -14,7 +14,7 @@ pub mod pda;
 pub mod ix;
 pub mod error;
 
-declare_id!("FyCpUM8qyDY57fzeJf3MdwgrCKg2N9fQfTEXo9bFqZPp");
+declare_id!("9G9p4oS8vNg7fy4HLc6kY4Ca5fyuDYUkJhqpnyLtFu8y");
 
 #[program]
 pub mod dap_cool {
@@ -102,6 +102,12 @@ pub struct CreateNFT<'info> {
     payer = payer
     )]
     pub mint: Account<'info, Mint>,
+    #[account(init,
+    associated_token::mint = mint,
+    associated_token::authority = payer,
+    payer = payer
+    )]
+    pub mint_ata: Box<Account<'info, TokenAccount>>,
     #[account(mut,
     seeds = [
     PREFIX.as_bytes(),
@@ -113,42 +119,6 @@ pub struct CreateNFT<'info> {
     )]
     /// CHECK: uninitialized metadata
     pub metadata: UncheckedAccount<'info>,
-    #[account(init,
-    mint::authority = authority,
-    mint::freeze_authority = authority,
-    mint::decimals = 0,
-    payer = payer
-    )]
-    pub collection: Account<'info, Mint>,
-    #[account(mut,
-    seeds = [
-    PREFIX.as_bytes(),
-    metadata_program.key().as_ref(),
-    collection.key().as_ref()
-    ],
-    bump = bumps.collection_metadata,
-    seeds::program = metadata_program.key()
-    )]
-    /// CHECK: uninitialized metadata
-    pub collection_metadata: UncheckedAccount<'info>,
-    #[account(mut,
-    seeds = [
-    PREFIX.as_bytes(),
-    metadata_program.key().as_ref(),
-    collection.key().as_ref(),
-    EDITION.as_bytes()
-    ],
-    bump = bumps.collection_master_edition,
-    seeds::program = metadata_program.key()
-    )]
-    /// CHECK: uninitialized collection master-edition
-    pub collection_master_edition: UncheckedAccount<'info>,
-    #[account(init,
-    associated_token::mint = collection,
-    associated_token::authority = authority,
-    payer = payer
-    )]
-    pub collection_master_edition_ata: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program

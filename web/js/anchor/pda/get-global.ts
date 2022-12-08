@@ -50,6 +50,7 @@ export async function getGlobal(
             )
         );
     } catch (error) {
+        console.log(error);
         console.log("could not find creator on-chain");
         // send success to elm
         app.ports.success.send(

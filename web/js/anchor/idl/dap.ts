@@ -52,27 +52,12 @@ export type DapCool = {
           "isSigner": true
         },
         {
+          "name": "mintAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "metadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEditionAta",
           "isMut": true,
           "isSigner": false
         },
@@ -229,10 +214,6 @@ export type DapCool = {
             "type": "publicKey"
           },
           {
-            "name": "collection",
-            "type": "publicKey"
-          },
-          {
             "name": "numMinted",
             "type": "u64"
           },
@@ -347,14 +328,6 @@ export type DapCool = {
           {
             "name": "metadata",
             "type": "u8"
-          },
-          {
-            "name": "collectionMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMasterEdition",
-            "type": "u8"
           }
         ]
       }
@@ -396,13 +369,13 @@ export type DapCool = {
     },
     {
       "code": 6001,
-      "name": "EveryCollectionMustBeMarked",
-      "msg": "Your previous collection must be marked before purchasing another."
+      "name": "CreatorDistributionTooLarge",
+      "msg": "Creator distribution must be smaller than total supply."
     },
     {
       "code": 6002,
-      "name": "CouldNotDeserializeMetadata",
-      "msg": "Could not deserialize metadata that should have been initialized already."
+      "name": "SoldOut",
+      "msg": "Primary sale is sold out. Check secondary markets."
     }
   ]
 };
@@ -461,27 +434,12 @@ export const IDL: DapCool = {
           "isSigner": true
         },
         {
+          "name": "mintAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "metadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEditionAta",
           "isMut": true,
           "isSigner": false
         },
@@ -638,10 +596,6 @@ export const IDL: DapCool = {
             "type": "publicKey"
           },
           {
-            "name": "collection",
-            "type": "publicKey"
-          },
-          {
             "name": "numMinted",
             "type": "u64"
           },
@@ -756,14 +710,6 @@ export const IDL: DapCool = {
           {
             "name": "metadata",
             "type": "u8"
-          },
-          {
-            "name": "collectionMetadata",
-            "type": "u8"
-          },
-          {
-            "name": "collectionMasterEdition",
-            "type": "u8"
           }
         ]
       }
@@ -805,13 +751,13 @@ export const IDL: DapCool = {
     },
     {
       "code": 6001,
-      "name": "EveryCollectionMustBeMarked",
-      "msg": "Your previous collection must be marked before purchasing another."
+      "name": "CreatorDistributionTooLarge",
+      "msg": "Creator distribution must be smaller than total supply."
     },
     {
       "code": 6002,
-      "name": "CouldNotDeserializeMetadata",
-      "msg": "Could not deserialize metadata that should have been initialized already."
+      "name": "SoldOut",
+      "msg": "Primary sale is sold out. Check secondary markets."
     }
   ]
 };

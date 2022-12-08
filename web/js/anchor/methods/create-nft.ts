@@ -18,6 +18,7 @@ import {
 import {buildMetaData, readLogo} from "../../shdw/shdw";
 import {DapCool} from "../idl/dap";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
+import {min} from "bn.js";
 
 export interface Form {
     step: number
@@ -86,8 +87,16 @@ export async function creatNft(
     );
     // derive key-pair for mint
     const mint = Keypair.generate();
-    // derive key-pair for collection
-    const collection = Keypair.generate();
+    // derive associated-token-address
+    let mintAta: PublicKey, _;
+    [mintAta, _] = PublicKey.findProgramAddressSync(
+        [
+            provider.wallet.publicKey.toBuffer(),
+            SPL_TOKEN_PROGRAM_ID.toBuffer(),
+            mint.publicKey.toBuffer()
+        ],
+        SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+    );
     // derive metadata
     let metadataPda, metadataBump;
     [metadataPda, metadataBump] = PublicKey.findProgramAddressSync(
@@ -97,37 +106,6 @@ export async function creatNft(
             mint.publicKey.toBuffer(),
         ],
         MPL_TOKEN_METADATA_PROGRAM_ID
-    );
-    // derive collection metadata
-    let collectionMetadata, collectionMetadataBump;
-    [collectionMetadata, collectionMetadataBump] = PublicKey.findProgramAddressSync(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            collection.publicKey.toBuffer()
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    );
-    // derive collection master-edition
-    let collectionMasterEdition, collectionMasterEditionBump;
-    [collectionMasterEdition, collectionMasterEditionBump] = PublicKey.findProgramAddressSync(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            collection.publicKey.toBuffer(),
-            Buffer.from(MPL_EDITION),
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    );
-    // derive collection master-edition-ata
-    let collectionMasterEditionAta, _;
-    [collectionMasterEditionAta, _] = PublicKey.findProgramAddressSync(
-        [
-            authorityPda.address.toBuffer(),
-            SPL_TOKEN_PROGRAM_ID.toBuffer(),
-            collection.publicKey.toBuffer()
-        ],
-        SPL_ASSOCIATED_TOKEN_PROGRAM_ID
     );
     // read logo from input
     const logo: File = readLogo();
@@ -274,8 +252,6 @@ export async function creatNft(
                 handle: handlePda.bump,
                 authority: authorityPda.bump,
                 metadata: metadataBump,
-                collectionMetadata: collectionMetadataBump,
-                collectionMasterEdition: collectionMasterEditionBump
             }
             // invoke rpc
             await programs.dap.methods
@@ -291,11 +267,8 @@ export async function creatNft(
                         handle: handlePda.address,
                         authority: authorityPda.address,
                         mint: mint.publicKey,
+                        mintAta: mintAta,
                         metadata: metadataPda,
-                        collection: collection.publicKey,
-                        collectionMetadata: collectionMetadata,
-                        collectionMasterEdition: collectionMasterEdition,
-                        collectionMasterEditionAta: collectionMasterEditionAta,
                         payer: provider.wallet.publicKey,
                         tokenProgram: SPL_TOKEN_PROGRAM_ID,
                         associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -304,7 +277,7 @@ export async function creatNft(
                         rent: SYSVAR_RENT_PUBKEY,
                     }
                 )
-                .signers([mint, collection])
+                .signers([mint])
                 .rpc()
             // fetch pda
             console.log("mint", mint.publicKey.toString());
@@ -316,12 +289,12 @@ export async function creatNft(
                     symbol: form.meta.symbol,
                     index: authorityIndex,
                     uri: metadataUrl,
-                    numMinted: 0,
+                    numMinted: 1, // TODO; creator-distribution?
                 },
                 accounts: {
                     pda: authorityPda.address,
                     mint: mint.publicKey,
-                    collection: collection.publicKey,
+                    collection: null,
                     ata: null
                 }
             } as CollectionAuthority;
