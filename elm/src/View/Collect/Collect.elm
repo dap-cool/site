@@ -1,7 +1,7 @@
 module View.Collect.Collect exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, href, placeholder, src, style, type_, width)
+import Html.Attributes exposing (class, href, placeholder, src, style, target, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection as Collection
 import Model.Collector.Collector as Collector exposing (Collector(..))
@@ -9,7 +9,8 @@ import Model.Handle as Handle
 import Model.State.Global.Global as Global exposing (Global)
 import Model.State.Local.Local as Local
 import Msg.Collector.Collector as CollectorMsg
-import Msg.Msg exposing (Msg(..))
+import Msg.Global as FromGlobal
+import Msg.Msg as Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
 
 
@@ -197,75 +198,209 @@ body global collector =
                             withCollections.collections
                         ]
 
-                SelectedCollection maybeCopiedEdition masterEdition ->
+                SelectedCollection maybeCollected selected ->
                     let
                         purchase =
-                            Html.button
-                                [ class "is-button-1"
-                                , onClick <|
-                                    FromCollector <|
-                                        CollectorMsg.PrintCopy
-                                            masterEdition.meta.handle
-                                            masterEdition.meta.index
-                                ]
-                                [ Html.text "Purchase"
-                                ]
+                            case Collection.isSoldOut selected of
+                                True ->
+                                    Html.div
+                                        []
+                                        [ Html.div
+                                            []
+                                            [ Html.text
+                                                """Check out
+                                                """
+                                            , Html.a
+                                                [ class "has-sky-blue-text"
+                                                , href <|
+                                                    String.concat
+                                                        [ "https://hyperspace.xyz/token/"
+                                                        , selected.accounts.mint
+                                                        ]
+                                                , target "_blank"
+                                                ]
+                                                [ Html.text
+                                                    """this collection on hyperspace
+                                                    """
+                                                ]
+                                            , Html.text
+                                                """ to place your bid on the secondary market. 🤝
+                                                """
+                                            ]
+                                        ]
 
-                        purchaseOrMark =
-                            case maybeCopiedEdition of
-                                Just copiedEdition ->
-                                    case Collection.isEmpty copiedEdition of
-                                        True ->
+                                False ->
+                                    Html.button
+                                        [ class "is-button-1"
+                                        , onClick <|
+                                            FromCollector <|
+                                                CollectorMsg.PrintCopy
+                                                    selected.meta.handle
+                                                    selected.meta.index
+                                        ]
+                                        [ Html.text "purchase"
+                                        ]
+
+                        purchaseAgain =
+                            case Collection.isSoldOut selected of
+                                True ->
+                                    Html.div
+                                        []
+                                        [ Html.div
+                                            []
+                                            [ Html.text
+                                                """Check out
+                                                """
+                                            , Html.a
+                                                [ class "has-sky-blue-text"
+                                                , href <|
+                                                    String.concat
+                                                        [ "https://hyperspace.xyz/token/"
+                                                        , selected.accounts.mint
+                                                        ]
+                                                , target "_blank"
+                                                ]
+                                                [ Html.text
+                                                    """this collection on hyperspace
+                                                    """
+                                                ]
+                                            , Html.text
+                                                """ to list or place your bid for another on the secondary market. 🤝
+                                                """
+                                            ]
+                                        ]
+
+                                False ->
+                                    Html.button
+                                        [ class "is-button-1"
+                                        , onClick <|
+                                            FromCollector <|
+                                                CollectorMsg.PrintCopy
+                                                    selected.meta.handle
+                                                    selected.meta.index
+                                        ]
+                                        [ Html.text "purchase again"
+                                        ]
+
+                        view_ =
+                            case maybeCollected of
+                                Collector.NotLoggedInYet ->
+                                    Html.div
+                                        []
+                                        [ Html.div
+                                            []
+                                            [ purchase
+                                            ]
+                                        , Html.div
+                                            []
+                                            [ Html.button
+                                                [ class "is-light-text-container-4 mr-2"
+                                                , onClick <| Msg.Global FromGlobal.Connect
+                                                ]
+                                                [ Html.text "Connect Wallet"
+                                                ]
+                                            , Html.text
+                                                """ to unlock if you've already purchased.
+                                                """
+                                            ]
+                                        , Html.div
+                                            []
+                                            [ View.Generic.Collection.Collector.Collector.view selected
+                                            ]
+                                        ]
+
+                                Collector.LoggedIn found ataBalance ->
+                                    case ( found, ataBalance ) of
+                                        ( Collector.No, Collector.Positive ) ->
                                             Html.div
                                                 []
                                                 [ Html.div
                                                     []
                                                     [ Html.text
-                                                        """You've successfully purchased this NFT 😁 --
-                                                        """
-                                                    , Html.a
-                                                        [ class "has-sky-blue-text"
-                                                        , href <|
-                                                            String.concat
-                                                                [ "https://explorer.solana.com/address/"
-                                                                , copiedEdition.accounts.mint
-                                                                ]
-                                                        ]
-                                                        [ Html.text "view it here or in your wallet 👀"
-                                                        ]
-                                                    ]
-                                                , Html.div
-                                                    []
-                                                    [ Html.text
-                                                        """but you still need to mark your copy
-                                                        as part of the on-chain collection
-                                                        before you can unlock stuff
+                                                        """It looks like you already have a positive token balance
+                                                        for this collection 👀
                                                         """
                                                     ]
                                                 , Html.div
                                                     []
                                                     [ Html.button
-                                                        [ class "is-button-1"
-                                                        , onClick <|
-                                                            FromCollector <|
-                                                                CollectorMsg.MarkCopy
-                                                                    masterEdition.meta.handle
-                                                                    masterEdition.meta.index
+                                                        []
+                                                        [ Html.text "Declare"
                                                         ]
-                                                        [ Html.text "Mark your copy"
+                                                    , Html.text
+                                                        """ as an official collector to start unlocking stuff 😎
+                                                        """
+                                                    ]
+                                                , View.Generic.Collection.Collector.Collector.view selected
+                                                ]
+
+                                        ( Collector.No, Collector.Zero ) ->
+                                            Html.div
+                                                []
+                                                [ purchase
+                                                , View.Generic.Collection.Collector.Collector.view selected
+                                                ]
+
+                                        ( Collector.Yes collected, Collector.Positive ) ->
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    []
+                                                    [ Html.text
+                                                        """Welcome back official collector \u{1FAE1}
+                                                        """
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.text <|
+                                                        String.concat
+                                                            [ "token balance:"
+                                                            , " "
+                                                            , String.fromInt collected.accounts.ata.balance
+                                                            ]
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.button
+                                                        []
+                                                        [ Html.text "Unlock stuff"
                                                         ]
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ purchaseAgain
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ View.Generic.Collection.Collector.Collector.view collected
                                                     ]
                                                 ]
 
-                                        False ->
+                                        ( Collector.Yes collected, Collector.Zero ) ->
                                             Html.div
                                                 []
-                                                [ Html.text "unlock stuff"
+                                                [ Html.div
+                                                    []
+                                                    [ Html.text
+                                                        """Welcome back official collector \u{1FAE1}
+                                                        """
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.text
+                                                        """It looks like you've sold or transferred your tokens here
+                                                        which means you can no longer unlock stuff.
+                                                        """
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ purchaseAgain
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ View.Generic.Collection.Collector.Collector.view collected
+                                                    ]
                                                 ]
-
-                                -- TODO; href to secondary market + button to add to collection from secondary
-                                Nothing ->
-                                    purchase
                     in
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
@@ -277,64 +412,10 @@ body global collector =
                                 String.concat
                                     [ "creator:"
                                     , " "
-                                    , masterEdition.meta.handle
+                                    , selected.meta.handle
                                     ]
                             ]
-                        , Html.div
-                            []
-                            [ Html.text "collection selected ⬇️"
-                            ]
-                        , View.Generic.Collection.Collector.Collector.view
-                            masterEdition
-                        , purchaseOrMark
-                        ]
-
-                PrintedAndMarked collection ->
-                    Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ header
-                        , Html.div
-                            []
-                            [ Html.div
-                                []
-                                [ Html.text
-                                    """You've successfully purchased your NFT &
-                                    marked it as part of the official collection
-                                    """
-                                ]
-                            , Html.div
-                                []
-                                [ Html.a
-                                    [ class "is-button-1"
-                                    , Local.href <|
-                                        Local.Collect <|
-                                            Collector.MaybeExistingCollection
-                                                collection.meta.handle
-                                                collection.meta.index
-                                    ]
-                                    [ Html.text "go start unlocking stuff 🔓"
-                                    ]
-                                ]
-                            ]
-                        , Html.div
-                            []
-                            [ Html.text <|
-                                String.concat
-                                    [ "creator:"
-                                    , " "
-                                    , collection.meta.handle
-                                    ]
-                            ]
-                        , Html.div
-                            []
-                            [ Html.text "collection selected ⬇️"
-                            ]
-                        , Html.div
-                            []
-                            [ View.Generic.Collection.Collector.Collector.view
-                                collection
-                            ]
+                        , view_
                         ]
 
                 MaybeExistingCreator _ ->

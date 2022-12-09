@@ -2,7 +2,7 @@ module View.Generic.Collection.Collection exposing (view, viewMany)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class)
-import Model.Collection exposing (Collection)
+import Model.Collection as Collection exposing (Collection)
 import Msg.Msg exposing (Msg(..))
 
 
@@ -31,29 +31,36 @@ viewMany collections f =
 view_ : Collection -> Html Msg -> Html Msg
 view_ collection select =
     let
-        ataDiv =
-            case collection.accounts.ata of
-                Just ata ->
+        supply =
+            case Collection.isSoldOut collection of
+                True ->
                     Html.div
-                        [ class "has-border-2 px-2 py-2 mb-2"
-                        ]
-                        [ Html.text <|
-                            String.concat
-                                [ "ata balance:"
-                                , " "
-                                , String.fromInt ata.balance
-                                ]
+                        []
+                        [ Html.text "Sold Out 😮\u{200D}💨"
                         ]
 
-                Nothing ->
+                False ->
                     Html.div
                         []
-                        []
+                        [ Html.div
+                            [ class "has-border-2 px-2 py-2 mb-2"
+                            ]
+                            [ Html.text <|
+                                String.concat
+                                    [ String.fromInt (collection.meta.totalSupply - collection.meta.numMinted)
+                                    , " "
+                                    , "still available out of"
+                                    , " "
+                                    , String.fromInt collection.meta.totalSupply
+                                    ]
+                            ]
+                        ]
     in
     Html.div
         [ class "has-border-2 px-2 py-2"
         ]
         [ select
+        , supply
         , Html.div
             [ class "has-border-2 px-2 py-2 mb-2"
             ]
@@ -72,27 +79,6 @@ view_ collection select =
                     [ "mint:"
                     , " "
                     , collection.accounts.mint
-                    ]
-            ]
-        , Html.div
-            [ class "has-border-2 px-2 py-2 mb-2"
-            ]
-            [ Html.text <|
-                String.concat
-                    [ "pda:"
-                    , " "
-                    , collection.accounts.pda
-                    ]
-            ]
-        , ataDiv
-        , Html.div
-            [ class "has-border-2 px-2 py-2 mb-2"
-            ]
-            [ Html.text <|
-                String.concat
-                    [ "num-minted:"
-                    , " "
-                    , String.fromInt collection.meta.numMinted
                     ]
             ]
         ]

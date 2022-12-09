@@ -290,6 +290,7 @@ export async function creatNft(
                     index: authorityIndex,
                     uri: metadataUrl,
                     numMinted: 1, // TODO; creator-distribution?
+                    totalSupply: 10, // TODO; supply
                 },
                 accounts: {
                     pda: authorityPda.address,

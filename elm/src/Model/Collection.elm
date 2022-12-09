@@ -1,4 +1,4 @@
-module Model.Collection exposing (Collection, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty)
+module Model.Collection exposing (Collection, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -20,6 +20,7 @@ type alias Meta =
     , symbol : String
     , uri : String
     , numMinted : Int -- encoded as big-int
+    , totalSupply : Int -- encoded as big-int
     }
 
 
@@ -56,6 +57,7 @@ encoder collection =
                 , ( "symbol", Encode.string collection.meta.symbol )
                 , ( "uri", Encode.string collection.meta.uri )
                 , ( "numMinted", Encode.int collection.meta.numMinted )
+                , ( "totalSupply", Encode.int collection.meta.totalSupply )
                 ]
           )
         , ( "accounts"
@@ -86,13 +88,14 @@ decoder : Decode.Decoder Collection
 decoder =
     Decode.map2 Collection
         (Decode.field "meta" <|
-            Decode.map6 Meta
+            Decode.map7 Meta
                 (Decode.field "handle" Decode.string)
                 (Decode.field "index" Decode.int)
                 (Decode.field "name" Decode.string)
                 (Decode.field "symbol" Decode.string)
                 (Decode.field "uri" Decode.string)
                 (Decode.field "numMinted" Decode.int)
+                (Decode.field "totalSupply" Decode.int)
         )
         (Decode.field "accounts" <|
             Decode.map3 Accounts
@@ -103,6 +106,11 @@ decoder =
                         (Decode.field "balance" Decode.int)
                 )
         )
+
+
+isSoldOut : Collection -> Bool
+isSoldOut collection =
+    collection.meta.totalSupply == collection.meta.numMinted
 
 
 isEmpty : Collection -> Bool

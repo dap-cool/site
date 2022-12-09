@@ -222,6 +222,7 @@ export async function main(app, json) {
                         pp.programs,
                         authorityPda
                     );
+                    console.log(collection);
                     app.ports.success.send(
                         JSON.stringify(
                             {

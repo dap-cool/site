@@ -3,5 +3,5 @@ import {RPC_URL} from "./rpc";
 
 
 export const COMMITMENT = "processed";
-export const PROGRAM_ID = new PublicKey("9G9p4oS8vNg7fy4HLc6kY4Ca5fyuDYUkJhqpnyLtFu8y");
+export const PROGRAM_ID = new PublicKey("DstQ6YK9iWuqzyJ9FtTpUgZsojNT39bvSr6RxMmXNgjD");
 export const NETWORK = RPC_URL;

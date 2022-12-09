@@ -22,6 +22,7 @@ export interface CollectionAuthority {
         index: number
         uri: string
         numMinted: number // decoded as BN
+        totalSupply: number // decoded as BN
     }
     // accounts
     accounts: {
@@ -42,6 +43,7 @@ interface RawCollectionAuthority {
     uri: string
     mint: PublicKey
     numMinted: BN.BN
+    totalSupply: BN.BN
 }
 
 interface RawSplToken {
@@ -134,6 +136,7 @@ async function getManyAuthorityPda(
                         index: raw.index,
                         uri: raw.uri,
                         numMinted: raw.numMinted.toNumber(),
+                        totalSupply: raw.totalSupply.toNumber()
                     },
                     accounts: {
                         pda: pda.address,
@@ -154,13 +157,19 @@ async function joinAtaWithAuthority(
     // fetch associated-token-account array
     const ataArray: RawSplToken[] = (await program.account.token.fetchMultiple(ataPdaArray)).map(obj =>
         obj as RawSplToken
-    );
+    ).filter(Boolean);
     // join
     return authorityArray.map((authority: CollectionAuthority) => {
-            const foundAta = ataArray.find(ata => ata.mint.equals(authority.accounts.mint));
-            authority.accounts.ata = {
-                balance: foundAta.amount.toNumber()
-            };
+            const maybeFoundAta = ataArray.find(ata => ata.mint.equals(authority.accounts.mint));
+            if (maybeFoundAta) {
+                authority.accounts.ata = {
+                    balance: maybeFoundAta.amount.toNumber()
+                };
+            } else {
+                authority.accounts.ata = {
+                    balance: 0
+                };
+            }
             return authority
         }
     )
@@ -188,7 +197,7 @@ export async function getAuthorityPda(
         const ata = await programs.token.account.token.fetch(
             ataPda
         ) as RawSplToken;
-        balance = ata.amount.toNumber;
+        balance = ata.amount.toNumber();
     } catch (error) {
         console.log("provider does not have existing token balance.")
         balance = 0;
@@ -202,6 +211,7 @@ export async function getAuthorityPda(
             index: authority.index,
             uri: authority.uri,
             numMinted: authority.numMinted.toNumber(),
+            totalSupply: authority.totalSupply.toNumber()
         },
         accounts: {
             pda: authorityPda.address,
