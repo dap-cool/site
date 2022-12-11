@@ -360,10 +360,13 @@ update msg model =
                                     }
                             )
 
-                FromCollector.SelectCollection _ _ ->
+                FromCollector.SelectCollection handle index ->
                     ( model
-                      -- href handles this state change
-                    , Cmd.none
+                    , sender <|
+                        Sender.encode <|
+                            { sender = Sender.Collect from
+                            , more = AlmostExistingCollection.encode { handle = handle, index = index }
+                            }
                     )
 
                 FromCollector.PrintCopy handle int ->

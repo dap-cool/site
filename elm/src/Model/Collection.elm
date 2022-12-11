@@ -39,7 +39,11 @@ type alias Ata =
     { balance : Int
     }
 
+
+
 -- TODO; delete ??
+
+
 encode : Collection -> String
 encode collection =
     Encode.encode 0 <|

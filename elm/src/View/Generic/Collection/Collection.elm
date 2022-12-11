@@ -36,7 +36,8 @@ view_ collection select =
             case Collection.isSoldOut collection of
                 True ->
                     Html.div
-                        []
+                        [ class "is-light-text-container-5 is-size-5 has-text-centered"
+                        ]
                         [ Html.text "Sold Out 😮\u{200D}💨"
                         ]
 
@@ -44,7 +45,7 @@ view_ collection select =
                     Html.div
                         []
                         [ Html.div
-                            [ class "has-border-2 px-2 py-2 mb-2"
+                            [ class "is-light-text-container-5 is-size-5 has-text-centered"
                             ]
                             [ Html.text <|
                                 String.concat
@@ -70,7 +71,8 @@ view_ collection select =
                 []
             ]
         , Html.div
-            []
+            [ class "my-3 is-text-container-3 is-size-3 has-text-centered"
+            ]
             [ Html.text collection.meta.name
             ]
         , supply

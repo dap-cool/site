@@ -174,7 +174,7 @@ body global collector =
                             [ class "mt-4"
                             ]
                             [ Html.div
-                                [ class "is-family-secondary is-light-text-container-5 is-size-5 is-italic"
+                                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-italic"
                                 ]
                                 [ Html.text "Creator"
                                 ]
@@ -188,7 +188,7 @@ body global collector =
                             [ class "mt-5"
                             ]
                             [ Html.div
-                                [ class "is-family-secondary is-light-text-container-5 is-size-5 is-italic"
+                                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-italic"
                                 ]
                                 [ Html.text "bio"
                                 ]
@@ -568,7 +568,7 @@ hiw =
 breadcrumb : Handle -> Html Msg
 breadcrumb handle =
     Html.div
-        [ class "is-family-secondary is-light-text-container-5 is-size-5"
+        [ class "is-family-secondary is-light-text-container-6 is-size-6"
         ]
         [ Html.a
             [ class "is-underlined"
@@ -594,7 +594,7 @@ breadcrumb handle =
 breadcrumb2 : Collection -> Html Msg
 breadcrumb2 collection =
     Html.div
-        [ class "is-light-text-container-5 is-size-5"
+        [ class "is-light-text-container-6 is-size-6"
         ]
         [ Html.a
             [ Local.href <|

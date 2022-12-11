@@ -123,11 +123,12 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // text containers /////////////////////////////////////////////////////////////////////////////////////////////////////
-.is-text-container-1, .is-text-container-2, .is-text-container-3, .is-text-container-4, .is-text-container-5 {
+.is-text-container-1, .is-text-container-2, .is-text-container-3, .is-text-container-4, .is-text-container-5,
+.is-text-container-6 {
   font-weight: 700;
 }
 
-.is-light-text-container-4, .is-light-text-container-5 {
+.is-light-text-container-4, .is-light-text-container-5, .is-light-text-container-6 {
   font-weight: 300;
 }
 
@@ -148,6 +149,10 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 }
 
 .is-text-container-5, .is-light-text-container-5 {
+  line-height: 18.75px;
+}
+
+.is-text-container-6, .is-light-text-container-6 {
   line-height: 16px;
 }
 
@@ -159,7 +164,8 @@ $size-1: 64px;
 $size-2: 48px;
 $size-3: 32px;
 $size-4: 24px;
-$size-5: 14px;
+$size-5: 16px;
+$size-6: 14px;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Bulma Import ///////////////////////////////////////////////////////////////////////////////////////////////////////

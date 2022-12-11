@@ -191,49 +191,55 @@ export async function main(app, json) {
         } else if (sender === "collector-select-collection") {
             // parse more json
             const more = JSON.parse(parsed.more);
-            // validate handle
-            const validated = validateHandleForCollector(
-                app,
-                more.handle
-            );
-            if (validated) {
-                // get provider & program
-                let pp;
-                if (phantom) {
-                    pp = getPP(phantom);
-                } else {
-                    pp = getEphemeralPP();
-                }
-                // asert handle pda exists
-                const handle = await assertHandlePdaDoesExistAlreadyForCollector(
+            const target = "#/" + more.handle + "/" + more.index;
+            if (window.location.toString().endsWith(target)) {
+                // validate handle
+                const validated = validateHandleForCollector(
                     app,
-                    pp.programs.dap,
-                    validated
+                    more.handle
                 );
-                if (handle) {
-                    // derive & fetch collection
-                    const authorityPda = await deriveAuthorityPda(
+                if (validated) {
+                    // get provider & program
+                    let pp;
+                    if (phantom) {
+                        pp = getPP(phantom);
+                    } else {
+                        pp = getEphemeralPP();
+                    }
+                    // asert handle pda exists
+                    const handle = await assertHandlePdaDoesExistAlreadyForCollector(
+                        app,
                         pp.programs.dap,
-                        validated,
-                        more.index
+                        validated
                     );
-                    const collection = await getAuthorityPda(
-                        pp.provider,
-                        pp.programs,
-                        authorityPda
-                    );
-                    console.log(collection);
-                    app.ports.success.send(
-                        JSON.stringify(
-                            {
-                                listener: "collector-collection-found",
-                                more: JSON.stringify(
-                                    collection
-                                )
-                            }
-                        )
-                    );
+                    if (handle) {
+                        // derive & fetch collection
+                        const authorityPda = await deriveAuthorityPda(
+                            pp.programs.dap,
+                            validated,
+                            more.index
+                        );
+                        const collection = await getAuthorityPda(
+                            pp.provider,
+                            pp.programs,
+                            authorityPda
+                        );
+                        console.log(collection);
+                        app.ports.success.send(
+                            JSON.stringify(
+                                {
+                                    listener: "collector-collection-found",
+                                    more: JSON.stringify(
+                                        collection
+                                    )
+                                }
+                            )
+                        );
+                    }
                 }
+            } else {
+                // href
+                window.location = target;
             }
             // or collector print copy
         } else if (sender === "collector-print-copy") {

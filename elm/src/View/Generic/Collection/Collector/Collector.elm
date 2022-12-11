@@ -2,9 +2,9 @@ module View.Generic.Collection.Collector.Collector exposing (view, viewMany)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class)
+import Html.Events exposing (onClick)
 import Model.Collection exposing (Collection)
-import Model.Collector.Collector as Collector
-import Model.State.Local.Local as Local
+import Msg.Collector.Collector as CollectorMsg
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collection
 
@@ -23,11 +23,11 @@ select : Collection -> Html Msg
 select collection =
     Html.div
         []
-        [ Html.a
+        [ Html.button
             [ class "is-button-1"
-            , Local.href <|
-                Local.Collect <|
-                    Collector.MaybeExistingCollection
+            , onClick <|
+                FromCollector <|
+                    CollectorMsg.SelectCollection
                         collection.meta.handle
                         collection.meta.index
             ]
