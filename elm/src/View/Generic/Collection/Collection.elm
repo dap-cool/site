@@ -36,7 +36,7 @@ view_ collection select =
             case Collection.isSoldOut collection of
                 True ->
                     Html.div
-                        [ class "is-light-text-container-5 is-size-5 has-text-centered"
+                        [ class "is-light-text-container-5 is-size-5 is-light-text-container-7-mobile is-size-7-mobile has-text-centered"
                         ]
                         [ Html.text "Sold Out 😮\u{200D}💨"
                         ]
@@ -45,7 +45,7 @@ view_ collection select =
                     Html.div
                         []
                         [ Html.div
-                            [ class "is-light-text-container-5 is-size-5 has-text-centered"
+                            [ class "is-light-text-container-5 is-size-5 is-light-text-container-7-mobile is-size-7-mobile has-text-centered"
                             ]
                             [ Html.text <|
                                 String.concat
@@ -71,13 +71,13 @@ view_ collection select =
                 []
             ]
         , Html.div
-            [ class "my-3 is-text-container-3 is-size-3 is-text-container-5-mobile is-size-5-mobile has-text-centered"
+            [ class "my-3 mt-1-mobile is-text-container-3 is-size-3 is-text-container-5-mobile is-size-5-mobile has-text-centered"
             ]
             [ Html.text collection.meta.name
             ]
         , supply
         , Html.div
-            [ class "mt-4"
+            [ class "mt-4 my-1-mobile"
             ]
             [ select
             ]

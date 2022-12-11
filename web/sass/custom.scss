@@ -102,7 +102,6 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // buttons /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 .is-button-1 {
-  height: 56px;
   width: 100%;
   background-color: #2B2B2B;
   color: #FDF9EF;
@@ -125,11 +124,13 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 // text containers /////////////////////////////////////////////////////////////////////////////////////////////////////
 .is-text-container-1, .is-text-container-1-mobile, .is-text-container-2, .is-text-container-2-mobile,
 .is-text-container-3, .is-text-container-3-mobile, .is-text-container-4, .is-text-container-4-mobile,
-.is-text-container-5, .is-text-container-5-mobile, .is-text-container-6, .is-text-container-6-mobile, {
+.is-text-container-5, .is-text-container-5-mobile, .is-text-container-6, .is-text-container-6-mobile,
+.is-text-container-7, .is-text-container-7-mobile {
   font-weight: 700;
 }
 
-.is-light-text-container-4, .is-light-text-container-5, .is-light-text-container-6 {
+.is-light-text-container-4-mobile, .is-light-text-container-5-mobile, .is-light-text-container-6-mobile,
+.is-light-text-container-7-mobile {
   font-weight: 300;
 }
 
@@ -143,6 +144,7 @@ $size-3: 32px;
 $size-4: 24px;
 $size-5: 16px;
 $size-6: 14px;
+$size-7: 12px;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Bulma Import ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,6 +159,40 @@ $size-6: 14px;
   text-align: center;
   border-radius: 100px;
   box-sizing: border-box;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// spacing /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+.my-0-mobile {
+  @include until($tablet) {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+.my-1-mobile {
+  @include until($tablet) {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+}
+
+.mt-1-mobile {
+  @include until($tablet) {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// buttons /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+.is-button-1 {
+  @include until($tablet) {
+    height: 32px;
+  }
+  @include from($tablet) {
+    height: 56px;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -230,6 +266,18 @@ $size-6: 14px;
 .is-text-container-6-mobile, .is-light-text-container-6-mobile {
   @include until($tablet) {
     line-height: 16px;
+  }
+}
+
+.is-text-container-7, .is-light-text-container-7 {
+  @include from($tablet) {
+    line-height: 14px;
+  }
+}
+
+.is-text-container-7-mobile, .is-light-text-container-7-mobile {
+  @include until($tablet) {
+    line-height: 14px;
   }
 }
 
