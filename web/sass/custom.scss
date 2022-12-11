@@ -40,7 +40,7 @@ strong {
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700');
 $family-primary: "Roboto", BlinkMacSystemFont, -apple-system, "Helvetica", "Arial", sans-serif;
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@1,400;1,700');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@1,300;1,400;1,700');
 $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica", "Arial", sans-serif;
 
 
@@ -139,8 +139,12 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // text containers /////////////////////////////////////////////////////////////////////////////////////////////////////
-.is-text-container-1, .is-text-container-2, .is-text-container-3, .is-text-container-4 {
+.is-text-container-1, .is-text-container-2, .is-text-container-3, .is-text-container-4, .is-text-container-5 {
   font-weight: 700;
+}
+
+.is-light-text-container-4, .is-light-text-container-5 {
+  font-weight: 300;
 }
 
 .is-text-container-1 {
@@ -159,8 +163,8 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
   line-height: 28px;
 }
 
-.is-light-text-container-4 {
-  font-weight: 300;
+.is-text-container-5, .is-light-text-container-5 {
+  line-height: 16px;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,6 +175,7 @@ $size-1: 64px;
 $size-2: 48px;
 $size-3: 32px;
 $size-4: 24px;
+$size-5: 14px;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Bulma Import ///////////////////////////////////////////////////////////////////////////////////////////////////////

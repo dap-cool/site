@@ -3,9 +3,9 @@ module View.Collect.Collect exposing (body)
 import Html exposing (Html)
 import Html.Attributes exposing (class, href, placeholder, src, style, target, type_, width)
 import Html.Events exposing (onClick, onInput)
-import Model.Collection as Collection
+import Model.Collection as Collection exposing (Collection)
 import Model.Collector.Collector as Collector exposing (Collector(..))
-import Model.Handle as Handle
+import Model.Handle as Handle exposing (Handle)
 import Model.State.Global.Global as Global exposing (Global)
 import Model.State.Local.Local as Local
 import Msg.Collector.Collector as CollectorMsg
@@ -72,8 +72,7 @@ body global collector =
                     in
                     Html.div
                         []
-                        [ header
-                        , Html.div
+                        [ Html.div
                             []
                             [ Html.input
                                 [ class "input is-size-3"
@@ -99,8 +98,7 @@ body global collector =
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ header
-                        , Html.div
+                        [ Html.div
                             [ class "is-loading"
                             ]
                             []
@@ -110,8 +108,7 @@ body global collector =
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ header
-                        , Html.div
+                        [ Html.div
                             [ class "has-border-2 px-2 py-2"
                             ]
                             [ Html.text <|
@@ -142,8 +139,7 @@ body global collector =
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ header
-                        , Html.div
+                        [ Html.div
                             [ class "has-border-2 px-2 py-2"
                             ]
                             [ Html.text <|
@@ -170,11 +166,43 @@ body global collector =
                             ]
                         ]
 
-                SelectedCreator intersection withCollections ->
+                SelectedCreator handle intersection withCollections ->
                     Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ header
+                        []
+                        [ breadcrumb handle
+                        , Html.div
+                            [ class "mt-4"
+                            ]
+                            [ Html.div
+                                [ class "is-family-secondary is-light-text-container-5 is-size-5 is-italic"
+                                ]
+                                [ Html.text "Creator"
+                                ]
+                            , Html.div
+                                [ class "is-text-container-2 is-size-2"
+                                ]
+                                [ Html.text handle
+                                ]
+                            ]
+                        , Html.div
+                            [ class "mt-5"
+                            ]
+                            [ Html.div
+                                [ class "is-family-secondary is-light-text-container-5 is-size-5 is-italic"
+                                ]
+                                [ Html.text "bio"
+                                ]
+                            , Html.div
+                                [ class "mt-1 is-text-container-3 is-size-3"
+                                ]
+                                [ Html.text
+                                    """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                    Aliquet enim tortor at auctor urna nunc id cursus.
+                                    Pulvinar etiam non quam lacus.
+                                    """
+                                ]
+                            ]
                         , Html.div
                             []
                             [ Html.text <|
@@ -405,8 +433,7 @@ body global collector =
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ header
-                        , Html.div
+                        [ Html.div
                             []
                             [ Html.text <|
                                 String.concat
@@ -422,8 +449,7 @@ body global collector =
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ header
-                        , Html.div
+                        [ Html.div
                             [ class "is-loading"
                             ]
                             []
@@ -433,52 +459,15 @@ body global collector =
                     Html.div
                         [ class "has-border-2 px-2 pt-2 pb-6"
                         ]
-                        [ header
-                        , Html.div
+                        [ Html.div
                             [ class "is-loading"
                             ]
                             []
                         ]
     in
     Html.div
-        [ class "container"
-        ]
+        []
         [ html
-        ]
-
-
-header : Html Msg
-header =
-    Html.div
-        [ class "has-head-space has-text-centered"
-        ]
-        [ Html.h2
-            [ class "is-text-container-1 is-size-1 mb-2"
-            ]
-            [ Html.text "Sell your work."
-            ]
-        , Html.h2
-            [ class "is-text-container-1 is-size-1 mb-5"
-            ]
-            [ Html.p
-                []
-                [ Html.text <|
-                    String.concat
-                        [ "Unlock and"
-                        , " "
-                        ]
-                , Html.strong
-                    [ class "is-family-secondary is-italic"
-                    ]
-                    [ Html.text "own"
-                    ]
-                , Html.text <|
-                    String.concat
-                        [ " "
-                        , "exclusive content."
-                        ]
-                ]
-            ]
         ]
 
 
@@ -572,5 +561,64 @@ hiw =
                     ]
                     []
                 ]
+            ]
+        ]
+
+
+breadcrumb : Handle -> Html Msg
+breadcrumb handle =
+    Html.div
+        [ class "is-family-secondary is-light-text-container-5 is-size-5"
+        ]
+        [ Html.a
+            [ class "is-underlined"
+            , Local.href <|
+                Local.Collect <|
+                    Collector.TypingHandle
+                        ""
+            ]
+            [ Html.text <|
+                String.concat
+                    [ "Search creators"
+                    ]
+            ]
+        , Html.text <|
+            String.concat
+                [ ">"
+                , " "
+                , handle
+                ]
+        ]
+
+
+breadcrumb2 : Collection -> Html Msg
+breadcrumb2 collection =
+    Html.div
+        [ class "is-light-text-container-5 is-size-5"
+        ]
+        [ Html.a
+            [ Local.href <|
+                Local.Collect <|
+                    Collector.TypingHandle
+                        ""
+            ]
+            [ Html.text <|
+                String.concat
+                    [ "Search creators"
+                    ]
+            ]
+        , Html.text <|
+            String.concat
+                [ " "
+                , ">"
+                , " "
+                ]
+        , Html.a
+            [ Local.href <|
+                Local.Collect <|
+                    Collector.MaybeExistingCreator
+                        collection.meta.handle
+            ]
+            [ Html.text collection.meta.handle
             ]
         ]

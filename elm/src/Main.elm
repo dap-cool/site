@@ -584,6 +584,7 @@ update msg model =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCreator
+                                                                                        withCollections.handle
                                                                                         (intersection withCollections.collections)
                                                                                         withCollections
                                                                             , global = model.state.global
@@ -688,9 +689,10 @@ update msg model =
                                                     let
                                                         local =
                                                             case model.state.local of
-                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
+                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
                                                                     Local.Collect <|
                                                                         Collector.SelectedCreator
+                                                                            handle
                                                                             []
                                                                             -- no intersection
                                                                             withCollections
@@ -741,7 +743,7 @@ update msg model =
                                                         f hasWallet =
                                                             case model.state.local of
                                                                 -- compute intersection from new global state
-                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
+                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
                                                                     let
                                                                         bumpedState_ =
                                                                             bumpedState hasWallet
@@ -756,6 +758,7 @@ update msg model =
                                                                             bumpLocal
                                                                                 (Local.Collect <|
                                                                                     Collector.SelectedCreator
+                                                                                        handle
                                                                                         (Collection.intersection
                                                                                             withCollections.collections
                                                                                             hasWallet.collected
@@ -808,7 +811,7 @@ update msg model =
                                                         f hasWalletAndHandle =
                                                             case model.state.local of
                                                                 -- compute intersection from new global state
-                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
+                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
                                                                     let
                                                                         bumpedState_ =
                                                                             bumpedState hasWalletAndHandle
@@ -823,6 +826,7 @@ update msg model =
                                                                             bumpLocal
                                                                                 (Local.Collect <|
                                                                                     Collector.SelectedCreator
+                                                                                        handle
                                                                                         (Collection.intersection
                                                                                             withCollections.collections
                                                                                             hasWalletAndHandle.collected
