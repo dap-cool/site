@@ -123,37 +123,14 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // text containers /////////////////////////////////////////////////////////////////////////////////////////////////////
-.is-text-container-1, .is-text-container-2, .is-text-container-3, .is-text-container-4, .is-text-container-5,
-.is-text-container-6 {
+.is-text-container-1, .is-text-container-1-mobile, .is-text-container-2, .is-text-container-2-mobile,
+.is-text-container-3, .is-text-container-3-mobile, .is-text-container-4, .is-text-container-4-mobile,
+.is-text-container-5, .is-text-container-5-mobile, .is-text-container-6, .is-text-container-6-mobile, {
   font-weight: 700;
 }
 
 .is-light-text-container-4, .is-light-text-container-5, .is-light-text-container-6 {
   font-weight: 300;
-}
-
-.is-text-container-1 {
-  line-height: 75px;
-}
-
-.is-text-container-2 {
-  line-height: 56px;
-}
-
-.is-text-container-3 {
-  line-height: 38px;
-}
-
-.is-text-container-4, .is-light-text-container-4 {
-  line-height: 28px;
-}
-
-.is-text-container-5, .is-light-text-container-5 {
-  line-height: 18.75px;
-}
-
-.is-text-container-6, .is-light-text-container-6 {
-  line-height: 16px;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,6 +159,93 @@ $size-6: 14px;
   box-sizing: border-box;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// text containers /////////////////////////////////////////////////////////////////////////////////////////////////////
+.is-text-container-1 {
+  @include from($tablet) {
+    line-height: 75px;
+  }
+}
+
+.is-text-container-1-mobile {
+  @include until($tablet) {
+    line-height: 75px;
+  }
+}
+
+.is-text-container-2 {
+  @include from($tablet) {
+    line-height: 56px;
+  }
+}
+
+.is-text-container-2-mobile {
+  @include until($tablet) {
+    line-height: 56px;
+  }
+}
+
+.is-text-container-3 {
+  @include from($tablet) {
+    line-height: 38px;
+  }
+}
+
+.is-text-container-3-mobile {
+  @include until($tablet) {
+    line-height: 38px;
+  }
+}
+
+.is-text-container-4, .is-light-text-container-4 {
+  @include from($tablet) {
+    line-height: 28px;
+  }
+}
+
+.is-text-container-4-mobile, .is-light-text-container-4-mobile {
+  @include until($tablet) {
+    line-height: 28px;
+  }
+}
+
+.is-text-container-5, .is-light-text-container-5 {
+  @include from($tablet) {
+    line-height: 18.75px;
+  }
+}
+
+.is-text-container-5-mobile, .is-light-text-container-5-mobile {
+  @include until($tablet) {
+    line-height: 18.75px;
+  }
+}
+
+.is-text-container-6, .is-light-text-container-6 {
+  @include from($tablet) {
+    line-height: 16px;
+  }
+}
+
+.is-text-container-6-mobile, .is-light-text-container-6-mobile {
+  @include until($tablet) {
+    line-height: 16px;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// borders /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+.is-collection {
+  @include until($tablet) {
+    height: 183px;
+  }
+  @include from($tablet) {
+    height: 405px;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// images //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 .is-image-container-1 {
   @include until($tablet) {
     height: 87px;

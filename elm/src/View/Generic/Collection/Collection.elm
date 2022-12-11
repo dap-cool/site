@@ -71,10 +71,14 @@ view_ collection select =
                 []
             ]
         , Html.div
-            [ class "my-3 is-text-container-3 is-size-3 has-text-centered"
+            [ class "my-3 is-text-container-3 is-size-3 is-text-container-5-mobile is-size-5-mobile has-text-centered"
             ]
             [ Html.text collection.meta.name
             ]
         , supply
-        , select
+        , Html.div
+            [ class "mt-4"
+            ]
+            [ select
+            ]
         ]
