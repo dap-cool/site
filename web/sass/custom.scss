@@ -92,49 +92,33 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
   border-radius: 16px;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// buttons /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-.is-button-1, .is-button-2, .is-button-3 {
-  height: 30px;
-  text-align: center;
+.is-collection {
+  height: 405px;
+  background-color: #FDF9EF;
+  color: #2B2B2B;
+  border-radius: 16px;
 }
 
-.is-button-1, .is-button-2 {
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// buttons /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+.is-button-1 {
+  height: 56px;
+  width: 100%;
   background-color: #2B2B2B;
-  border: 1px dotted #4a4a4a;
   color: #FDF9EF;
+  border-radius: 12px;
 }
 
-.is-button-2 {
-  letter-spacing: 10px;
-}
-
-.is-button-3 {
-  color: #2B2B2B;
-  border: 1px dotted #4a4a4a;
-  background-color: #FDF9EF;
-}
-
-.is-active-header-tab {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
-
-.is-button-1:hover, .is-button-2:hover, .is-active-header-tab, .is-active-button {
+.is-button-1:hover {
   background-color: #FDF9EF;
   color: #2B2B2B;
-}
-
-.is-active-button {
-  box-shadow: inset 0px 5px 5px #2B2B2B;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// images /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-.is-image-1, .is-image-2 {
-  margin-bottom: 5px;
-  margin-right: 5px;
-  box-shadow: 1px 1px 5px grey;
+// images //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+.is-image-container-1 {
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,31 +176,11 @@ $size-5: 14px;
   box-sizing: border-box;
 }
 
-.is-image-1 {
+.is-image-container-1 {
   @include until($tablet) {
-    width: 160px;
-    height: 238px;
+    height: 87px;
   }
   @include from($tablet) {
-    width: 225px;
-    height: 350px;
-  }
-}
-
-.is-button-2 {
-  @include until($tablet) {
-    width: 325px;
-  }
-  @include from($tablet) {
-    width: 455px;
-  }
-}
-
-.has-spacing-1 {
-  @include until($tablet) {
-    margin-right: 3px !important;
-  }
-  @include from($tablet) {
-    margin-right: 6px !important;
+    height: 227px;
   }
 }

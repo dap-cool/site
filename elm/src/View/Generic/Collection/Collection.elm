@@ -1,7 +1,7 @@
 module View.Generic.Collection.Collection exposing (view, viewMany)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, src, style)
 import Model.Collection as Collection exposing (Collection)
 import Msg.Msg exposing (Msg(..))
 
@@ -21,7 +21,8 @@ view collection =
 viewMany : List Collection -> (Collection -> Html Msg) -> Html Msg
 viewMany collections f =
     Html.div
-        []
+        [ class "columns is-multiline"
+        ]
     <|
         List.map
             (\c -> view_ c <| f c)
@@ -57,28 +58,21 @@ view_ collection select =
                         ]
     in
     Html.div
-        [ class "has-border-2 px-2 py-2"
+        [ class "column is-collection is-one-third is-half-mobile"
         ]
-        [ select
-        , supply
-        , Html.div
-            [ class "has-border-2 px-2 py-2 mb-2"
+        [ Html.div
+            [ class "is-image-container-1"
             ]
+            [ Html.img
+                [ style "width" "100%"
+                , src "images/upload/default-pfp.jpg"
+                ]
+                []
+            ]
+        , Html.div
+            []
             [ Html.text collection.meta.name
             ]
-        , Html.div
-            [ class "has-border-2 px-2 py-2 mb-2"
-            ]
-            [ Html.text collection.meta.symbol
-            ]
-        , Html.div
-            [ class "has-border-2 px-2 py-2 mb-2"
-            ]
-            [ Html.text <|
-                String.concat
-                    [ "mint:"
-                    , " "
-                    , collection.accounts.mint
-                    ]
-            ]
+        , supply
+        , select
         ]

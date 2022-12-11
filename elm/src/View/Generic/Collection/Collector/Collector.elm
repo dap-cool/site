@@ -9,12 +9,6 @@ import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Collection
 
 
-
--- TODO: 11111111111111111111111111111111
---  if .collection is undefined expose method to add to collection
---  add .belongs-to field in pda
-
-
 view : Collection -> Html Msg
 view collection =
     View.Generic.Collection.Collection.view collection
@@ -37,6 +31,26 @@ select collection =
                         collection.meta.handle
                         collection.meta.index
             ]
-            [ Html.text "Select this"
+            [ Html.span
+                [ class "icon-text"
+                ]
+                [ Html.span
+                    [ class "icon"
+                    ]
+                    [ Html.i
+                        [ class "fas fa-home"
+                        ]
+                        []
+                    ]
+                , Html.span
+                    []
+                    [ Html.text <|
+                        String.concat
+                            [ "15.00"
+                            , " "
+                            , "USDC"
+                            ]
+                    ]
+                ]
             ]
         ]
