@@ -21,7 +21,7 @@ view collection =
 viewMany : List Collection -> (Collection -> Html Msg) -> Html Msg
 viewMany collections f =
     Html.div
-        [ class "columns is-multiline"
+        [ class "columns is-multiline is-mobile"
         ]
     <|
         List.map
@@ -59,7 +59,7 @@ view_ collection select =
                         ]
     in
     Html.div
-        [ class "column is-collection is-one-third is-half-mobile"
+        [ class "column is-collection is-half-mobile is-one-third-tablet"
         ]
         [ Html.div
             [ class "is-image-container-1"
