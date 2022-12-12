@@ -13,10 +13,6 @@ import Msg.Msg as Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
 
 
-
--- TODO; drop global
-
-
 body : Collector -> Html Msg
 body collector =
     let
@@ -160,7 +156,7 @@ body collector =
                                         [ class "mt-5"
                                         ]
                                         [ Html.div
-                                            [ class "mb-3 is-text-container-3 is-size-3"
+                                            [ class "mb-3 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
                                             ]
                                             [ Html.text "Already collected ⬇️"
                                             ]
@@ -180,14 +176,13 @@ body collector =
                                         [ class "mt-5"
                                         ]
                                         [ Html.div
-                                            [ class "mb-3 is-text-container-3 is-size-3"
+                                            [ class "mb-3 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
                                             ]
                                             [ Html.text "Not collected yet ⬇️"
                                             ]
                                         , View.Generic.Collection.Collector.Collector.viewMany
                                             remainder
                                         ]
-
                     in
                     Html.div
                         []
@@ -196,12 +191,12 @@ body collector =
                             [ class "mt-4"
                             ]
                             [ Html.div
-                                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-italic"
+                                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
                                 ]
                                 [ Html.text "Creator"
                                 ]
                             , Html.div
-                                [ class "is-text-container-2 is-size-2"
+                                [ class "is-text-container-2 is-size-2 is-text-container-3-mobile is-size-3-mobile"
                                 ]
                                 [ Html.text handle
                                 ]
@@ -210,12 +205,12 @@ body collector =
                             [ class "mt-5"
                             ]
                             [ Html.div
-                                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-italic"
+                                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
                                 ]
                                 [ Html.text "bio"
                                 ]
                             , Html.div
-                                [ class "mt-1 is-text-container-3 is-size-3"
+                                [ class "mt-1 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
                                 ]
                                 [ Html.text
                                     """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
