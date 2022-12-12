@@ -1,6 +1,6 @@
 module Model.Collector.Collector exposing (AtaBalance(..), Collector(..), Found(..), MaybeCollected(..))
 
-import Model.Collection exposing (Collection)
+import Model.Collection exposing (Collection, Intersection, Remainder)
 import Model.Collector.WithCollections exposing (WithCollections)
 import Model.Handle exposing (Handle)
 
@@ -13,15 +13,11 @@ type
     | HandleInvalid String
     | HandleDoesNotExist String
       -- select collection
-    | SelectedCreator Handle Intersection WithCollections
+    | SelectedCreator Handle ( Intersection, Remainder ) WithCollections
     | SelectedCollection MaybeCollected Selected
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int
-
-
-type alias Intersection =
-    List Collection
 
 
 type alias Selected =

@@ -6,7 +6,6 @@ import Html.Events exposing (onClick, onInput)
 import Model.Collection as Collection exposing (Collection)
 import Model.Collector.Collector as Collector exposing (Collector(..))
 import Model.Handle as Handle exposing (Handle)
-import Model.State.Global.Global as Global exposing (Global)
 import Model.State.Local.Local as Local
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Global as FromGlobal
@@ -18,8 +17,8 @@ import View.Generic.Collection.Collector.Collector
 -- TODO; drop global
 
 
-body : Global -> Collector -> Html Msg
-body global collector =
+body : Collector -> Html Msg
+body collector =
     let
         html =
             case collector of
@@ -50,25 +49,6 @@ body global collector =
                                                     ]
                                             ]
                                         ]
-
-                        hiwOrCollections =
-                            case global of
-                                Global.HasWallet hasWallet ->
-                                    Html.div
-                                        []
-                                        [ View.Generic.Collection.Collector.Collector.viewMany
-                                            hasWallet.collected
-                                        ]
-
-                                Global.HasWalletAndHandle hasWalletAndHandle ->
-                                    Html.div
-                                        []
-                                        [ View.Generic.Collection.Collector.Collector.viewMany
-                                            hasWalletAndHandle.collected
-                                        ]
-
-                                _ ->
-                                    hiw
                     in
                     Html.div
                         []
@@ -91,7 +71,7 @@ body global collector =
                             [ class "my-6"
                             ]
                             []
-                        , hiwOrCollections
+                        , hiw
                         ]
 
                 WaitingForHandleConfirmation ->
@@ -166,7 +146,49 @@ body global collector =
                             ]
                         ]
 
-                SelectedCreator handle intersection withCollections ->
+                SelectedCreator handle ( intersection, remainder ) _ ->
+                    let
+                        ix =
+                            case intersection of
+                                [] ->
+                                    Html.div
+                                        []
+                                        []
+
+                                _ ->
+                                    Html.div
+                                        [ class "mt-5"
+                                        ]
+                                        [ Html.div
+                                            [ class "mb-3 is-text-container-3 is-size-3"
+                                            ]
+                                            [ Html.text "Already collected ⬇️"
+                                            ]
+                                        , View.Generic.Collection.Collector.Collector.viewMany
+                                            intersection
+                                        ]
+
+                        rx =
+                            case remainder of
+                                [] ->
+                                    Html.div
+                                        []
+                                        []
+
+                                _ ->
+                                    Html.div
+                                        [ class "mt-5"
+                                        ]
+                                        [ Html.div
+                                            [ class "mb-3 is-text-container-3 is-size-3"
+                                            ]
+                                            [ Html.text "Not collected yet ⬇️"
+                                            ]
+                                        , View.Generic.Collection.Collector.Collector.viewMany
+                                            remainder
+                                        ]
+
+                    in
                     Html.div
                         []
                         [ breadcrumb handle
@@ -203,27 +225,8 @@ body global collector =
                                     """
                                 ]
                             ]
-                        , Html.div
-                            []
-                            [ Html.text <|
-                                String.concat
-                                    [ "creator:"
-                                    , " "
-                                    , withCollections.handle
-                                    ]
-                            ]
-                        , Html.div
-                            []
-                            [ Html.text "intersection ⬇️"
-                            ]
-                        , View.Generic.Collection.Collector.Collector.viewMany
-                            intersection
-                        , Html.div
-                            []
-                            [ Html.text "collections ⬇️"
-                            ]
-                        , View.Generic.Collection.Collector.Collector.viewMany
-                            withCollections.collections
+                        , ix
+                        , rx
                         ]
 
                 SelectedCollection maybeCollected selected ->

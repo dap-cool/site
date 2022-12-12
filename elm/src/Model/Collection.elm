@@ -1,4 +1,4 @@
-module Model.Collection exposing (Collection, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut)
+module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -38,6 +38,14 @@ type alias Accounts =
 type alias Ata =
     { balance : Int
     }
+
+
+type alias Intersection =
+    List Collection
+
+
+type alias Remainder =
+    List Collection
 
 
 
@@ -122,22 +130,30 @@ isEmpty collection =
     collection.accounts.ata.balance == 0
 
 
-intersection : List Collection -> List Collection -> List Collection
+intersection : List Collection -> List Collection -> ( Intersection, Remainder )
 intersection left right =
     let
         leftMintAddresses : Set.Set Mint
         leftMintAddresses =
             List.map (\c -> c.accounts.mint) left
                 |> Set.fromList
-
-        intersection_ =
-            List.filter
-                (\c ->
-                    Set.member ((\c_ -> c_.accounts.mint) c) leftMintAddresses
-                )
-                right
     in
-    intersection_
+    f2 ( [], [] ) leftMintAddresses right
+
+
+f2 : ( Intersection, Remainder ) -> Set.Set Mint -> List Collection -> ( Intersection, Remainder )
+f2 ( ix, rx ) members candidates =
+    case candidates of
+        [] ->
+            ( ix, rx )
+
+        head :: tail ->
+            case Set.member ((\c -> c.accounts.mint) head) members of
+                True ->
+                    f2 ( head :: ix, rx ) members tail
+
+                False ->
+                    f2 ( ix, head :: rx ) members tail
 
 
 find : Collection -> List Collection -> Maybe Collection

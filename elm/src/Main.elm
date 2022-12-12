@@ -579,7 +579,7 @@ update msg model =
                                                                                 hasWallet.collected
 
                                                                         _ ->
-                                                                            []
+                                                                            ( [], collections )
 
                                                                 f withCollections =
                                                                     { model
@@ -696,7 +696,7 @@ update msg model =
                                                                     Local.Collect <|
                                                                         Collector.SelectedCreator
                                                                             handle
-                                                                            []
+                                                                            ( [], withCollections.collections )
                                                                             -- no intersection
                                                                             withCollections
 
@@ -961,7 +961,7 @@ view model =
                     hero <| View.Create.Create.body creator
 
                 Local.Collect collector ->
-                    hero <| View.Collect.Collect.body model.state.global collector
+                    hero <| View.Collect.Collect.body collector
 
                 Local.Error error ->
                     hero <| View.Error.Error.body error
