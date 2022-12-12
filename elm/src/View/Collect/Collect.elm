@@ -210,7 +210,7 @@ body collector =
                                 [ Html.text "bio"
                                 ]
                             , Html.div
-                                [ class "mt-1 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
+                                [ class "mt-1 container is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
                                 ]
                                 [ Html.text
                                     """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
