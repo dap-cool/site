@@ -169,7 +169,7 @@ export async function mintNewCopy(
                 );
             } else {
                 // concat new collection
-                collectorArray.concat([lastCollectedAuthority]);
+                collectorArray = collectorArray.concat([lastCollectedAuthority]);
             }
         }
         // fetch collections & set global
