@@ -570,13 +570,13 @@ update msg model =
                                                                     case model.state.global of
                                                                         Global.HasWalletAndHandle hasWalletAndHandle ->
                                                                             Collection.intersection
-                                                                                collections
                                                                                 hasWalletAndHandle.collected
+                                                                                collections
 
                                                                         Global.HasWallet hasWallet ->
                                                                             Collection.intersection
-                                                                                collections
                                                                                 hasWallet.collected
+                                                                                collections
 
                                                                         _ ->
                                                                             ( [], collections )
@@ -763,8 +763,8 @@ update msg model =
                                                                                     Collector.SelectedCreator
                                                                                         handle
                                                                                         (Collection.intersection
-                                                                                            withCollections.collections
                                                                                             hasWallet.collected
+                                                                                            withCollections.collections
                                                                                         )
                                                                                         withCollections
                                                                                 )
@@ -831,8 +831,8 @@ update msg model =
                                                                                     Collector.SelectedCreator
                                                                                         handle
                                                                                         (Collection.intersection
-                                                                                            withCollections.collections
                                                                                             hasWalletAndHandle.collected
+                                                                                            withCollections.collections
                                                                                         )
                                                                                         withCollections
                                                                                 )

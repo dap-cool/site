@@ -1,5 +1,6 @@
 module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut)
 
+import Dict
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Model.Mint exposing (Mint)
@@ -133,27 +134,35 @@ isEmpty collection =
 intersection : List Collection -> List Collection -> ( Intersection, Remainder )
 intersection left right =
     let
-        leftMintAddresses : Set.Set Mint
-        leftMintAddresses =
-            List.map (\c -> c.accounts.mint) left
-                |> Set.fromList
+        candidates : Candidates
+        candidates =
+            List.map (\c -> ( c.accounts.mint, c )) left
+                |> Dict.fromList
     in
-    f2 ( [], [] ) leftMintAddresses right
+    f2 ( [], [] ) candidates right
 
 
-f2 : ( Intersection, Remainder ) -> Set.Set Mint -> List Collection -> ( Intersection, Remainder )
-f2 ( ix, rx ) members candidates =
-    case candidates of
+type alias Members =
+    List Collection
+
+
+type alias Candidates =
+    Dict.Dict Mint Collection
+
+
+f2 : ( Intersection, Remainder ) -> Candidates -> Members -> ( Intersection, Remainder )
+f2 ( ix, rx ) candidates members =
+    case members of
         [] ->
             ( ix, rx )
 
         head :: tail ->
-            case Set.member ((\c -> c.accounts.mint) head) members of
-                True ->
-                    f2 ( head :: ix, rx ) members tail
+            case Dict.get ((\c -> c.accounts.mint) head) candidates of
+                Just found ->
+                    f2 ( found :: ix, rx ) candidates tail
 
-                False ->
-                    f2 ( ix, head :: rx ) members tail
+                Nothing ->
+                    f2 ( ix, head :: rx ) candidates tail
 
 
 find : Collection -> List Collection -> Maybe Collection
