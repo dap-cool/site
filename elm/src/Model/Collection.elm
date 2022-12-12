@@ -1,10 +1,9 @@
-module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut)
+module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut, encodeList)
 
 import Dict
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Model.Mint exposing (Mint)
-import Set
 import Util.Decode as Util
 
 
@@ -50,9 +49,18 @@ type alias Remainder =
 
 
 
+encodeList : List Collection -> String
+encodeList list =
+    let
+        encoder_ =
+            Encode.list
+                encoder
+                list
+    in
+    Encode.encode 0 <|
+        encoder_
+
 -- TODO; delete ??
-
-
 encode : Collection -> String
 encode collection =
     Encode.encode 0 <|

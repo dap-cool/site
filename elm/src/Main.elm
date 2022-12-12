@@ -360,6 +360,11 @@ update msg model =
                                     }
                             )
 
+                FromCollector.ReadLogos ->
+                    ( model -- handled by recursive handle-found
+                    , Cmd.none
+                    )
+
                 FromCollector.SelectCollection handle index ->
                     ( model
                     , sender <|
@@ -582,7 +587,7 @@ update msg model =
                                                                             ( [], collections )
 
                                                                 f withCollections =
-                                                                    { model
+                                                                    ( { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
@@ -594,8 +599,17 @@ update msg model =
                                                                             , exception = model.state.exception
                                                                             }
                                                                     }
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.ReadLogos
+                                                                            , more = Collection.encodeList <|
+                                                                                withCollections.collections
+                                                                            }
+                                                                    )
                                                             in
-                                                            Listener.decode model json WithCollections.decode f
+                                                            Listener.decode2 model json WithCollections.decode f
 
                                                         ToCollector.CollectionSelected ->
                                                             let

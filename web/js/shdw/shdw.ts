@@ -1,3 +1,6 @@
+import {PublicKey} from "@solana/web3.js";
+import {readImage} from "../util/read-image";
+
 export interface CollectionMetadata {
     name: string
     symbol: string
@@ -52,4 +55,30 @@ export function buildMetaData(
         type: "application/json;charset=utf-8"
     });
     return new File([blob], "meta.json");
+}
+
+export async function getMetaData(url: string): Promise<CollectionMetadata> {
+    const fetched = await fetch(url)
+        .then(response => response.json());
+    return {
+        name: fetched.name,
+        symbol: fetched.symbol,
+        description: fetched.description,
+        image: fetched.image,
+        external_url: fetched.external_url
+    }
+}
+
+export async function getLogo(mint: PublicKey, metaData: CollectionMetadata): Promise<void> {
+    const url = metaData.image;
+    const fileType = url.slice(
+        (Math.max(0, url.lastIndexOf(".")) || Infinity) + 1
+    );
+    const logo = await fetch(metaData.image)
+        .then(response => response.blob())
+        .then(blob => new File([blob], "logo." + fileType))
+    readImage(
+        "img-" + mint.toString(),
+        logo
+    );
 }

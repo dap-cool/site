@@ -17,6 +17,8 @@ import {creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
+import {readImage} from "./util/read-image";
+import {getLogo, getMetaData} from "./shdw/shdw";
 
 // init phantom
 let phantom = null;
@@ -109,9 +111,6 @@ export async function main(app, json) {
             }
             // or creator prepare image form
         } else if (sender === "creator-prepare-image-form") {
-            const img = document.getElementById(
-                "dap-cool-collection-logo"
-            );
             const imgSelector = document.getElementById(
                 "dap-cool-collection-logo-selector"
             );
@@ -121,11 +120,10 @@ export async function main(app, json) {
                 if (fileList.length === 1) {
                     const file = fileList[0];
                     // read image
-                    const reader = new FileReader();
-                    reader.addEventListener("load", (readEvent) => {
-                        img.src = readEvent.target.result;
-                    });
-                    reader.readAsDataURL(file);
+                    readImage(
+                        "dap-cool-collection-logo",
+                        file
+                    );
                 }
             });
             // or creator create new nft
@@ -186,6 +184,20 @@ export async function main(app, json) {
                         )
                     );
                 }
+            }
+            // or read logos
+        } else if (sender === "collector-read-logos") {
+            // parse more json
+            const collections = JSON.parse(parsed.more);
+            // read logo for each collection
+            for (const collection of collections) {
+                const metaData = await getMetaData(
+                    collection.meta.uri
+                );
+                await getLogo(
+                    collection.accounts.mint,
+                    metaData
+                );
             }
             // or collector select collection
         } else if (sender === "collector-select-collection") {

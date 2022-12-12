@@ -1,7 +1,7 @@
 module View.Generic.Collection.Collection exposing (view, viewMany)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, src, style)
+import Html.Attributes exposing (class, id, src, style)
 import Model.Collection as Collection exposing (Collection)
 import Msg.Msg exposing (Msg(..))
 
@@ -67,6 +67,12 @@ view_ collection select =
             [ Html.img
                 [ style "width" "100%"
                 , src "images/upload/default-pfp.jpg"
+                , id <|
+                    String.concat
+                        [ "img"
+                        , "-"
+                        , collection.accounts.mint
+                        ]
                 ]
                 []
             ]
