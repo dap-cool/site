@@ -78,40 +78,13 @@ export async function creatNft(
         programs.dap,
         handle.handle
     );
-    // derive authority pda
+    // increment authority index
     const authorityIndex: number = handle.numCollections + 1;
-    const authorityPda = await deriveAuthorityPda(
-        programs.dap,
-        handle.handle,
-        authorityIndex
-    );
-    // derive key-pair for mint
-    const mint = Keypair.generate();
-    // derive associated-token-address
-    let mintAta: PublicKey, _;
-    [mintAta, _] = PublicKey.findProgramAddressSync(
-        [
-            provider.wallet.publicKey.toBuffer(),
-            SPL_TOKEN_PROGRAM_ID.toBuffer(),
-            mint.publicKey.toBuffer()
-        ],
-        SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-    );
-    // derive metadata
-    let metadataPda, metadataBump;
-    [metadataPda, metadataBump] = PublicKey.findProgramAddressSync(
-        [
-            Buffer.from(MPL_PREFIX),
-            MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            mint.publicKey.toBuffer(),
-        ],
-        MPL_TOKEN_METADATA_PROGRAM_ID
-    );
-    // read logo from input
-    const logo: File = await readLogo();
     // kick off upload steps
     if (form.step === 1) {
         try {
+            // read logo from input
+            const logo: File = await readLogo();
             // provision space
             form.shdw = await provision(
                 provider.connection,
@@ -167,6 +140,8 @@ export async function creatNft(
         }
     } else if (form.step === 2) {
         try {
+            // read logo from input
+            const logo: File = await readLogo();
             // build url
             const url = buildUrl(
                 form.shdw.account
@@ -247,6 +222,34 @@ export async function creatNft(
                 form.shdw.account
             );
             const metadataUrl = url + "meta.json";
+            // derive authority pda
+            const authorityPda = await deriveAuthorityPda(
+                programs.dap,
+                handle.handle,
+                authorityIndex
+            );
+            // derive key-pair for mint
+            const mint = Keypair.generate();
+            // derive associated-token-address
+            let mintAta: PublicKey, _;
+            [mintAta, _] = PublicKey.findProgramAddressSync(
+                [
+                    provider.wallet.publicKey.toBuffer(),
+                    SPL_TOKEN_PROGRAM_ID.toBuffer(),
+                    mint.publicKey.toBuffer()
+                ],
+                SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+            );
+            // derive metadata
+            let metadataPda, metadataBump;
+            [metadataPda, metadataBump] = PublicKey.findProgramAddressSync(
+                [
+                    Buffer.from(MPL_PREFIX),
+                    MPL_TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                    mint.publicKey.toBuffer(),
+                ],
+                MPL_TOKEN_METADATA_PROGRAM_ID
+            );
             // bump bumps
             const bumps = {
                 handle: handlePda.bump,
