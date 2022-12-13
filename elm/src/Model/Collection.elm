@@ -1,4 +1,4 @@
-module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut, encodeList)
+module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encodeList, encoder, find, intersection, isEmpty, isSoldOut)
 
 import Dict
 import Json.Decode as Decode
@@ -48,7 +48,6 @@ type alias Remainder =
     List Collection
 
 
-
 encodeList : List Collection -> String
 encodeList list =
     let
@@ -60,7 +59,11 @@ encodeList list =
     Encode.encode 0 <|
         encoder_
 
+
+
 -- TODO; delete ??
+
+
 encode : Collection -> String
 encode collection =
     Encode.encode 0 <|

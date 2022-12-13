@@ -361,7 +361,8 @@ update msg model =
                             )
 
                 FromCollector.ReadLogos ->
-                    ( model -- handled by recursive handle-found
+                    ( model
+                      -- handled by recursive handle-found
                     , Cmd.none
                     )
 
@@ -598,14 +599,15 @@ update msg model =
                                                                             , global = model.state.global
                                                                             , exception = model.state.exception
                                                                             }
-                                                                    }
+                                                                      }
                                                                     , sender <|
                                                                         Sender.encode <|
                                                                             { sender =
                                                                                 Sender.Collect <|
                                                                                     FromCollector.ReadLogos
-                                                                            , more = Collection.encodeList <|
-                                                                                withCollections.collections
+                                                                            , more =
+                                                                                Collection.encodeList <|
+                                                                                    withCollections.collections
                                                                             }
                                                                     )
                                                             in
@@ -704,24 +706,36 @@ update msg model =
                                             case toGlobal of
                                                 ToGlobal.DisconnectWallet ->
                                                     let
-                                                        local =
+                                                        ( local, cmd ) =
                                                             case model.state.local of
                                                                 Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
-                                                                    Local.Collect <|
+                                                                    ( Local.Collect <|
                                                                         Collector.SelectedCreator
                                                                             handle
                                                                             ( [], withCollections.collections )
                                                                             -- no intersection
                                                                             withCollections
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.ReadLogos
+                                                                            , more =
+                                                                                Collection.encodeList <|
+                                                                                    withCollections.collections
+                                                                            }
+                                                                    )
 
                                                                 Local.Collect (Collector.SelectedCollection _ selected) ->
-                                                                    Local.Collect <|
+                                                                    ( Local.Collect <|
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
                                                                             selected
+                                                                    , Cmd.none
+                                                                    )
 
                                                                 _ ->
-                                                                    model.state.local
+                                                                    ( model.state.local, Cmd.none )
                                                     in
                                                     ( { model
                                                         | state =
@@ -730,7 +744,7 @@ update msg model =
                                                             , exception = model.state.exception
                                                             }
                                                       }
-                                                    , Cmd.none
+                                                    , cmd
                                                     )
 
                                                 ToGlobal.FoundMissingWalletPlugin ->
@@ -783,7 +797,15 @@ update msg model =
                                                                                         withCollections
                                                                                 )
                                                                       }
-                                                                    , Cmd.none
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.ReadLogos
+                                                                            , more =
+                                                                                Collection.encodeList <|
+                                                                                    withCollections.collections
+                                                                            }
                                                                     )
 
                                                                 -- go back to js for ata balance
@@ -851,7 +873,15 @@ update msg model =
                                                                                         withCollections
                                                                                 )
                                                                       }
-                                                                    , Cmd.none
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.ReadLogos
+                                                                            , more =
+                                                                                Collection.encodeList <|
+                                                                                    withCollections.collections
+                                                                            }
                                                                     )
 
                                                                 -- go back to js for ata balance
