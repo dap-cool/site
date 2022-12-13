@@ -17,7 +17,7 @@ import {creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
-import {readImage} from "./util/read-image";
+import {compressImage, readImage} from "./util/read-image";
 import {getLogo, getMetaData} from "./shdw/shdw";
 
 // init phantom
@@ -114,11 +114,15 @@ export async function main(app, json) {
             const imgSelector = document.getElementById(
                 "dap-cool-collection-logo-selector"
             );
-            imgSelector.addEventListener("change", (selectEvent) => {
+            imgSelector.addEventListener("change", async (selectEvent) => {
                 // capture file list
                 const fileList = selectEvent.target.files;
                 if (fileList.length === 1) {
-                    const file = fileList[0];
+                    let file = fileList[0];
+                    // compress image
+                    file = await compressImage(
+                        file
+                    );
                     // read image
                     readImage(
                         "dap-cool-collection-logo",

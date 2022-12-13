@@ -1,5 +1,5 @@
 import {PublicKey} from "@solana/web3.js";
-import {readImage} from "../util/read-image";
+import {compressImage, readImage} from "../util/read-image";
 
 export interface CollectionMetadata {
     name: string
@@ -9,22 +9,25 @@ export interface CollectionMetadata {
     external_url: string
 }
 
-export function readLogo(): File {
+export async function readLogo(): Promise<File> {
     const imgSelector: HTMLInputElement = document.getElementById(
         "dap-cool-collection-logo-selector"
     ) as HTMLInputElement;
     console.log(imgSelector);
     const fileList = imgSelector.files;
-    let file;
+    let file: File;
     if (fileList && fileList.length === 1) {
         console.log("found selected logo");
         file = fileList[0];
         // parse file-type
         const fileName = file.name;
         const fileType = fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1);
+        // grab bytes
+        let blob = file.slice(0, file.size, file.type); // grab buffer
+        // compress bytes
+        blob = await compressImage(blob);
         // rename file
         console.log("renaming file")
-        const blob = file.slice(0, file.size, file.type); // grab buffer
         file = new File([blob], "logo." + fileType, {type: file.type});
     } else {
         console.log("could not find logo")

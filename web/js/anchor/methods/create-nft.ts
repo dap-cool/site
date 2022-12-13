@@ -108,7 +108,7 @@ export async function creatNft(
         MPL_TOKEN_METADATA_PROGRAM_ID
     );
     // read logo from input
-    const logo: File = readLogo();
+    const logo: File = await readLogo();
     // kick off upload steps
     if (form.step === 1) {
         try {
