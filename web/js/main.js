@@ -191,6 +191,7 @@ export async function main(app, json) {
             }
             // or read logos
         } else if (sender === "collector-read-logos") {
+            await new Promise(r => setTimeout(r, 50));
             // parse more json
             const collections = JSON.parse(parsed.more);
             // read logo for each collection

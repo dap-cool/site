@@ -653,7 +653,7 @@ update msg model =
                                                                             Collector.NotLoggedInYet
 
                                                                 f collection =
-                                                                    { model
+                                                                    ( { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
@@ -663,9 +663,19 @@ update msg model =
                                                                             , global = model.state.global
                                                                             , exception = Exception.Closed
                                                                             }
-                                                                    }
+                                                                      }
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.ReadLogos
+                                                                            , more =
+                                                                                Collection.encodeList <|
+                                                                                    [ collection ]
+                                                                            }
+                                                                    )
                                                             in
-                                                            Listener.decode model json Collection.decode f
+                                                            Listener.decode2 model json Collection.decode f
 
                                                         ToCollector.CollectionPrinted ->
                                                             let
