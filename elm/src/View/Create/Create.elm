@@ -30,32 +30,20 @@ body creator =
                                 []
                                 [ header
                                 , Html.div
-                                    [ class "field"
+                                    [ class "mt-6"
                                     ]
-                                    [ Html.p
-                                        [ class "control has-icons-left"
+                                    [ Html.input
+                                        [ class "input"
+                                        , type_ "text"
+                                        , placeholder "Handle @@@"
+                                        , onInput <|
+                                            \s ->
+                                                FromCreator <|
+                                                    CreatorMsg.New <|
+                                                        NewMsg.HandleForm <|
+                                                            Handle.Typing s
                                         ]
-                                        [ Html.input
-                                            [ class "input"
-                                            , type_ "text"
-                                            , placeholder "Handle"
-                                            , onInput <|
-                                                \s ->
-                                                    FromCreator <|
-                                                        CreatorMsg.New <|
-                                                            NewMsg.HandleForm <|
-                                                                Handle.Typing s
-                                            ]
-                                            []
-                                        , Html.span
-                                            [ class "icon is-left"
-                                            ]
-                                            [ Html.i
-                                                [ class "fas fa-at"
-                                                ]
-                                                []
-                                            ]
-                                        ]
+                                        []
                                     ]
                                 ]
 
@@ -92,32 +80,20 @@ body creator =
                                 []
                                 [ header
                                 , Html.div
-                                    [ class "field"
+                                    [ class "mt-6"
                                     ]
-                                    [ Html.p
-                                        [ class "control has-icons-left"
+                                    [ Html.input
+                                        [ class "input"
+                                        , type_ "text"
+                                        , placeholder "Handle @@@"
+                                        , onInput <|
+                                            \s ->
+                                                FromCreator <|
+                                                    CreatorMsg.New <|
+                                                        NewMsg.HandleForm <|
+                                                            Handle.Typing s
                                         ]
-                                        [ Html.input
-                                            [ class "input"
-                                            , type_ "text"
-                                            , placeholder "Handle"
-                                            , onInput <|
-                                                \s ->
-                                                    FromCreator <|
-                                                        CreatorMsg.New <|
-                                                            NewMsg.HandleForm <|
-                                                                Handle.Typing s
-                                            ]
-                                            []
-                                        , Html.span
-                                            [ class "icon is-left"
-                                            ]
-                                            [ Html.i
-                                                [ class "fas fa-at"
-                                                ]
-                                                []
-                                            ]
-                                        ]
+                                        []
                                     ]
                                 , select
                                 ]
@@ -137,7 +113,7 @@ body creator =
                                 []
                                 [ header
                                 , Html.div
-                                    [ class "has-border-2 px-2 py-2"
+                                    [ class "mt-6"
                                     ]
                                     [ Html.text <|
                                         String.concat
@@ -169,7 +145,7 @@ body creator =
                                 []
                                 [ header
                                 , Html.div
-                                    [ class "has-border-2 px-2 py-2"
+                                    [ class "mt-6"
                                     ]
                                     [ Html.text <|
                                         String.concat
@@ -201,16 +177,7 @@ body creator =
                         Existing.Top ->
                             Html.div
                                 []
-                                [ header
-                                , Html.div
-                                    []
-                                    [ Html.text <|
-                                        String.concat
-                                            [ "authorized as:"
-                                            , " "
-                                            , fromGlobal.handle
-                                            ]
-                                    ]
+                                [ header2 fromGlobal.handle
                                 , Html.div
                                     []
                                     [ Html.button
@@ -430,9 +397,8 @@ body creator =
                                                         []
                                     in
                                     Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ header
+                                        []
+                                        [ header3 fromGlobal.handle
                                         , imageForm
                                         , nameForm
                                         , symbolFrom
@@ -444,7 +410,7 @@ body creator =
                                 NewCollection.Done collection ->
                                     Html.div
                                         []
-                                        [ header
+                                        [ header3 fromGlobal.handle
                                         , Html.div
                                             [ class "columns is-mobile"
                                             ]
@@ -481,19 +447,19 @@ body creator =
                         Existing.SelectedCollection collection ->
                             Html.div
                                 []
-                                [ header
+                                [ header3 fromGlobal.handle
                                 , Html.div
                                     [ class "columns is-mobile"
                                     ]
-                                    []
-                                , View.Generic.Collection.Creator.Creator.view collection
-                                , Html.div
-                                    [ class "column is-half-mobile is-two-third-tablet"
-                                    ]
-                                    [ Html.button
-                                        [ class "is-button-1"
+                                    [ View.Generic.Collection.Creator.Creator.view collection
+                                    , Html.div
+                                        [ class "column is-half-mobile is-two-third-tablet"
                                         ]
-                                        [ Html.text "upload stuff"
+                                        [ Html.button
+                                            [ class "is-button-1"
+                                            ]
+                                            [ Html.text "upload stuff"
+                                            ]
                                         ]
                                     ]
                                 ]
@@ -507,10 +473,95 @@ body creator =
 header : Html Msg
 header =
     Html.div
-        [ class "is-family-secondary mt-2 mb-5"
+        []
+        [ Html.div
+            [ class "mt-4"
+            ]
+            [ Html.div
+                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
+                ]
+                [ Html.text "Admin"
+                ]
+            , Html.div
+                [ class "is-text-container-2 is-size-2 is-text-container-3-mobile is-size-3-mobile"
+                ]
+                [ Html.text "New"
+                ]
+            ]
+        , Html.div
+            [ class "mt-5"
+            ]
+            [ Html.div
+                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
+                ]
+                [ Html.text "handle"
+                ]
+            , Html.div
+                [ class "mt-1 container is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
+                ]
+                [ Html.div
+                    [ class "mb-1"
+                    ]
+                    [ Html.text
+                        """Register your wallet on-chain with a creator "handle" 🆒
+                        """
+                    ]
+                , Html.div
+                    []
+                    [ Html.em
+                        [ class "is-family-secondary"
+                        ]
+                        [ Html.text "dap.cool"
+                        ]
+                    , Html.text
+                        """ derives an unique URL from your handle so that collectors can find your page 😎
+                        """
+                    ]
+                ]
+            ]
         ]
-        [ Html.h2
-            []
-            [ Html.text "Creator Console"
+
+
+header2 : String -> Html Msg
+header2 handle =
+    Html.div
+        []
+        [ header3 handle
+        , Html.div
+            [ class "mt-5"
+            ]
+            [ Html.div
+                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
+                ]
+                [ Html.text "bio"
+                ]
+            , Html.div
+                [ class "mt-1 container is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
+                ]
+                [ Html.text
+                    """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Aliquet enim tortor at auctor urna nunc id cursus.
+                    Pulvinar etiam non quam lacus.
+                    """
+                ]
+            ]
+        ]
+
+
+header3 : String -> Html Msg
+header3 handle =
+    Html.div
+        [ class "mt-4"
+        ]
+        [ Html.div
+            [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
+            ]
+            [ Html.text "Admin"
+            ]
+        , Html.div
+            [ class "is-text-container-2 is-size-2 is-text-container-3-mobile is-size-3-mobile"
+            ]
+            [ Html.text handle
             ]
         ]

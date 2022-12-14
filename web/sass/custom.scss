@@ -286,9 +286,14 @@ $size-7: 12px;
 .is-collection {
   @include until($tablet) {
     height: 183px;
+    min-width: 144px;
   }
   @include from($tablet) {
     height: 405px;
+    min-width: 200px;
+  }
+  @include from($widescreen) {
+    min-width: 375px;
   }
 }
 
