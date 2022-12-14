@@ -609,7 +609,7 @@ breadcrumb handle =
 breadcrumb2 : Collection -> Html Msg
 breadcrumb2 collection =
     Html.div
-        [ class "is-light-text-container-6 is-size-6"
+        [ class "is-family-secondary is-light-text-container-6 is-size-6"
         ]
         [ Html.a
             [ class "is-underlined"
@@ -638,4 +638,11 @@ breadcrumb2 collection =
             ]
             [ Html.text collection.meta.handle
             ]
+        , Html.text <|
+            String.concat
+                [ " "
+                , ">"
+                , " "
+                , String.fromInt collection.meta.index
+                ]
         ]

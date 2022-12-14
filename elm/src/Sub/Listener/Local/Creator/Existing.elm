@@ -5,8 +5,7 @@ type
     Existing
     -- creating collection
     = CreatingNewNft -- processing multi-part step-one
-    | CreatedNewNft -- ready for step two
-    | CreatedNewCollection -- step two -- TODO; delete
+    | CreatedNewNft
 
 
 fromString : String -> Maybe Existing
@@ -17,9 +16,6 @@ fromString string =
 
         "creator-created-new-nft" ->
             Just <| CreatedNewNft
-
-        "creator-created-new-collection" ->
-            Just <| CreatedNewCollection
 
         _ ->
             Nothing

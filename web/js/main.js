@@ -39,7 +39,6 @@ export async function main(app, json) {
                     pp.provider,
                     pp.programs
                 );
-                window.location = "#/" // top
             }
         });
     }

@@ -297,21 +297,6 @@ update msg model =
                                     }
                             )
 
-                        FromExistingCreator.CreateNewCollection collection ->
-                            ( { model
-                                | state =
-                                    { local = model.state.local
-                                    , global = model.state.global
-                                    , exception = Exception.Waiting
-                                    }
-                              }
-                            , sender <|
-                                Sender.encode <|
-                                    { sender = Sender.Create from
-                                    , more = Collection.encode collection
-                                    }
-                            )
-
                         FromExistingCreator.SelectCollection collection ->
                             ( { model
                                 | state =
@@ -505,32 +490,12 @@ update msg model =
                                                                                         Local.Create <|
                                                                                             Creator.Existing withCollection.global <|
                                                                                                 ExistingCreator.CreatingNewCollection <|
-                                                                                                    NewCollection.HasCreateNft
-                                                                                                        withCollection.collection
-                                                                                    , global =
-                                                                                        Global.HasWalletAndHandle
-                                                                                            withCollection.global
-                                                                                    , exception = model.state.exception
-                                                                                    }
-                                                                            }
-                                                                    in
-                                                                    Listener.decode model json WithCollectionForCreator.decode f
-
-                                                                ToExistingCreator.CreatedNewCollection ->
-                                                                    let
-                                                                        f withCollection =
-                                                                            { model
-                                                                                | state =
-                                                                                    { local =
-                                                                                        Local.Create <|
-                                                                                            Creator.Existing withCollection.global <|
-                                                                                                ExistingCreator.CreatingNewCollection <|
                                                                                                     NewCollection.Done
                                                                                                         withCollection.collection
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             withCollection.global
-                                                                                    , exception = Exception.Closed
+                                                                                    , exception = model.state.exception
                                                                                     }
                                                                             }
                                                                     in
@@ -718,6 +683,11 @@ update msg model =
                                                     let
                                                         ( local, cmd ) =
                                                             case model.state.local of
+                                                                Local.Create _ ->
+                                                                    ( Local.Create <| Creator.New <| NewCreator.Top
+                                                                    , Cmd.none
+                                                                    )
+
                                                                 Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
                                                                     ( Local.Collect <|
                                                                         Collector.SelectedCreator
@@ -781,22 +751,36 @@ update msg model =
                                                                 , exception = model.state.exception
                                                             }
 
+                                                        bumpedLocal hasWallet local =
+                                                            let
+                                                                bumpedState_ =
+                                                                    bumpedState hasWallet
+                                                            in
+                                                            { bumpedState_
+                                                                | local = local
+                                                            }
+
                                                         f hasWallet =
                                                             case model.state.local of
-                                                                -- compute intersection from new global state
-                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
-                                                                    let
-                                                                        bumpedState_ =
-                                                                            bumpedState hasWallet
-
-                                                                        bumpLocal local =
-                                                                            { bumpedState_
-                                                                                | local = local
-                                                                            }
-                                                                    in
+                                                                Local.Create _ ->
                                                                     ( { model
                                                                         | state =
-                                                                            bumpLocal
+                                                                            bumpedLocal
+                                                                                hasWallet
+                                                                                (Local.Create <|
+                                                                                    Creator.New <|
+                                                                                        NewCreator.Top
+                                                                                )
+                                                                      }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                                -- compute intersection from new global state
+                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
+                                                                    ( { model
+                                                                        | state =
+                                                                            bumpedLocal
+                                                                                hasWallet
                                                                                 (Local.Collect <|
                                                                                     Collector.SelectedCreator
                                                                                         handle
@@ -857,22 +841,36 @@ update msg model =
                                                                 , exception = model.state.exception
                                                             }
 
+                                                        bumpedLocal hasWallet local =
+                                                            let
+                                                                bumpedState_ =
+                                                                    bumpedState hasWallet
+                                                            in
+                                                            { bumpedState_
+                                                                | local = local
+                                                            }
+
                                                         f hasWalletAndHandle =
                                                             case model.state.local of
-                                                                -- compute intersection from new global state
-                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
-                                                                    let
-                                                                        bumpedState_ =
-                                                                            bumpedState hasWalletAndHandle
-
-                                                                        bumpLocal local =
-                                                                            { bumpedState_
-                                                                                | local = local
-                                                                            }
-                                                                    in
+                                                                Local.Create _ ->
                                                                     ( { model
                                                                         | state =
-                                                                            bumpLocal
+                                                                            bumpedLocal
+                                                                                hasWalletAndHandle
+                                                                                (Local.Create <|
+                                                                                    Creator.Existing hasWalletAndHandle <|
+                                                                                        ExistingCreator.Top
+                                                                                )
+                                                                      }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                                -- compute intersection from new global state
+                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
+                                                                    ( { model
+                                                                        | state =
+                                                                            bumpedLocal
+                                                                                hasWalletAndHandle
                                                                                 (Local.Collect <|
                                                                                     Collector.SelectedCreator
                                                                                         handle

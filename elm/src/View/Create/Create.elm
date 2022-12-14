@@ -3,7 +3,7 @@ module View.Create.Create exposing (body)
 import Html exposing (Html)
 import Html.Attributes exposing (accept, class, href, id, placeholder, src, type_, width)
 import Html.Events exposing (onClick, onInput)
-import Model.Collection as Collection
+import Model.Collection
 import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.NewCollection as NewCollection
@@ -27,8 +27,7 @@ body creator =
                     case newCreator of
                         New.Top ->
                             Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
+                                []
                                 [ header
                                 , Html.div
                                     [ class "field"
@@ -90,8 +89,7 @@ body creator =
                                                 ]
                             in
                             Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
+                                []
                                 [ header
                                 , Html.div
                                     [ class "field"
@@ -126,8 +124,7 @@ body creator =
 
                         New.WaitingForHandleConfirmation ->
                             Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
+                                []
                                 [ header
                                 , Html.div
                                     [ class "is-loading"
@@ -137,8 +134,7 @@ body creator =
 
                         New.HandleInvalid string ->
                             Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
+                                []
                                 [ header
                                 , Html.div
                                     [ class "has-border-2 px-2 py-2"
@@ -170,8 +166,7 @@ body creator =
 
                         New.HandleAlreadyExists string ->
                             Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
+                                []
                                 [ header
                                 , Html.div
                                     [ class "has-border-2 px-2 py-2"
@@ -205,8 +200,7 @@ body creator =
                     case existingCreator of
                         Existing.Top ->
                             Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
+                                []
                                 [ header
                                 , Html.div
                                     []
@@ -229,9 +223,18 @@ body creator =
                                         [ Html.text "create new collection"
                                         ]
                                     ]
-                                , View.Generic.Collection.Creator.Creator.viewMany
-                                    fromGlobal
-                                    fromGlobal.collections
+                                , Html.div
+                                    [ class "mt-5"
+                                    ]
+                                    [ Html.div
+                                        [ class "mb-3 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
+                                        ]
+                                        [ Html.text "Your collections ⬇️"
+                                        ]
+                                    , View.Generic.Collection.Creator.Creator.viewMany
+                                        fromGlobal
+                                        fromGlobal.collections
+                                    ]
                                 ]
 
                         Existing.CreatingNewCollection newCollection ->
@@ -438,118 +441,65 @@ body creator =
                                         , waiting
                                         ]
 
-                                NewCollection.HasCreateNft collection ->
-                                    Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
-                                        [ header
-                                        , View.Generic.Collection.Creator.Creator.view
-                                            collection
-                                        , Html.div
-                                            []
-                                            [ Html.div
-                                                []
-                                                [ Html.text
-                                                    """Your NFT has successfully been created! 😁
-                                                    """
-                                                , Html.a
-                                                    [ class "has-sky-blue-text"
-                                                    , href <|
-                                                        String.concat
-                                                            [ "https://explorer.solana.com/address/"
-                                                            , collection.accounts.mint
-                                                            ]
-                                                    ]
-                                                    [ Html.text "view it here 👀"
-                                                    ]
-                                                ]
-                                            , Html.div
-                                                []
-                                                [ Html.text
-                                                    """We still need to be create an official collection "stamp"
-                                                    that proves authenticity & then we can open the primary sale!
-                                                    """
-                                                ]
-                                            , Html.div
-                                                []
-                                                [ Html.button
-                                                    [ class "is-button-1"
-                                                    , onClick <|
-                                                        FromCreator <|
-                                                            CreatorMsg.Existing fromGlobal <|
-                                                                ExistingMsg.CreateNewCollection collection
-                                                    ]
-                                                    [ Html.text "create official collection stamp"
-                                                    ]
-                                                ]
-                                            ]
-                                        ]
-
                                 NewCollection.Done collection ->
                                     Html.div
-                                        [ class "has-border-2 px-2 pt-2 pb-6"
-                                        ]
+                                        []
                                         [ header
                                         , Html.div
-                                            []
-                                            [ Html.text
-                                                """All done \u{1FAE0}
-                                                """
+                                            [ class "columns is-mobile"
                                             ]
-                                        , View.Generic.Collection.Creator.Creator.view
-                                            collection
+                                            [ View.Generic.Collection.Creator.Creator.view collection
+                                            ]
                                         , Html.div
-                                            []
-                                            [ Html.a
-                                                [ Local.href <| Local.Create (New New.Top)
-                                                , class "has-sky-blue-text"
+                                            [ class "column is-half-mobile is-two-third-tablet"
+                                            ]
+                                            [ Html.text
+                                                """Your NFT has successfully been created! 😁
+                                                """
+                                            , Html.a
+                                                [ class "has-sky-blue-text"
+                                                , href <|
+                                                    String.concat
+                                                        [ "https://explorer.solana.com/address/"
+                                                        , collection.accounts.mint
+                                                        ]
                                                 ]
-                                                [ Html.text "back 2 collections 🔙"
+                                                [ Html.text "view it here 👀"
+                                                ]
+                                            , Html.div
+                                                []
+                                                [ Html.a
+                                                    [ Local.href <| Local.Create (New New.Top)
+                                                    , class "has-sky-blue-text"
+                                                    ]
+                                                    [ Html.text "back 2 collections 🔙"
+                                                    ]
                                                 ]
                                             ]
                                         ]
 
                         Existing.SelectedCollection collection ->
-                            let
-                                button =
-                                    case Collection.isEmpty collection of
-                                        True ->
-                                            Html.div
-                                                []
-                                                [ Html.text
-                                                    """This NFT still needs to be marked as an on-chain collection
-                                                    before we can start listing the primary sale.
-                                                    """
-                                                , Html.div
-                                                    []
-                                                    [ Html.button
-                                                        [ class "is-button-1"
-                                                        , onClick <|
-                                                            FromCreator <|
-                                                                CreatorMsg.Existing fromGlobal <|
-                                                                    ExistingMsg.CreateNewCollection collection
-                                                        ]
-                                                        [ Html.text "mark collection"
-                                                        ]
-                                                    ]
-                                                ]
-
-                                        False ->
-                                            Html.div
-                                                []
-                                                []
-                            in
                             Html.div
-                                [ class "has-border-2 px-2 pt-2 pb-6"
-                                ]
+                                []
                                 [ header
+                                , Html.div
+                                    [ class "columns is-mobile"
+                                    ]
+                                    []
                                 , View.Generic.Collection.Creator.Creator.view collection
-                                , button
+                                , Html.div
+                                    [ class "column is-half-mobile is-two-third-tablet"
+                                    ]
+                                    [ Html.button
+                                        [ class "is-button-1"
+                                        ]
+                                        [ Html.text "upload stuff"
+                                        ]
+                                    ]
                                 ]
     in
     Html.div
-        [ class "container"
-        ]
+        []
         [ html
         ]
 

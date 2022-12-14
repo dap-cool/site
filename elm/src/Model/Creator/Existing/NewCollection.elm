@@ -10,7 +10,6 @@ import Util.Decode as Util
 
 type NewCollection
     = Input Submitted
-    | HasCreateNft Collection
     | Done Collection
 
 

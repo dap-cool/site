@@ -12,7 +12,6 @@ type
     | NewCollectionForm NewCollectionForm
       -- create new nft rpc transactions
     | CreateNewNft NewCollection.MetaForm
-    | CreateNewCollection Collection
       -- existing collection
     | SelectCollection Collection
 
@@ -30,9 +29,6 @@ toString existing =
 
         CreateNewNft _ ->
             "creator-create-new-nft"
-
-        CreateNewCollection _ ->
-            "creator-create-new-collection"
 
         _ ->
             "no-op"

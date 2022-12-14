@@ -1,7 +1,7 @@
 module View.Generic.Collection.Creator.Creator exposing (view, viewMany)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Model.Collection exposing (Collection)
 import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
@@ -27,7 +27,6 @@ select fromGlobal collection =
         []
         [ Html.button
             [ class "is-button-1"
-            , style "width" "100%"
             , onClick <| FromCreator <| Existing fromGlobal <| SelectCollection collection
             ]
             [ Html.text "Select"
