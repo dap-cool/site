@@ -19,7 +19,7 @@ import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 import {compressImage, readImage} from "./util/read-image";
 import {getLogo, getMetaData} from "./shdw/shdw";
-import {getUploads} from "./anchor/pda/datum-pda";
+import {getUploads, upload} from "./anchor/pda/datum-pda";
 
 // init phantom
 let phantom = null;
@@ -210,14 +210,24 @@ export async function main(app, json) {
             });
             // or creator upload
         } else if (sender === "creator-upload") {
+            // get provider & program
+            const pp = getPP(phantom);
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            // select files
             const imgSelector = document.getElementById(
                 "dap-cool-collection-upload-selector"
             );
             const files = imgSelector.files;
             console.log(files);
-            // parse more json
-            const more = JSON.parse(parsed.more);
-            console.log(more);
+            // upload
+            await upload(
+                pp.provider,
+                more.collection,
+                more.form,
+                files
+            );
+            // send success to elm
             app.ports.success.send(
                 JSON.stringify(
                     {

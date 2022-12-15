@@ -4,13 +4,17 @@ import * as DapSdk from "@dap-cool/sdk";
 import {deriveHandlePda, getHandlePda} from "./handle-pda";
 import {DapCool} from "../idl/dap";
 
-interface FromElm {
+interface CollectionFromElm {
     meta: {
         handle: string
     }
     accounts: {
         mint: string
     }
+}
+
+interface FormFromElm {
+    title: string
 }
 
 interface ToElm extends DapSdk.Datum {
@@ -26,7 +30,7 @@ interface ToElm extends DapSdk.Datum {
 export async function getUploads(
     provider: AnchorProvider,
     dapCoolProgram: Program<DapCool>,
-    fromElm: FromElm
+    fromElm: CollectionFromElm
 ): Promise<ToElm[]> {
     // get program
     const dapProtocolProgram: Program<DapSdk.DapProtocol> = await DapSdk.getProgram(
@@ -76,4 +80,57 @@ export async function getUploads(
         toElmArray = [];
     }
     return toElmArray
+}
+
+export async function upload(
+    provider: AnchorProvider,
+    collection: CollectionFromElm,
+    form: FormFromElm,
+    files: FileList
+): Promise<void> {
+    // build encryption args
+    const litArgs = DapSdk.defaultLitArgs(
+        collection.accounts.mint
+    );
+    // encrypt
+    const encrypted = await DapSdk.encrypt(
+        files,
+        litArgs
+    );
+    // provision storage on shdw drive
+    const provisioned = await DapSdk.provision(
+        provider.connection,
+        provider.wallet,
+        encrypted.file
+    );
+    // build metadata
+    const metadata = {
+        key: encrypted.key,
+        lit: litArgs,
+        title: form.title,
+        zip: {
+            count: files.length,
+            types: Array.from(files).map(file => file.type)
+        },
+        timestamp: Date.now()
+    };
+    const encodedMetadata = DapSdk.encodeMetadata(
+        metadata
+    );
+    // upload encrypted file & metadata
+    await DapSdk.uploadMultipleFiles(
+        [encrypted.file, encodedMetadata],
+        provisioned.drive,
+        provisioned.account
+    );
+    // publish url on-chain
+    const dapProtocolProgram = DapSdk.getProgram(
+        provider
+    );
+    await DapSdk.increment(
+        dapProtocolProgram,
+        provider,
+        new PublicKey(collection.accounts.mint),
+        provisioned.account
+    );
 }
