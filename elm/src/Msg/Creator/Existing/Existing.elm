@@ -2,6 +2,7 @@ module Msg.Creator.Existing.Existing exposing (Existing(..), toString)
 
 import Model.Collection exposing (Collection)
 import Model.Creator.Existing.NewCollection as NewCollection
+import Model.Creator.Existing.UploadForm exposing (UploadForm)
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (NewCollectionForm)
 
 
@@ -14,6 +15,9 @@ type
     | CreateNewNft NewCollection.MetaForm
       -- existing collection
     | SelectCollection Collection
+    | StartUploading Collection
+    | TypingUploadTitle Collection String
+    | Upload Collection UploadForm
 
 
 toString : Existing -> String
@@ -32,6 +36,9 @@ toString existing =
 
         SelectCollection _ ->
             "creator-select-collection"
+
+        Upload _ _ ->
+            "creator-upload"
 
         _ ->
             "no-op"

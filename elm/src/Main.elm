@@ -12,6 +12,7 @@ import Model.Collector.WithCollections as WithCollections
 import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.NewCollection as NewCollection
+import Model.Creator.Existing.UploadForm as UploadForm
 import Model.Creator.Existing.WithCollection as WithCollectionForCreator
 import Model.Creator.New.New as NewCreator
 import Model.Datum as Datum
@@ -325,6 +326,56 @@ update msg model =
                                     }
                             )
 
+                        FromExistingCreator.StartUploading collection ->
+                            ( { model
+                                | state =
+                                    { local =
+                                        Local.Create <|
+                                            Creator.Existing hasWalletAndHandle <|
+                                                ExistingCreator.Uploading
+                                                    collection
+                                                    { title = "" }
+                                    , global = model.state.global
+                                    , exception = model.state.exception
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
+                        FromExistingCreator.TypingUploadTitle collection title ->
+                            ( { model
+                                | state =
+                                    { local =
+                                        Local.Create <|
+                                            Creator.Existing hasWalletAndHandle <|
+                                                ExistingCreator.Uploading
+                                                    collection
+                                                    { title = title }
+                                    , global = model.state.global
+                                    , exception = model.state.exception
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
+                        FromExistingCreator.Upload collection form ->
+                            ( { model
+                                | state =
+                                    { local =
+                                        Local.Create <|
+                                            Creator.Existing hasWalletAndHandle <|
+                                                ExistingCreator.WaitingForUpload collection
+                                    , global = model.state.global
+                                    , exception = model.state.exception
+                                    }
+                              }
+                            , sender <|
+                                Sender.encode <|
+                                    { sender = Sender.Create from
+                                    , more = UploadForm.encode collection form
+                                    }
+                            )
+
         FromCollector from ->
             case from of
                 FromCollector.HandleForm form ->
@@ -513,7 +564,7 @@ update msg model =
                                                                         f uploads =
                                                                             case model.state.global of
                                                                                 Global.HasWalletAndHandle hasWalletAndHandle ->
-                                                                                    ( { model
+                                                                                    { model
                                                                                         | state =
                                                                                             { local =
                                                                                                 Local.Create <|
@@ -524,16 +575,34 @@ update msg model =
                                                                                             , global = model.state.global
                                                                                             , exception = model.state.exception
                                                                                             }
-                                                                                      }
-                                                                                    , Cmd.none
-                                                                                    )
+                                                                                    }
 
                                                                                 _ ->
-                                                                                    ( model
-                                                                                    , Cmd.none
-                                                                                    )
+                                                                                    model
                                                                     in
-                                                                    Listener.decode2 model json Datum.decode f
+                                                                    Listener.decode model json Datum.decode f
+
+                                                                ToExistingCreator.UploadSuccessful ->
+                                                                    let
+                                                                        f collection =
+                                                                            case model.state.global of
+                                                                                Global.HasWalletAndHandle hasWalletAndHandle ->
+                                                                                    { model
+                                                                                        | state =
+                                                                                            { local =
+                                                                                                Local.Create <|
+                                                                                                    Creator.Existing hasWalletAndHandle <|
+                                                                                                        ExistingCreator.UploadSuccessful
+                                                                                                            collection
+                                                                                            , global = model.state.global
+                                                                                            , exception = model.state.exception
+                                                                                            }
+                                                                                    }
+
+                                                                                _ ->
+                                                                                    model
+                                                                    in
+                                                                    Listener.decode model json Collection.decode f
 
                                                 -- found msg for collector
                                                 ToLocal.Collect toCollector ->

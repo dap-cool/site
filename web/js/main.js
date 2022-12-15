@@ -208,6 +208,26 @@ export async function main(app, json) {
                     )
                 );
             });
+            // or creator upload
+        } else if (sender === "creator-upload") {
+            const imgSelector = document.getElementById(
+                "dap-cool-collection-upload-selector"
+            );
+            const files = imgSelector.files;
+            console.log(files);
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            console.log(more);
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-upload-success",
+                        more: JSON.stringify(
+                            more.collection
+                        )
+                    }
+                )
+            );
             // or creator select collection
         } else if (sender === "creator-select-collection") {
             // get provider & program

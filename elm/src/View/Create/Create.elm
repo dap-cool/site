@@ -1,7 +1,7 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (accept, class, href, id, placeholder, src, type_, width)
+import Html.Attributes exposing (accept, class, href, id, multiple, placeholder, src, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Creator.Creator exposing (Creator(..))
@@ -479,8 +479,149 @@ body creator =
                                         ]
                                         [ Html.button
                                             [ class "is-button-1"
+                                            , onClick <|
+                                                FromCreator <|
+                                                    CreatorMsg.Existing fromGlobal <|
+                                                        ExistingMsg.StartUploading collection
                                             ]
                                             [ Html.text "upload stuff"
+                                            ]
+                                        ]
+                                    ]
+                                ]
+
+                        Existing.Uploading collection form ->
+                            let
+                                title =
+                                    case form.title of
+                                        "" ->
+                                            Html.div
+                                                [ class "is-text-container-3 is-size-3"
+                                                ]
+                                                [ Html.text <|
+                                                    String.concat
+                                                        [ "title"
+                                                        , " "
+                                                        , "➡️"
+                                                        , " "
+                                                        , "untitled"
+                                                        ]
+                                                ]
+
+                                        nes ->
+                                            Html.div
+                                                [ class "is-text-container-3 is-size-3"
+                                                ]
+                                                [ Html.text <|
+                                                    String.concat
+                                                        [ "title"
+                                                        , "➡️"
+                                                        , " "
+                                                        , nes
+                                                        ]
+                                                ]
+
+                                uploadForm =
+                                    case form.title of
+                                        "" ->
+                                            { form | title = "untitled" }
+
+                                        _ ->
+                                            form
+                            in
+                            Html.div
+                                []
+                                [ header3 fromGlobal.handle
+                                , Html.div
+                                    [ class "columns is-mobile"
+                                    ]
+                                    [ View.Generic.Collection.Creator.Creator.view collection
+                                    , Html.div
+                                        [ class "column is-half-mobile is-two-third-tablet"
+                                        ]
+                                        [ Html.input
+                                            [ id "dap-cool-collection-upload-selector"
+                                            , type_ "file"
+                                            , multiple True
+                                            ]
+                                            []
+                                        , Html.div
+                                            []
+                                            [ title
+                                            , Html.div
+                                                []
+                                                [ Html.input
+                                                    [ class "input"
+                                                    , placeholder "title ✏️"
+                                                    , onInput <|
+                                                        \s ->
+                                                            FromCreator <|
+                                                                CreatorMsg.Existing fromGlobal <|
+                                                                    ExistingMsg.TypingUploadTitle collection s
+                                                    ]
+                                                    []
+                                                ]
+                                            ]
+                                        , Html.div
+                                            []
+                                            [ Html.button
+                                                [ onClick <|
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing fromGlobal <|
+                                                            ExistingMsg.Upload collection uploadForm
+                                                ]
+                                                [ Html.text "upload"
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+
+                        Existing.WaitingForUpload collection ->
+                            Html.div
+                                []
+                                [ header3 fromGlobal.handle
+                                , Html.div
+                                    [ class "columns is-mobile"
+                                    ]
+                                    [ View.Generic.Collection.Creator.Creator.view collection
+                                    , Html.div
+                                        [ class "column is-half-mobile is-two-thirds-tablet"
+                                        ]
+                                        [ Html.div
+                                            [ class "is-loading"
+                                            ]
+                                            []
+                                        ]
+                                    ]
+                                ]
+
+                        Existing.UploadSuccessful collection ->
+                            Html.div
+                                []
+                                [ header3 fromGlobal.handle
+                                , Html.div
+                                    [ class "columns is-mobile"
+                                    ]
+                                    [ View.Generic.Collection.Creator.Creator.view collection
+                                    , Html.div
+                                        [ class "column is-half-mobile is-two-thirds-tablet"
+                                        ]
+                                        [ Html.div
+                                            []
+                                            [ Html.text <|
+                                                String.concat
+                                                    [ "Upload successful"
+                                                    ]
+                                            ]
+                                        , Html.div
+                                            []
+                                            [ Html.a
+                                                [ Local.href <| Local.Create (New New.Top)
+                                                , class "has-sky-blue-text"
+                                                ]
+                                                [ Html.text "back 2 collections 🔙"
+                                                ]
                                             ]
                                         ]
                                     ]

@@ -8,6 +8,7 @@ type
     | CreatedNewNft
       -- uploading
     | SelectedCollection
+    | UploadSuccessful
 
 
 fromString : String -> Maybe Existing
@@ -21,6 +22,9 @@ fromString string =
 
         "creator-selected-collection" ->
             Just <| SelectedCollection
+
+        "creator-upload-success" ->
+            Just <| UploadSuccessful
 
         _ ->
             Nothing
