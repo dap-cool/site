@@ -399,12 +399,24 @@ body creator =
                                     Html.div
                                         []
                                         [ header3 fromGlobal.handle
-                                        , imageForm
-                                        , nameForm
-                                        , symbolFrom
-                                        , create
-                                        , retries
-                                        , waiting
+                                        , Html.div
+                                            [ class "columns"
+                                            ]
+                                            [ Html.div
+                                                [ class "column is-half"
+                                                ]
+                                                [ imageForm
+                                                ]
+                                            , Html.div
+                                                [ class "column is-half"
+                                                ]
+                                                [ nameForm
+                                                , symbolFrom
+                                                , create
+                                                , retries
+                                                , waiting
+                                                ]
+                                            ]
                                         ]
 
                                 NewCollection.Done collection ->

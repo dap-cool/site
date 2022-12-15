@@ -1,9 +1,13 @@
 module Msg.Global exposing (Global(..), toString)
 
 
-type Global
+type
+    Global
+    -- wallet
     = Connect
     | Disconnect
+      -- file reader
+    | ReadLogos
 
 
 toString : Global -> String
@@ -14,3 +18,6 @@ toString global =
 
         Disconnect ->
             "disconnect"
+
+        ReadLogos ->
+            "read-logos"

@@ -26,6 +26,7 @@ import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExistingCreator
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
 import Msg.Creator.New.New as FromNewCreator
+import Msg.Global as FromGlobal
 import Msg.Js as JsMsg
 import Msg.Msg exposing (Msg(..), resetViewport)
 import Sub.Listener.Global.Global as ToGlobal
@@ -95,7 +96,15 @@ update msg model =
                                     , exception = model.state.exception
                                     }
                               }
-                            , Cmd.none
+                            , sender <|
+                                Sender.encode <|
+                                    { sender =
+                                        Sender.Global <|
+                                            FromGlobal.ReadLogos
+                                    , more =
+                                        Collection.encodeList <|
+                                            hasWalletAndHandle.collections
+                                    }
                             )
 
                         _ ->
@@ -309,7 +318,15 @@ update msg model =
                                     , exception = model.state.exception
                                     }
                               }
-                            , Cmd.none
+                            , sender <|
+                                Sender.encode <|
+                                    { sender =
+                                        Sender.Global <|
+                                            FromGlobal.ReadLogos
+                                    , more =
+                                        Collection.encodeList <|
+                                            hasWalletAndHandle.collections
+                                    }
                             )
 
         FromCollector from ->
@@ -344,12 +361,6 @@ update msg model =
                                     , more = Handle.encode string
                                     }
                             )
-
-                FromCollector.ReadLogos ->
-                    ( model
-                      -- handled by recursive handle-found
-                    , Cmd.none
-                    )
 
                 FromCollector.SelectCollection handle index ->
                     ( model
@@ -568,8 +579,8 @@ update msg model =
                                                                     , sender <|
                                                                         Sender.encode <|
                                                                             { sender =
-                                                                                Sender.Collect <|
-                                                                                    FromCollector.ReadLogos
+                                                                                Sender.Global <|
+                                                                                    FromGlobal.ReadLogos
                                                                             , more =
                                                                                 Collection.encodeList <|
                                                                                     withCollections.collections
@@ -632,8 +643,8 @@ update msg model =
                                                                     , sender <|
                                                                         Sender.encode <|
                                                                             { sender =
-                                                                                Sender.Collect <|
-                                                                                    FromCollector.ReadLogos
+                                                                                Sender.Global <|
+                                                                                    FromGlobal.ReadLogos
                                                                             , more =
                                                                                 Collection.encodeList <|
                                                                                     [ collection ]
@@ -698,8 +709,8 @@ update msg model =
                                                                     , sender <|
                                                                         Sender.encode <|
                                                                             { sender =
-                                                                                Sender.Collect <|
-                                                                                    FromCollector.ReadLogos
+                                                                                Sender.Global <|
+                                                                                    FromGlobal.ReadLogos
                                                                             , more =
                                                                                 Collection.encodeList <|
                                                                                     withCollections.collections
@@ -794,8 +805,8 @@ update msg model =
                                                                     , sender <|
                                                                         Sender.encode <|
                                                                             { sender =
-                                                                                Sender.Collect <|
-                                                                                    FromCollector.ReadLogos
+                                                                                Sender.Global <|
+                                                                                    FromGlobal.ReadLogos
                                                                             , more =
                                                                                 Collection.encodeList <|
                                                                                     withCollections.collections
@@ -862,7 +873,15 @@ update msg model =
                                                                                         ExistingCreator.Top
                                                                                 )
                                                                       }
-                                                                    , Cmd.none
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Global <|
+                                                                                    FromGlobal.ReadLogos
+                                                                            , more =
+                                                                                Collection.encodeList <|
+                                                                                    hasWalletAndHandle.collections
+                                                                            }
                                                                     )
 
                                                                 -- compute intersection from new global state
@@ -884,8 +903,8 @@ update msg model =
                                                                     , sender <|
                                                                         Sender.encode <|
                                                                             { sender =
-                                                                                Sender.Collect <|
-                                                                                    FromCollector.ReadLogos
+                                                                                Sender.Global <|
+                                                                                    FromGlobal.ReadLogos
                                                                             , more =
                                                                                 Collection.encodeList <|
                                                                                     withCollections.collections
@@ -975,15 +994,23 @@ update msg model =
                     )
 
         Global fromGlobal ->
-            ( { model
-                | state =
-                    { local = model.state.local
-                    , global = Global.Connecting
-                    , exception = model.state.exception
-                    }
-              }
-            , sender <| Sender.encode0 <| Sender.Global fromGlobal
-            )
+            case fromGlobal of
+                FromGlobal.ReadLogos ->
+                    ( model
+                      -- handled by recursive handle-found
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( { model
+                        | state =
+                            { local = model.state.local
+                            , global = Global.Connecting
+                            , exception = model.state.exception
+                            }
+                      }
+                    , sender <| Sender.encode0 <| Sender.Global fromGlobal
+                    )
 
         CloseExceptionModal ->
             ( { model
