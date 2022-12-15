@@ -466,7 +466,7 @@ body creator =
                                     []
                                 ]
 
-                        Existing.SelectedCollection collection _ ->
+                        Existing.SelectedCollection collection uploaded ->
                             Html.div
                                 []
                                 [ header3 fromGlobal.handle
@@ -477,15 +477,49 @@ body creator =
                                     , Html.div
                                         [ class "column is-half-mobile is-two-third-tablet"
                                         ]
-                                        [ Html.button
-                                            [ class "is-button-1"
-                                            , onClick <|
-                                                FromCreator <|
-                                                    CreatorMsg.Existing fromGlobal <|
-                                                        ExistingMsg.StartUploading collection
+                                        [ Html.div
+                                            []
+                                            [ Html.button
+                                                [ class "is-button-1"
+                                                , onClick <|
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing fromGlobal <|
+                                                            ExistingMsg.StartUploading collection
+                                                ]
+                                                [ Html.text "upload stuff"
+                                                ]
                                             ]
-                                            [ Html.text "upload stuff"
+                                        , Html.div
+                                            [ class "columns"
                                             ]
+                                          <|
+                                            List.map
+                                                (\datum ->
+                                                    Html.div
+                                                        [ class "column is-one-third"
+                                                        ]
+                                                        [ Html.div
+                                                            [ class "is-upload"
+                                                            ]
+                                                            [ Html.div
+                                                                [ class "is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
+                                                                ]
+                                                                [ Html.text datum.metadata.title
+                                                                ]
+                                                            , Html.div
+                                                                [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
+                                                                ]
+                                                                [ Html.text <|
+                                                                    String.concat
+                                                                        [ "# of files"
+                                                                        , "➡️"
+                                                                        , String.fromInt datum.metadata.zip.count
+                                                                        ]
+                                                                ]
+                                                            ]
+                                                        ]
+                                                )
+                                                uploaded
                                         ]
                                     ]
                                 ]

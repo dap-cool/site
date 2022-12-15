@@ -67,14 +67,6 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // borders /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-.has-border-1 {
-  border-bottom: 1px solid #FDF9EF;
-}
-
-.has-border-2 {
-  border: 1px dotted #4a4a4a;
-}
-
 .is-navbar {
   overflow: hidden;
   position: fixed; /* Set the navbar to fixed position */
@@ -93,9 +85,13 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 }
 
 .is-collection {
-  height: 405px;
   background-color: #FDF9EF;
   color: #2B2B2B;
+  border-radius: 16px;
+}
+
+.is-upload {
+  border: 2px solid #FDF9EF;
   border-radius: 16px;
 }
 
@@ -283,7 +279,7 @@ $size-7: 12px;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // borders /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-.is-collection {
+.is-collection, .is-upload {
   @include until($tablet) {
     height: 183px;
     min-width: 144px;
