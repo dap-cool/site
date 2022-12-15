@@ -325,7 +325,7 @@ update msg model =
                                             FromGlobal.ReadLogos
                                     , more =
                                         Collection.encodeList <|
-                                            hasWalletAndHandle.collections
+                                            [ collection ]
                                     }
                             )
 
