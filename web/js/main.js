@@ -19,6 +19,7 @@ import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 import {compressImage, readImage} from "./util/read-image";
 import {getLogo, getMetaData} from "./shdw/shdw";
+import {getUploads} from "./anchor/pda/datum-pda";
 
 // init phantom
 let phantom = null;
@@ -207,6 +208,32 @@ export async function main(app, json) {
                     )
                 );
             });
+            // or creator select collection
+        } else if (sender === "creator-select-collection") {
+            // get provider & program
+            const pp = getPP(phantom);
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            // get uploads
+            const uploads = await getUploads(
+                pp.provider,
+                pp.programs.dap,
+                more
+            );
+            console.log(uploads);
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-selected-collection",
+                        more: JSON.stringify(
+                            {
+                                collection: more,
+                                datum: uploads
+                            }
+                        )
+                    }
+                )
+            );
             // or collector select collection
         } else if (sender === "collector-select-collection") {
             // parse more json

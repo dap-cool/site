@@ -6,6 +6,8 @@ type
     -- creating collection
     = CreatingNewNft -- processing multi-part step-one
     | CreatedNewNft
+      -- uploading
+    | SelectedCollection
 
 
 fromString : String -> Maybe Existing
@@ -16,6 +18,9 @@ fromString string =
 
         "creator-created-new-nft" ->
             Just <| CreatedNewNft
+
+        "creator-selected-collection" ->
+            Just <| SelectedCollection
 
         _ ->
             Nothing

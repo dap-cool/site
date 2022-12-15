@@ -30,5 +30,8 @@ toString existing =
         CreateNewNft _ ->
             "creator-create-new-nft"
 
+        SelectCollection _ ->
+            "creator-select-collection"
+
         _ ->
             "no-op"

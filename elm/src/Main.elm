@@ -14,6 +14,7 @@ import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.Existing.WithCollection as WithCollectionForCreator
 import Model.Creator.New.New as NewCreator
+import Model.Datum as Datum
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State.Exception.Exception as Exception
@@ -312,20 +313,15 @@ update msg model =
                                     { local =
                                         Local.Create <|
                                             Creator.Existing hasWalletAndHandle <|
-                                                ExistingCreator.SelectedCollection
-                                                    collection
+                                                ExistingCreator.WaitingForUploaded
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }
                               }
                             , sender <|
                                 Sender.encode <|
-                                    { sender =
-                                        Sender.Global <|
-                                            FromGlobal.ReadLogos
-                                    , more =
-                                        Collection.encodeList <|
-                                            [ collection ]
+                                    { sender = Sender.Create from
+                                    , more = Collection.encode collection
                                     }
                             )
 
@@ -511,6 +507,33 @@ update msg model =
                                                                             }
                                                                     in
                                                                     Listener.decode model json WithCollectionForCreator.decode f
+
+                                                                ToExistingCreator.SelectedCollection ->
+                                                                    let
+                                                                        f uploads =
+                                                                            case model.state.global of
+                                                                                Global.HasWalletAndHandle hasWalletAndHandle ->
+                                                                                    ( { model
+                                                                                        | state =
+                                                                                            { local =
+                                                                                                Local.Create <|
+                                                                                                    Creator.Existing hasWalletAndHandle <|
+                                                                                                        ExistingCreator.SelectedCollection
+                                                                                                            uploads.collection
+                                                                                                            uploads.datum
+                                                                                            , global = model.state.global
+                                                                                            , exception = model.state.exception
+                                                                                            }
+                                                                                      }
+                                                                                    , Cmd.none
+                                                                                    )
+
+                                                                                _ ->
+                                                                                    ( model
+                                                                                    , Cmd.none
+                                                                                    )
+                                                                    in
+                                                                    Listener.decode2 model json Datum.decode f
 
                                                 -- found msg for collector
                                                 ToLocal.Collect toCollector ->

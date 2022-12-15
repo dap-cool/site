@@ -456,7 +456,17 @@ body creator =
                                             ]
                                         ]
 
-                        Existing.SelectedCollection collection ->
+                        Existing.WaitingForUploaded ->
+                            Html.div
+                                []
+                                [ header3 fromGlobal.handle
+                                , Html.div
+                                    [ class "is-loading"
+                                    ]
+                                    []
+                                ]
+
+                        Existing.SelectedCollection collection _ ->
                             Html.div
                                 []
                                 [ header3 fromGlobal.handle
