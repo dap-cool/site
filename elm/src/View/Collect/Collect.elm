@@ -282,7 +282,11 @@ body collector =
                                     Html.div
                                         [ class "columns is-mobile"
                                         ]
-                                        [ View.Generic.Collection.Collector.Collector.view selected
+                                        [ Html.div
+                                            [ class "column is-half-mobile is-one-third-tablet"
+                                            ]
+                                            [ View.Generic.Collection.Collector.Collector.view selected
+                                            ]
                                         , Html.div
                                             [ class "column is-half-mobile is-two-third-tablet"
                                             ]
@@ -311,7 +315,11 @@ body collector =
                                             Html.div
                                                 [ class "columns is-mobile"
                                                 ]
-                                                [ View.Generic.Collection.Collector.Collector.view selected
+                                                [ Html.div
+                                                    [ class "column is-half-mobile is-one-third-tablet"
+                                                    ]
+                                                    [ View.Generic.Collection.Collector.Collector.view selected
+                                                    ]
                                                 , Html.div
                                                     [ class "column is-half-mobile is-two-third-tablet"
                                                     ]
@@ -336,7 +344,11 @@ body collector =
                                             Html.div
                                                 [ class "columns is-mobile"
                                                 ]
-                                                [ View.Generic.Collection.Collector.Collector.view selected
+                                                [ Html.div
+                                                    [ class "column is-half-mobile is-one-third-tablet"
+                                                    ]
+                                                    [ View.Generic.Collection.Collector.Collector.view selected
+                                                    ]
                                                 , Html.div
                                                     [ class "column is-half-mobile is-two-third-tablet"
                                                     ]
@@ -348,7 +360,11 @@ body collector =
                                             Html.div
                                                 [ class "columns is-mobile"
                                                 ]
-                                                [ View.Generic.Collection.Collector.Collector.view collected
+                                                [ Html.div
+                                                    [ class "column is-half-mobile is-one-third-tablet"
+                                                    ]
+                                                    [ View.Generic.Collection.Collector.Collector.view selected
+                                                    ]
                                                 , Html.div
                                                     [ class "column is-half-mobile is-two-third-tablet"
                                                     ]
@@ -385,7 +401,11 @@ body collector =
                                             Html.div
                                                 [ class "columns is-mobile"
                                                 ]
-                                                [ View.Generic.Collection.Collector.Collector.view collected
+                                                [ Html.div
+                                                    [ class "column is-half-mobile is-one-third-tablet"
+                                                    ]
+                                                    [ View.Generic.Collection.Collector.Collector.view collected
+                                                    ]
                                                 , Html.div
                                                     [ class "column is-half-mobile is-two-third-tablet"
                                                     ]

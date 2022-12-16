@@ -25,7 +25,13 @@ viewMany collections f =
         ]
     <|
         List.map
-            (\c -> view_ c <| f c)
+            (\c ->
+                Html.div
+                    [ class "column is-half-mobile is-one-third-tablet"
+                    ]
+                    [ view_ c <| f c
+                    ]
+            )
             collections
 
 
@@ -59,7 +65,7 @@ view_ collection select =
                         ]
     in
     Html.div
-        [ class "column is-collection is-half-mobile is-one-third-tablet"
+        [ class "is-collection px-1 py-1"
         ]
         [ Html.div
             [ class "is-image-container-1"

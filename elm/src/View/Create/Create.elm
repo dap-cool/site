@@ -1,7 +1,7 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (accept, class, href, id, multiple, placeholder, src, type_, width)
+import Html.Attributes exposing (accept, class, href, id, multiple, placeholder, src, style, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Creator.Creator exposing (Creator(..))
@@ -426,7 +426,11 @@ body creator =
                                         , Html.div
                                             [ class "columns is-mobile"
                                             ]
-                                            [ View.Generic.Collection.Creator.Creator.view collection
+                                            [ Html.div
+                                                [ class "column is-half-mobile is-one-third-tablet"
+                                                ]
+                                                [ View.Generic.Collection.Creator.Creator.view collection
+                                                ]
                                             ]
                                         , Html.div
                                             [ class "column is-half-mobile is-two-third-tablet"
@@ -471,56 +475,57 @@ body creator =
                                 []
                                 [ header3 fromGlobal.handle
                                 , Html.div
-                                    [ class "columns is-mobile"
+                                    [ class "mt-3"
                                     ]
                                     [ View.Generic.Collection.Creator.Creator.view collection
-                                    , Html.div
-                                        [ class "column is-half-mobile is-two-third-tablet"
+                                    ]
+                                , Html.div
+                                    [ class "mt-3"
+                                    ]
+                                    [ Html.div
+                                        [ class "mb-3"
                                         ]
-                                        [ Html.div
-                                            []
-                                            [ Html.button
-                                                [ class "is-button-1"
-                                                , onClick <|
-                                                    FromCreator <|
-                                                        CreatorMsg.Existing fromGlobal <|
-                                                            ExistingMsg.StartUploading collection
-                                                ]
-                                                [ Html.text "upload stuff"
-                                                ]
+                                        [ Html.button
+                                            [ class "is-button-1"
+                                            , onClick <|
+                                                FromCreator <|
+                                                    CreatorMsg.Existing fromGlobal <|
+                                                        ExistingMsg.StartUploading collection
                                             ]
-                                        , Html.div
-                                            [ class "columns"
+                                            [ Html.text "upload stuff"
                                             ]
-                                          <|
-                                            List.map
-                                                (\datum ->
-                                                    Html.div
-                                                        [ class "column is-one-third"
+                                        ]
+                                    , Html.div
+                                        [ class "columns"
+                                        ]
+                                      <|
+                                        List.map
+                                            (\datum ->
+                                                Html.div
+                                                    [ class "column is-one-third"
+                                                    ]
+                                                    [ Html.div
+                                                        [ class "is-upload"
                                                         ]
                                                         [ Html.div
-                                                            [ class "is-upload"
+                                                            [ class "is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
                                                             ]
-                                                            [ Html.div
-                                                                [ class "is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
-                                                                ]
-                                                                [ Html.text datum.metadata.title
-                                                                ]
-                                                            , Html.div
-                                                                [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
-                                                                ]
-                                                                [ Html.text <|
-                                                                    String.concat
-                                                                        [ "# of files"
-                                                                        , "➡️"
-                                                                        , String.fromInt datum.metadata.zip.count
-                                                                        ]
-                                                                ]
+                                                            [ Html.text datum.metadata.title
+                                                            ]
+                                                        , Html.div
+                                                            [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
+                                                            ]
+                                                            [ Html.text <|
+                                                                String.concat
+                                                                    [ "# of files"
+                                                                    , "➡️"
+                                                                    , String.fromInt datum.metadata.zip.count
+                                                                    ]
                                                             ]
                                                         ]
-                                                )
-                                                uploaded
-                                        ]
+                                                    ]
+                                            )
+                                            uploaded
                                     ]
                                 ]
 
@@ -569,7 +574,11 @@ body creator =
                                 , Html.div
                                     [ class "columns is-mobile"
                                     ]
-                                    [ View.Generic.Collection.Creator.Creator.view collection
+                                    [ Html.div
+                                        [ class "column is-half-mobile is-one-third-tablet"
+                                        ]
+                                        [ View.Generic.Collection.Creator.Creator.view collection
+                                        ]
                                     , Html.div
                                         [ class "column is-half-mobile is-two-third-tablet"
                                         ]
@@ -618,7 +627,11 @@ body creator =
                                 , Html.div
                                     [ class "columns is-mobile"
                                     ]
-                                    [ View.Generic.Collection.Creator.Creator.view collection
+                                    [ Html.div
+                                        [ class "column is-half-mobile is-one-third-tablet"
+                                        ]
+                                        [ View.Generic.Collection.Creator.Creator.view collection
+                                        ]
                                     , Html.div
                                         [ class "column is-half-mobile is-two-thirds-tablet"
                                         ]
@@ -637,7 +650,11 @@ body creator =
                                 , Html.div
                                     [ class "columns is-mobile"
                                     ]
-                                    [ View.Generic.Collection.Creator.Creator.view collection
+                                    [ Html.div
+                                        [ class "column is-half-mobile is-one-third-tablet"
+                                        ]
+                                        [ View.Generic.Collection.Creator.Creator.view collection
+                                        ]
                                     , Html.div
                                         [ class "column is-half-mobile is-two-thirds-tablet"
                                         ]

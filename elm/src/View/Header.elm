@@ -8,11 +8,9 @@ import Model.Creator.Creator as Creator
 import Model.Creator.New.New as NewCreator
 import Model.State.Global.Global exposing (Global(..))
 import Model.State.Local.Local as Local
-import Msg.Creator.Creator as FromCreator
-import Msg.Creator.Existing.Existing as FromExisting
+import Model.Wallet as Wallet
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
-import String as Wallet
 
 
 view : Global -> Html Msg
@@ -134,7 +132,7 @@ viewGlobal global =
                         String.concat
                             [ "wallet:"
                             , " "
-                            , Wallet.trim hasWallet.wallet
+                            , Wallet.slice hasWallet.wallet
                             ]
                     ]
                 , Html.div
@@ -163,7 +161,7 @@ viewGlobal global =
                         String.concat
                             [ "wallet:"
                             , " "
-                            , Wallet.trim hasWalletAndHandle.wallet
+                            , Wallet.slice hasWalletAndHandle.wallet
                             ]
                     ]
                 , Html.div
