@@ -1,7 +1,7 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (accept, class, href, id, multiple, placeholder, src, style, type_, width)
+import Html.Attributes exposing (accept, class, href, id, multiple, placeholder, src, style, target, type_, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Creator.Creator exposing (Creator(..))
@@ -440,6 +440,7 @@ body creator =
                                                 """
                                             , Html.a
                                                 [ class "has-sky-blue-text"
+                                                , target "_blank"
                                                 , href <|
                                                     String.concat
                                                         [ "https://explorer.solana.com/address/"

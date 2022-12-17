@@ -28,7 +28,6 @@ import Msg.Creator.Creator as FromCreator
 import Msg.Creator.Existing.Existing as FromExistingCreator
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
 import Msg.Creator.New.New as FromNewCreator
-import Msg.Global as FromGlobal
 import Msg.Js as JsMsg
 import Msg.Msg exposing (Msg(..), resetViewport)
 import Sub.Listener.Global.Global as ToGlobal
@@ -98,15 +97,7 @@ update msg model =
                                     , exception = model.state.exception
                                     }
                               }
-                            , sender <|
-                                Sender.encode <|
-                                    { sender =
-                                        Sender.Global <|
-                                            FromGlobal.ReadLogos
-                                    , more =
-                                        Collection.encodeList <|
-                                            hasWalletAndHandle.collections
-                                    }
+                            , Cmd.none
                             )
 
                         _ ->
@@ -656,7 +647,7 @@ update msg model =
                                                                             ( [], collections )
 
                                                                 f withCollections =
-                                                                    ( { model
+                                                                    { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
@@ -667,19 +658,9 @@ update msg model =
                                                                             , global = model.state.global
                                                                             , exception = model.state.exception
                                                                             }
-                                                                      }
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Global <|
-                                                                                    FromGlobal.ReadLogos
-                                                                            , more =
-                                                                                Collection.encodeList <|
-                                                                                    withCollections.collections
-                                                                            }
-                                                                    )
+                                                                    }
                                                             in
-                                                            Listener.decode2 model json WithCollections.decode f
+                                                            Listener.decode model json WithCollections.decode f
 
                                                         ToCollector.CollectionSelected ->
                                                             let
@@ -721,7 +702,7 @@ update msg model =
                                                                             Collector.NotLoggedInYet
 
                                                                 f collection =
-                                                                    ( { model
+                                                                    { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
@@ -731,19 +712,9 @@ update msg model =
                                                                             , global = model.state.global
                                                                             , exception = Exception.Closed
                                                                             }
-                                                                      }
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Global <|
-                                                                                    FromGlobal.ReadLogos
-                                                                            , more =
-                                                                                Collection.encodeList <|
-                                                                                    [ collection ]
-                                                                            }
-                                                                    )
+                                                                    }
                                                             in
-                                                            Listener.decode2 model json Collection.decode f
+                                                            Listener.decode model json Collection.decode f
 
                                                         ToCollector.CollectionPrinted ->
                                                             let
@@ -784,41 +755,27 @@ update msg model =
                                             case toGlobal of
                                                 ToGlobal.DisconnectWallet ->
                                                     let
-                                                        ( local, cmd ) =
+                                                        local =
                                                             case model.state.local of
                                                                 Local.Create _ ->
-                                                                    ( Local.Create <| Creator.New <| NewCreator.Top
-                                                                    , Cmd.none
-                                                                    )
+                                                                    Local.Create <| Creator.New <| NewCreator.Top
 
                                                                 Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
-                                                                    ( Local.Collect <|
+                                                                    Local.Collect <|
                                                                         Collector.SelectedCreator
                                                                             handle
                                                                             ( [], withCollections.collections )
                                                                             -- no intersection
                                                                             withCollections
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Global <|
-                                                                                    FromGlobal.ReadLogos
-                                                                            , more =
-                                                                                Collection.encodeList <|
-                                                                                    withCollections.collections
-                                                                            }
-                                                                    )
 
                                                                 Local.Collect (Collector.SelectedCollection _ selected) ->
-                                                                    ( Local.Collect <|
+                                                                    Local.Collect <|
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
                                                                             selected
-                                                                    , Cmd.none
-                                                                    )
 
                                                                 _ ->
-                                                                    ( model.state.local, Cmd.none )
+                                                                    model.state.local
                                                     in
                                                     ( { model
                                                         | state =
@@ -827,7 +784,7 @@ update msg model =
                                                             , exception = model.state.exception
                                                             }
                                                       }
-                                                    , cmd
+                                                    , Cmd.none
                                                     )
 
                                                 ToGlobal.FoundMissingWalletPlugin ->
@@ -894,15 +851,7 @@ update msg model =
                                                                                         withCollections
                                                                                 )
                                                                       }
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Global <|
-                                                                                    FromGlobal.ReadLogos
-                                                                            , more =
-                                                                                Collection.encodeList <|
-                                                                                    withCollections.collections
-                                                                            }
+                                                                    , Cmd.none
                                                                     )
 
                                                                 -- go back to js for ata balance
@@ -965,15 +914,7 @@ update msg model =
                                                                                         ExistingCreator.Top
                                                                                 )
                                                                       }
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Global <|
-                                                                                    FromGlobal.ReadLogos
-                                                                            , more =
-                                                                                Collection.encodeList <|
-                                                                                    hasWalletAndHandle.collections
-                                                                            }
+                                                                    , Cmd.none
                                                                     )
 
                                                                 -- compute intersection from new global state
@@ -992,15 +933,7 @@ update msg model =
                                                                                         withCollections
                                                                                 )
                                                                       }
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Global <|
-                                                                                    FromGlobal.ReadLogos
-                                                                            , more =
-                                                                                Collection.encodeList <|
-                                                                                    withCollections.collections
-                                                                            }
+                                                                    , Cmd.none
                                                                     )
 
                                                                 -- go back to js for ata balance
@@ -1086,23 +1019,15 @@ update msg model =
                     )
 
         Global fromGlobal ->
-            case fromGlobal of
-                FromGlobal.ReadLogos ->
-                    ( model
-                      -- handled by recursive handle-found
-                    , Cmd.none
-                    )
-
-                _ ->
-                    ( { model
-                        | state =
-                            { local = model.state.local
-                            , global = Global.Connecting
-                            , exception = model.state.exception
-                            }
-                      }
-                    , sender <| Sender.encode0 <| Sender.Global fromGlobal
-                    )
+            ( { model
+                | state =
+                    { local = model.state.local
+                    , global = Global.Connecting
+                    , exception = model.state.exception
+                    }
+              }
+            , sender <| Sender.encode0 <| Sender.Global fromGlobal
+            )
 
         CloseExceptionModal ->
             ( { model

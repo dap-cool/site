@@ -17,10 +17,12 @@ export interface CollectionAuthority {
     // meta
     meta: {
         handle: string
+        index: number
         name: string
         symbol: string
-        index: number
         uri: string
+        image: string
+        // math
         numMinted: number // decoded as BN
         totalSupply: number // decoded as BN
     }
@@ -37,11 +39,12 @@ export interface CollectionAuthority {
 
 interface RawCollectionAuthority {
     handle: string
+    index: number
+    mint: PublicKey
     name: string
     symbol: string
-    index: number
     uri: string
-    mint: PublicKey
+    image: number
     numMinted: BN.BN
     totalSupply: BN.BN
 }
@@ -131,10 +134,11 @@ async function getManyAuthorityPda(
                 return {
                     meta: {
                         handle: raw.handle,
+                        index: raw.index,
                         name: raw.name,
                         symbol: raw.symbol,
-                        index: raw.index,
                         uri: raw.uri,
+                        image: getImageUrl(raw.uri, raw.image),
                         numMinted: raw.numMinted.toNumber(),
                         totalSupply: raw.totalSupply.toNumber()
                     },
@@ -184,13 +188,13 @@ export async function getAuthorityPda(
     authorityPda: AuthorityPda,
 ): Promise<CollectionAuthority> {
     // fetch authority
-    const authority: RawCollectionAuthority = await programs.dap.account.authority.fetch(
+    const raw: RawCollectionAuthority = await programs.dap.account.authority.fetch(
         authorityPda.address
     ) as RawCollectionAuthority;
     // derive & fetch associated-token-account
     const ataPda = deriveAtaPda(
         provider,
-        authority.mint
+        raw.mint
     );
     let balance: number;
     try {
@@ -205,22 +209,48 @@ export async function getAuthorityPda(
     // build collection authority
     return {
         meta: {
-            handle: authority.handle,
-            name: authority.name,
-            symbol: authority.symbol,
-            index: authority.index,
-            uri: authority.uri,
-            numMinted: authority.numMinted.toNumber(),
-            totalSupply: authority.totalSupply.toNumber()
+            handle: raw.handle,
+            index: raw.index,
+            name: raw.name,
+            symbol: raw.symbol,
+            uri: raw.uri,
+            image: getImageUrl(raw.uri, raw.image),
+            numMinted: raw.numMinted.toNumber(),
+            totalSupply: raw.totalSupply.toNumber()
         },
         accounts: {
             pda: authorityPda.address,
-            mint: authority.mint,
+            mint: raw.mint,
             ata: {
                 balance: balance
             }
         }
     } as CollectionAuthority
+}
+
+export function getImageUrl(uri: string, type: number): string {
+    const name = "logo." + decodeFileType(type);
+    uri = uri.replace("meta.json", name);
+    return uri
+}
+
+function decodeFileType(encoded: number): string {
+    let decoded: string;
+    switch (encoded) {
+        case 1: {
+            decoded = "jpg";
+            break
+        }
+        case 2: {
+            decoded = "jpeg";
+            break
+        }
+        case 3: {
+            decoded = "png";
+            break
+        }
+    }
+    return decoded
 }
 
 function deriveAtaPda(provider: AnchorProvider, mint: PublicKey): PublicKey {

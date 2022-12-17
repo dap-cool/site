@@ -1,4 +1,4 @@
-module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encodeList, encoder, find, intersection, isEmpty, isSoldOut)
+module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut)
 
 import Dict
 import Json.Decode as Decode
@@ -18,6 +18,7 @@ type alias Meta =
     , index : Int
     , name : String
     , symbol : String
+    , image : String
     , uri : String
     , numMinted : Int -- encoded as big-int
     , totalSupply : Int -- encoded as big-int
@@ -48,22 +49,6 @@ type alias Remainder =
     List Collection
 
 
-encodeList : List Collection -> String
-encodeList list =
-    let
-        encoder_ =
-            Encode.list
-                encoder
-                list
-    in
-    Encode.encode 0 <|
-        encoder_
-
-
-
--- TODO; delete ??
-
-
 encode : Collection -> String
 encode collection =
     Encode.encode 0 <|
@@ -78,6 +63,7 @@ encoder collection =
                 [ ( "handle", Encode.string collection.meta.handle )
                 , ( "index", Encode.int collection.meta.index )
                 , ( "name", Encode.string collection.meta.name )
+                , ( "image", Encode.string collection.meta.image )
                 , ( "symbol", Encode.string collection.meta.symbol )
                 , ( "uri", Encode.string collection.meta.uri )
                 , ( "numMinted", Encode.int collection.meta.numMinted )
@@ -112,11 +98,12 @@ decoder : Decode.Decoder Collection
 decoder =
     Decode.map2 Collection
         (Decode.field "meta" <|
-            Decode.map7 Meta
+            Decode.map8 Meta
                 (Decode.field "handle" Decode.string)
                 (Decode.field "index" Decode.int)
                 (Decode.field "name" Decode.string)
                 (Decode.field "symbol" Decode.string)
+                (Decode.field "image" Decode.string)
                 (Decode.field "uri" Decode.string)
                 (Decode.field "numMinted" Decode.int)
                 (Decode.field "totalSupply" Decode.int)

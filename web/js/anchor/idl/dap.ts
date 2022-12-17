@@ -112,6 +112,10 @@ export type DapCool = {
           "type": "string"
         },
         {
+          "name": "image",
+          "type": "u8"
+        },
+        {
           "name": "size",
           "type": "u64"
         }
@@ -219,14 +223,6 @@ export type DapCool = {
             "type": "publicKey"
           },
           {
-            "name": "numMinted",
-            "type": "u64"
-          },
-          {
-            "name": "totalSupply",
-            "type": "u64"
-          },
-          {
             "name": "name",
             "type": "string"
           },
@@ -237,6 +233,18 @@ export type DapCool = {
           {
             "name": "uri",
             "type": "string"
+          },
+          {
+            "name": "image",
+            "type": "u8"
+          },
+          {
+            "name": "numMinted",
+            "type": "u64"
+          },
+          {
+            "name": "totalSupply",
+            "type": "u64"
           }
         ]
       }
@@ -511,6 +519,10 @@ export const IDL: DapCool = {
           "type": "string"
         },
         {
+          "name": "image",
+          "type": "u8"
+        },
+        {
           "name": "size",
           "type": "u64"
         }
@@ -618,14 +630,6 @@ export const IDL: DapCool = {
             "type": "publicKey"
           },
           {
-            "name": "numMinted",
-            "type": "u64"
-          },
-          {
-            "name": "totalSupply",
-            "type": "u64"
-          },
-          {
             "name": "name",
             "type": "string"
           },
@@ -636,6 +640,18 @@ export const IDL: DapCool = {
           {
             "name": "uri",
             "type": "string"
+          },
+          {
+            "name": "image",
+            "type": "u8"
+          },
+          {
+            "name": "numMinted",
+            "type": "u64"
+          },
+          {
+            "name": "totalSupply",
+            "type": "u64"
           }
         ]
       }

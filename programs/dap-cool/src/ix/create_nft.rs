@@ -13,6 +13,7 @@ pub fn ix(
     name: String,
     symbol: String,
     uri: String,
+    image: u8,
     size: u64,
 ) -> Result<()> {
     // increment collection
@@ -117,14 +118,18 @@ pub fn ix(
     )?;
     // init authority data
     let authority = &mut ctx.accounts.authority;
+    // core
     authority.handle = ctx.accounts.handle.handle.clone();
     authority.index = increment;
     authority.mint = ctx.accounts.mint.key();
-    authority.total_supply = size;
-    authority.num_minted = creator_distribution;
+    // meta
     authority.name = name; // already validated by metaplex
     authority.symbol = symbol; // already validated by metaplex
     authority.uri = uri; // already validated by metaplex
+    authority.image = image;
+    // math
+    authority.total_supply = size;
+    authority.num_minted = creator_distribution;
     // increment collection
     let handle = &mut ctx.accounts.handle;
     handle.num_collections = increment;

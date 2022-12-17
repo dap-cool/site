@@ -18,7 +18,6 @@ import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 import {compressImage, readImage} from "./util/read-image";
-import {getLogo, getMetaData} from "./shdw/shdw";
 import {getUploads, upload} from "./anchor/pda/datum-pda";
 
 // init phantom
@@ -189,25 +188,6 @@ export async function main(app, json) {
                     );
                 }
             }
-            // or read logos
-        } else if (sender === "read-logos") {
-            window.requestAnimationFrame(async (_) => {
-                // parse more json
-                const collections = JSON.parse(parsed.more);
-                // read logo for each collection
-                await Promise.all(
-                    collections.map(async (collection) => {
-                            const metaData = await getMetaData(
-                                collection.meta.uri
-                            );
-                            await getLogo(
-                                collection.accounts.mint,
-                                metaData
-                            );
-                        }
-                    )
-                );
-            });
             // or creator upload
         } else if (sender === "creator-upload") {
             // get provider & program

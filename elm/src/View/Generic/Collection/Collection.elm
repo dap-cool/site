@@ -72,13 +72,7 @@ view_ collection select =
             ]
             [ Html.img
                 [ style "width" "100%"
-                , src "images/upload/default-pfp.jpg"
-                , id <|
-                    String.concat
-                        [ "img"
-                        , "-"
-                        , collection.accounts.mint
-                        ]
+                , src collection.meta.image
                 ]
                 []
             ]

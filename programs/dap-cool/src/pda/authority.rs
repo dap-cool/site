@@ -8,28 +8,35 @@ pub const SIZE: usize = 8 // discriminator
     + 4 + MAX_HANDLE_LENGTH
     + INDEX_SIZE
     + MINT_SIZE
-    + NUM_MINTED
-    + TOTAL_SUPPLY
+    + NUM_MINTED_SIZE
+    + TOTAL_SUPPLY_SIZE
     + 4 + MAX_NAME_LENGTH
     + 4 + MAX_SYMBOL_LENGTH
-    + 4 + MAX_URI_LENGTH;
+    + 4 + MAX_URI_LENGTH
+    + IMAGE_SIZE;
 
 const INDEX_SIZE: usize = 1;
 
 const MINT_SIZE: usize = 32;
 
-const NUM_MINTED: usize = 8;
+const NUM_MINTED_SIZE: usize = 8;
 
-const TOTAL_SUPPLY: usize = 8;
+const TOTAL_SUPPLY_SIZE: usize = 8;
+
+const IMAGE_SIZE: usize = 1;
 
 #[account]
 pub struct Authority {
+    // core
     pub handle: String,
     pub index: u8,
     pub mint: Pubkey,
-    pub num_minted: u64,
-    pub total_supply: u64,
+    // meta
     pub name: String,
     pub symbol: String,
     pub uri: String,
+    pub image: u8,
+    // math
+    pub num_minted: u64,
+    pub total_supply: u64,
 }

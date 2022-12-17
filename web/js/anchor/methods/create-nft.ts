@@ -5,7 +5,7 @@ import {ShdwDrive} from "@shadow-drive/sdk";
 import {deriveHandlePda, Handle} from "../pda/handle-pda";
 import {
     CollectionAuthority,
-    deriveAuthorityPda,
+    deriveAuthorityPda, getImageUrl,
     getManyAuthorityPdaForCollector,
     getManyAuthorityPdaForCreator
 } from "../pda/authority-pda";
@@ -84,12 +84,12 @@ export async function creatNft(
     if (form.step === 1) {
         try {
             // read logo from input
-            const logo: File = await readLogo();
+            const logo = await readLogo();
             // provision space
             form.shdw = await provision(
                 provider.connection,
                 provider.wallet,
-                logo
+                logo.file
             );
             // bump form
             form.step = 2;
@@ -141,7 +141,7 @@ export async function creatNft(
     } else if (form.step === 2) {
         try {
             // read logo from input
-            const logo: File = await readLogo();
+            const logo = await readLogo();
             // build url
             const url = buildUrl(
                 form.shdw.account
@@ -152,7 +152,7 @@ export async function creatNft(
                 provider.wallet
             );
             // build metadata
-            const logoUrl = url + logo.name;
+            const logoUrl = url + logo.file.name;
             const metadata: File = buildMetaData(
                 handle.handle,
                 authorityIndex,
@@ -163,7 +163,7 @@ export async function creatNft(
             );
             // upload logo + metadata
             await uploadMultipleFiles(
-                [logo, metadata],
+                [logo.file, metadata],
                 form.shdw.drive,
                 form.shdw.account
             );
@@ -217,6 +217,8 @@ export async function creatNft(
         }
     } else if (form.step === 3) {
         try {
+            // read logo from input
+            const logo = await readLogo();
             // build url
             const url = buildUrl(
                 form.shdw.account
@@ -263,6 +265,7 @@ export async function creatNft(
                     form.meta.name as any,
                     form.meta.symbol as any,
                     metadataUrl as any,
+                    logo.type as any,
                     new BN(10) // TODO; supply
                 )
                 .accounts(
@@ -287,11 +290,15 @@ export async function creatNft(
             // build response for elm
             const justCreated = {
                 meta: {
+                    // core
                     handle: handle.handle,
+                    index: authorityIndex,
+                    // meta
                     name: form.meta.name,
                     symbol: form.meta.symbol,
-                    index: authorityIndex,
                     uri: metadataUrl,
+                    image: getImageUrl(metadataUrl, logo.type),
+                    // math
                     numMinted: 1, // TODO; creator-distribution?
                     totalSupply: 10, // TODO; supply
                 },

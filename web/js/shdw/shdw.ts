@@ -9,19 +9,19 @@ export interface CollectionMetadata {
     external_url: string
 }
 
-export async function readLogo(): Promise<File> {
+export async function readLogo(): Promise<{ file: File; type: number }> {
     const imgSelector: HTMLInputElement = document.getElementById(
         "dap-cool-collection-logo-selector"
     ) as HTMLInputElement;
     console.log(imgSelector);
     const fileList = imgSelector.files;
-    let file: File;
+    let file: File, fileType: string;
     if (fileList && fileList.length === 1) {
         console.log("found selected logo");
         file = fileList[0];
         // parse file-type
         const fileName = file.name;
-        const fileType = fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1);
+        fileType = fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1);
         // grab bytes
         let blob = file.slice(0, file.size, file.type); // grab buffer
         // compress bytes
@@ -32,7 +32,29 @@ export async function readLogo(): Promise<File> {
     } else {
         console.log("could not find logo")
     }
-    return file as File
+    return {
+        file: file as File,
+        type: encodeFileType(fileType)
+    }
+}
+
+function encodeFileType(fileType: string): number {
+    let encoded: number;
+    switch (fileType) {
+        case "jpg": {
+            encoded = 1;
+            break
+        }
+        case "jpeg": {
+            encoded = 2;
+            break
+        }
+        case "png": {
+            encoded = 3;
+            break
+        }
+    }
+    return encoded
 }
 
 export function buildMetaData(

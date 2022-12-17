@@ -14,7 +14,7 @@ pub mod pda;
 pub mod ix;
 pub mod error;
 
-declare_id!("GtjLwmS1xQLv3JAkK6zpSdZSshTJidNkXU2HJqyqAiUZ");
+declare_id!("54eGWoBhZePCHVUWScjFznKx7ZUaLwa8qCenauN5ncLK");
 
 #[program]
 pub mod dap_cool {
@@ -33,9 +33,10 @@ pub mod dap_cool {
         name: String,
         symbol: String,
         uri: String,
+        image: u8,
         size: u64,
     ) -> Result<()> {
-        create_nft::ix(ctx, bumps, name, symbol, uri, size)
+        create_nft::ix(ctx, bumps, name, symbol, uri, image, size)
     }
 
     pub fn mint_new_copy(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<()> {
