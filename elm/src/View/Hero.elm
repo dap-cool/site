@@ -60,7 +60,7 @@ view exception global body =
             [ View.Header.view global
             ]
         , Html.div
-            [ class "container mx-6 my-6"
+            [ class "mx-6 my-6"
             ]
             [ body
             , exceptionModal

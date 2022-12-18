@@ -63,10 +63,6 @@ body collector =
                                 []
                             ]
                         , select
-                        , Html.div
-                            [ class "my-6"
-                            ]
-                            []
                         , hiw
                         ]
 
@@ -461,7 +457,8 @@ body collector =
                         ]
     in
     Html.div
-        []
+        [ class "container"
+        ]
         [ html
         ]
 
