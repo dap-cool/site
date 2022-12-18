@@ -202,21 +202,11 @@ export async function main(app, json) {
             console.log(files);
             // upload
             await upload(
+                app,
                 pp.provider,
                 more.collection,
                 more.form,
                 files
-            );
-            // send success to elm
-            app.ports.success.send(
-                JSON.stringify(
-                    {
-                        listener: "creator-upload-success",
-                        more: JSON.stringify(
-                            more.collection
-                        )
-                    }
-                )
             );
             // or creator select collection
         } else if (sender === "creator-select-collection") {

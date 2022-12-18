@@ -12,7 +12,6 @@ type Existing
     | WaitingForUploaded
     | SelectedCollection Collection Uploaded
     | Uploading Collection UploadForm
-    | WaitingForUpload Collection
     | UploadSuccessful Collection
 
 

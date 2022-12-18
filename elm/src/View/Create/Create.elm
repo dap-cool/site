@@ -532,6 +532,14 @@ body creator =
 
                         Existing.Uploading collection form ->
                             let
+                                selector =
+                                    Html.input
+                                        [ id "dap-cool-collection-upload-selector"
+                                        , type_ "file"
+                                        , multiple True
+                                        ]
+                                        []
+
                                 title =
                                     case form.title of
                                         "" ->
@@ -568,6 +576,58 @@ body creator =
 
                                         _ ->
                                             form
+
+                                step =
+                                    case form.step of
+                                        0 ->
+                                            Html.div
+                                                []
+                                                [ selector
+                                                , Html.div
+                                                    []
+                                                    [ title
+                                                    , Html.div
+                                                        []
+                                                        [ Html.input
+                                                            [ class "input"
+                                                            , placeholder "title ✏️"
+                                                            , onInput <|
+                                                                \s ->
+                                                                    FromCreator <|
+                                                                        CreatorMsg.Existing fromGlobal <|
+                                                                            ExistingMsg.TypingUploadTitle collection s
+                                                            ]
+                                                            []
+                                                        ]
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.button
+                                                        [ onClick <|
+                                                            FromCreator <|
+                                                                CreatorMsg.Existing fromGlobal <|
+                                                                    ExistingMsg.Upload collection uploadForm
+                                                        ]
+                                                        [ Html.text "upload"
+                                                        ]
+                                                    ]
+                                                ]
+
+                                        int ->
+                                            Html.div
+                                                []
+                                                [ selector
+                                                , Html.div
+                                                    []
+                                                    [ Html.text <|
+                                                        String.concat
+                                                            [ "step"
+                                                            , ": "
+                                                            , String.fromInt int
+                                                            ]
+                                                    ]
+                                                , Html.text <| String.fromInt form.retries
+                                                ]
                             in
                             Html.div
                                 []
@@ -583,63 +643,7 @@ body creator =
                                     , Html.div
                                         [ class "column is-half-mobile is-two-third-tablet"
                                         ]
-                                        [ Html.input
-                                            [ id "dap-cool-collection-upload-selector"
-                                            , type_ "file"
-                                            , multiple True
-                                            ]
-                                            []
-                                        , Html.div
-                                            []
-                                            [ title
-                                            , Html.div
-                                                []
-                                                [ Html.input
-                                                    [ class "input"
-                                                    , placeholder "title ✏️"
-                                                    , onInput <|
-                                                        \s ->
-                                                            FromCreator <|
-                                                                CreatorMsg.Existing fromGlobal <|
-                                                                    ExistingMsg.TypingUploadTitle collection s
-                                                    ]
-                                                    []
-                                                ]
-                                            ]
-                                        , Html.div
-                                            []
-                                            [ Html.button
-                                                [ onClick <|
-                                                    FromCreator <|
-                                                        CreatorMsg.Existing fromGlobal <|
-                                                            ExistingMsg.Upload collection uploadForm
-                                                ]
-                                                [ Html.text "upload"
-                                                ]
-                                            ]
-                                        ]
-                                    ]
-                                ]
-
-                        Existing.WaitingForUpload collection ->
-                            Html.div
-                                []
-                                [ header3 fromGlobal.handle
-                                , Html.div
-                                    [ class "columns is-mobile"
-                                    ]
-                                    [ Html.div
-                                        [ class "column is-half-mobile is-one-third-tablet"
-                                        ]
-                                        [ View.Generic.Collection.Creator.Creator.view collection
-                                        ]
-                                    , Html.div
-                                        [ class "column is-half-mobile is-two-thirds-tablet"
-                                        ]
-                                        [ Html.div
-                                            [ class "is-loading"
-                                            ]
-                                            []
+                                        [ step
                                         ]
                                     ]
                                 ]

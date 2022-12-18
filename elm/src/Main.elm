@@ -325,7 +325,7 @@ update msg model =
                                             Creator.Existing hasWalletAndHandle <|
                                                 ExistingCreator.Uploading
                                                     collection
-                                                    { title = "" }
+                                                    UploadForm.init
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }
@@ -341,7 +341,7 @@ update msg model =
                                             Creator.Existing hasWalletAndHandle <|
                                                 ExistingCreator.Uploading
                                                     collection
-                                                    { title = title }
+                                                    (UploadForm.title title)
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }
@@ -350,12 +350,18 @@ update msg model =
                             )
 
                         FromExistingCreator.Upload collection form ->
+                            let
+                                bump =
+                                    { form | step = 1 }
+                            in
                             ( { model
                                 | state =
                                     { local =
                                         Local.Create <|
                                             Creator.Existing hasWalletAndHandle <|
-                                                ExistingCreator.WaitingForUpload collection
+                                                ExistingCreator.Uploading
+                                                    collection
+                                                    bump
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }
@@ -363,7 +369,7 @@ update msg model =
                             , sender <|
                                 Sender.encode <|
                                     { sender = Sender.Create from
-                                    , more = UploadForm.encode collection form
+                                    , more = UploadForm.encode collection bump
                                     }
                             )
 
@@ -572,6 +578,56 @@ update msg model =
                                                                                     model
                                                                     in
                                                                     Listener.decode model json Datum.decode f
+
+                                                                ToExistingCreator.StillUploading ->
+                                                                    let
+                                                                        f withCollection =
+                                                                            case model.state.global of
+                                                                                Global.HasWalletAndHandle hasWalletAndHandle ->
+                                                                                    let
+                                                                                        bump =
+                                                                                            { model
+                                                                                                | state =
+                                                                                                    { local =
+                                                                                                        Local.Create <|
+                                                                                                            Creator.Existing hasWalletAndHandle <|
+                                                                                                                ExistingCreator.Uploading
+                                                                                                                    withCollection.collection
+                                                                                                                    withCollection.form
+                                                                                                    , global = model.state.global
+                                                                                                    , exception = model.state.exception
+                                                                                                    }
+                                                                                            }
+                                                                                    in
+                                                                                    case ( withCollection.recursive, withCollection.form.retries < 5 ) of
+                                                                                        ( True, True ) ->
+                                                                                            ( bump
+                                                                                            , sender <|
+                                                                                                Sender.encode <|
+                                                                                                    { sender =
+                                                                                                        Sender.Create <|
+                                                                                                            FromCreator.Existing hasWalletAndHandle <|
+                                                                                                                FromExistingCreator.Upload
+                                                                                                                    withCollection.collection
+                                                                                                                    withCollection.form
+                                                                                                    , more =
+                                                                                                        UploadForm.encode
+                                                                                                            withCollection.collection
+                                                                                                            withCollection.form
+                                                                                                    }
+                                                                                            )
+
+                                                                                        _ ->
+                                                                                            ( bump
+                                                                                            , Cmd.none
+                                                                                            )
+
+                                                                                _ ->
+                                                                                    ( model
+                                                                                    , Cmd.none
+                                                                                    )
+                                                                    in
+                                                                    Listener.decode2 model json UploadForm.decode f
 
                                                                 ToExistingCreator.UploadSuccessful ->
                                                                     let
