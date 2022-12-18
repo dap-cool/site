@@ -21,6 +21,7 @@ import {
     getCollectorPda
 } from "../pda/collector-pda";
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
+import {getUploads} from "../pda/datum-pda";
 
 export async function mintNewCopy(
     app,
@@ -145,6 +146,19 @@ export async function mintNewCopy(
                 }
             )
             .rpc();
+        // fetch uploaded
+        const uploaded = await getUploads(
+            provider,
+            programs.dap,
+            {
+                meta: {
+                    handle: authority.meta.handle
+                },
+                accounts: {
+                    mint: authority.accounts.mint.toString()
+                }
+            }
+        );
         // build last-collected
         const lastCollectedAuthority = authority;
         // add associated-token-account balance
@@ -214,6 +228,7 @@ export async function mintNewCopy(
                         {
                             master: authority,
                             copied: lastCollectedAuthority,
+                            datum: uploaded,
                             global: global
                         }
                     )

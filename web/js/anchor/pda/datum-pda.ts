@@ -40,7 +40,7 @@ interface Form {
     // lit args
     litArgs: DapSdk.LitArgs | null
     // encrypted
-    encrypted : {
+    encrypted: {
         key: Uint8Array,
         file: File
     } | null
@@ -52,6 +52,10 @@ interface ToElm extends DapSdk.Datum {
         zip: {
             count: number
             types: string[]
+            files: {
+                src: string,
+                type_: string
+            }[]
         }
     }
 }
@@ -99,7 +103,11 @@ export async function getUploads(
                     const toElm = d as ToElm;
                     toElm.metadata = {
                         title: metadata.title,
-                        zip: metadata.zip
+                        zip: {
+                            count: metadata.zip.count,
+                            types: metadata.zip.types,
+                            files: []
+                        },
                     }
                     return toElm
                 }

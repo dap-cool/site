@@ -2,6 +2,7 @@ module Model.Collector.Collector exposing (AtaBalance(..), Collector(..), Found(
 
 import Model.Collection exposing (Collection, Intersection, Remainder)
 import Model.Collector.WithCollections exposing (WithCollections)
+import Model.Datum exposing (Datum)
 
 
 type
@@ -13,7 +14,7 @@ type
     | HandleDoesNotExist String
       -- select collection
     | SelectedCreator ( Intersection, Remainder ) WithCollections
-    | SelectedCollection MaybeCollected Selected
+    | SelectedCollection MaybeCollected Selected Uploaded
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int
@@ -21,6 +22,10 @@ type
 
 type alias Selected =
     Collection
+
+
+type alias Uploaded =
+    List Datum
 
 
 type MaybeCollected

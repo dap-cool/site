@@ -756,24 +756,25 @@ update msg model =
                                                                         _ ->
                                                                             Collector.NotLoggedInYet
 
-                                                                f collection =
+                                                                f wc =
                                                                     { model
                                                                         | state =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCollection
-                                                                                        (maybeCollected collection)
-                                                                                        collection
+                                                                                        (maybeCollected wc.collection)
+                                                                                        wc.collection
+                                                                                        wc.datum
                                                                             , global = model.state.global
                                                                             , exception = Exception.Closed
                                                                             }
                                                                     }
                                                             in
-                                                            Listener.decode model json Collection.decode f
+                                                            Listener.decode model json Datum.decode f
 
                                                         ToCollector.CollectionPrinted ->
                                                             let
-                                                                update_ master copied global =
+                                                                update_ master copied datum global =
                                                                     { model
                                                                         | state =
                                                                             { local =
@@ -784,6 +785,7 @@ update msg model =
                                                                                             Collector.Positive
                                                                                         )
                                                                                         master
+                                                                                        datum
                                                                             , global = global
                                                                             , exception = Exception.Closed
                                                                             }
@@ -795,12 +797,14 @@ update msg model =
                                                                             update_
                                                                                 withCollection.master
                                                                                 withCollection.copied
+                                                                                withCollection.datum
                                                                                 (Global.HasWallet hasWallet)
 
                                                                         WithCollectionForCollector.HasWalletAndHandle hasWalletAndHandle ->
                                                                             update_
                                                                                 withCollection.master
                                                                                 withCollection.copied
+                                                                                withCollection.datum
                                                                                 (Global.HasWalletAndHandle hasWalletAndHandle)
                                                             in
                                                             Listener.decode model json WithCollectionForCollector.decode f
@@ -822,11 +826,12 @@ update msg model =
                                                                             -- no intersection
                                                                             withCollections
 
-                                                                Local.Collect (Collector.SelectedCollection _ selected) ->
+                                                                Local.Collect (Collector.SelectedCollection _ selected uploaded) ->
                                                                     Local.Collect <|
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
                                                                             selected
+                                                                            uploaded
 
                                                                 _ ->
                                                                     model.state.local
@@ -908,7 +913,7 @@ update msg model =
                                                                     )
 
                                                                 -- go back to js for ata balance
-                                                                Local.Collect (Collector.SelectedCollection _ selected) ->
+                                                                Local.Collect (Collector.SelectedCollection _ selected _) ->
                                                                     ( { model | state = bumpedState hasWallet }
                                                                     , sender <|
                                                                         Sender.encode <|
@@ -989,7 +994,7 @@ update msg model =
                                                                     )
 
                                                                 -- go back to js for ata balance
-                                                                Local.Collect (Collector.SelectedCollection _ selected) ->
+                                                                Local.Collect (Collector.SelectedCollection _ selected _) ->
                                                                     ( { model | state = bumpedState hasWalletAndHandle }
                                                                     , sender <|
                                                                         Sender.encode <|

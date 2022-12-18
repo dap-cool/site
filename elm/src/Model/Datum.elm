@@ -1,4 +1,4 @@
-module Model.Datum exposing (Datum, decode)
+module Model.Datum exposing (Datum, decode, decoder)
 
 import Json.Decode as Decode
 import Model.Collection as Collection exposing (Collection)
@@ -37,38 +37,52 @@ type alias Metadata =
 type alias Zip =
     { count : Int
     , types : List String
+    , files : List File
+    }
+
+
+type alias File =
+    { src : String
+    , type_ : String
     }
 
 
 decode : String -> Result String WithCollection
 decode string =
-    Util.decode string decoder identity
+    Util.decode string decoder_ identity
 
 
-decoder : Decode.Decoder WithCollection
+decoder : Decode.Decoder Datum
 decoder =
-    let
-        datum =
-            Decode.map6 Datum
-                (Decode.field "mint" Decode.string)
-                (Decode.field "uploader" Decode.string)
-                (Decode.field "index" Decode.int)
-                (Decode.field "filtered" Decode.bool)
-                (Decode.field "shadow" <|
-                    Decode.map2 Shadow
-                        (Decode.field "account" Decode.string)
-                        (Decode.field "url" Decode.string)
-                )
-                (Decode.field "metadata" <|
-                    Decode.map2 Metadata
-                        (Decode.field "title" Decode.string)
-                        (Decode.field "zip" <|
-                            Decode.map2 Zip
-                                (Decode.field "count" Decode.int)
-                                (Decode.field "types" <| Decode.list Decode.string)
+    Decode.map6 Datum
+        (Decode.field "mint" Decode.string)
+        (Decode.field "uploader" Decode.string)
+        (Decode.field "index" Decode.int)
+        (Decode.field "filtered" Decode.bool)
+        (Decode.field "shadow" <|
+            Decode.map2 Shadow
+                (Decode.field "account" Decode.string)
+                (Decode.field "url" Decode.string)
+        )
+        (Decode.field "metadata" <|
+            Decode.map2 Metadata
+                (Decode.field "title" Decode.string)
+                (Decode.field "zip" <|
+                    Decode.map3 Zip
+                        (Decode.field "count" Decode.int)
+                        (Decode.field "types" <| Decode.list Decode.string)
+                        (Decode.field "files" <|
+                            Decode.list <|
+                                Decode.map2 File
+                                    (Decode.field "src" Decode.string)
+                                    (Decode.field "type_" Decode.string)
                         )
                 )
-    in
+        )
+
+
+decoder_ : Decode.Decoder WithCollection
+decoder_ =
     Decode.map2 WithCollection
         (Decode.field "collection" Collection.decoder)
-        (Decode.field "datum" <| Decode.list datum)
+        (Decode.field "datum" <| Decode.list decoder)

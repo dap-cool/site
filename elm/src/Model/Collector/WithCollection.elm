@@ -2,6 +2,7 @@ module Model.Collector.WithCollection exposing (Global(..), WithCollection, deco
 
 import Json.Decode as Decode
 import Model.Collection as Collection exposing (Collection)
+import Model.Datum as Datum exposing (Datum)
 import Model.State.Global.HasWallet as HasWallet exposing (HasWallet)
 import Model.State.Global.HasWalletAndHandle as HasWalletAndHandle exposing (HasWalletAndHandle)
 import Util.Decode as Util
@@ -10,6 +11,7 @@ import Util.Decode as Util
 type alias WithCollection =
     { master : Collection
     , copied : Collection
+    , datum : List Datum
     , global : Global
     }
 
@@ -26,9 +28,10 @@ decode string =
 
 decoder : Decode.Decoder WithCollection
 decoder =
-    Decode.map3 WithCollection
+    Decode.map4 WithCollection
         (Decode.field "master" Collection.decoder)
         (Decode.field "copied" Collection.decoder)
+        (Decode.field "datum" <| Decode.list Datum.decoder)
         (Decode.field "global" globalDecoder)
 
 
