@@ -22,6 +22,7 @@ export async function readLogo(): Promise<{ file: File; type: number }> {
         // parse file-type
         const fileName = file.name;
         fileType = fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1);
+        fileType = fileType.toLowerCase();
         // grab bytes
         let blob = file.slice(0, file.size, file.type); // grab buffer
         // compress bytes
