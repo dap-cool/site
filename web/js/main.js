@@ -235,6 +235,7 @@ export async function main(app, json) {
                 )
             );
             // or collector select collection
+            // TODO; add fetch for uploads
         } else if (sender === "collector-select-collection") {
             // parse more json
             const more = JSON.parse(parsed.more);
@@ -289,6 +290,7 @@ export async function main(app, json) {
                 window.location = target;
             }
             // or collector print copy
+            // TODO; test fetch for uploads
         } else if (sender === "collector-print-copy") {
             // get phantom
             phantom = await getPhantom(app);
