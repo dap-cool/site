@@ -708,7 +708,6 @@ update msg model =
                                                                             { local =
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCreator
-                                                                                        withCollections.handle
                                                                                         (intersection withCollections.collections)
                                                                                         withCollections
                                                                             , global = model.state.global
@@ -816,10 +815,9 @@ update msg model =
                                                                 Local.Create _ ->
                                                                     Local.Create <| Creator.New <| NewCreator.Top
 
-                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
+                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
                                                                     Local.Collect <|
                                                                         Collector.SelectedCreator
-                                                                            handle
                                                                             ( [], withCollections.collections )
                                                                             -- no intersection
                                                                             withCollections
@@ -892,14 +890,13 @@ update msg model =
                                                                     )
 
                                                                 -- compute intersection from new global state
-                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
+                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
                                                                     ( { model
                                                                         | state =
                                                                             bumpedLocal
                                                                                 hasWallet
                                                                                 (Local.Collect <|
                                                                                     Collector.SelectedCreator
-                                                                                        handle
                                                                                         (Collection.intersection
                                                                                             hasWallet.collected
                                                                                             withCollections.collections
@@ -974,14 +971,13 @@ update msg model =
                                                                     )
 
                                                                 -- compute intersection from new global state
-                                                                Local.Collect (Collector.SelectedCreator handle _ withCollections) ->
+                                                                Local.Collect (Collector.SelectedCreator _ withCollections) ->
                                                                     ( { model
                                                                         | state =
                                                                             bumpedLocal
                                                                                 hasWalletAndHandle
                                                                                 (Local.Collect <|
                                                                                     Collector.SelectedCreator
-                                                                                        handle
                                                                                         (Collection.intersection
                                                                                             hasWalletAndHandle.collected
                                                                                             withCollections.collections

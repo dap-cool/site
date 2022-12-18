@@ -2,7 +2,6 @@ module Model.Collector.Collector exposing (AtaBalance(..), Collector(..), Found(
 
 import Model.Collection exposing (Collection, Intersection, Remainder)
 import Model.Collector.WithCollections exposing (WithCollections)
-import Model.Handle exposing (Handle)
 
 
 type
@@ -13,7 +12,7 @@ type
     | HandleInvalid String
     | HandleDoesNotExist String
       -- select collection
-    | SelectedCreator Handle ( Intersection, Remainder ) WithCollections
+    | SelectedCreator ( Intersection, Remainder ) WithCollections
     | SelectedCollection MaybeCollected Selected
       -- search by url
     | MaybeExistingCreator String

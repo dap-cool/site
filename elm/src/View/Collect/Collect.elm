@@ -138,7 +138,7 @@ body collector =
                             ]
                         ]
 
-                SelectedCreator handle ( intersection, remainder ) _ ->
+                SelectedCreator ( intersection, remainder ) total ->
                     let
                         ix =
                             case intersection of
@@ -182,8 +182,8 @@ body collector =
                     in
                     Html.div
                         []
-                        [ breadcrumb handle
-                        , header handle
+                        [ breadcrumb total.handle
+                        , header total.handle
                         , ix
                         , rx
                         ]
