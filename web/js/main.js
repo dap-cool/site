@@ -235,7 +235,6 @@ export async function main(app, json) {
                 )
             );
             // or collector select collection
-            // TODO; add fetch for uploads
         } else if (sender === "collector-select-collection") {
             // parse more json
             const more = JSON.parse(parsed.more);
@@ -272,13 +271,28 @@ export async function main(app, json) {
                             pp.programs,
                             authorityPda
                         );
-                        console.log(collection);
+                        // get uploads
+                        const uploads = await getUploads(
+                            pp.provider,
+                            pp.programs.dap,
+                            {
+                                meta: {
+                                    handle: collection.meta.handle
+                                },
+                                accounts: {
+                                    mint: collection.accounts.mint.toString()
+                                }
+                            }
+                        );
                         app.ports.success.send(
                             JSON.stringify(
                                 {
                                     listener: "collector-collection-found",
                                     more: JSON.stringify(
-                                        collection
+                                        {
+                                            collection: collection,
+                                            datum: uploads
+                                        }
                                     )
                                 }
                             )
@@ -290,7 +304,6 @@ export async function main(app, json) {
                 window.location = target;
             }
             // or collector print copy
-            // TODO; test fetch for uploads
         } else if (sender === "collector-print-copy") {
             // get phantom
             phantom = await getPhantom(app);

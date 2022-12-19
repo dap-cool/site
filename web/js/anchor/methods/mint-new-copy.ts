@@ -146,8 +146,8 @@ export async function mintNewCopy(
                 }
             )
             .rpc();
-        // fetch uploaded
-        const uploaded = await getUploads(
+        // get uploads
+        const uploads = await getUploads(
             provider,
             programs.dap,
             {
@@ -228,7 +228,7 @@ export async function mintNewCopy(
                         {
                             master: authority,
                             copied: lastCollectedAuthority,
-                            datum: uploaded,
+                            datum: uploads,
                             global: global
                         }
                     )

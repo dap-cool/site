@@ -188,7 +188,7 @@ body collector =
                         , rx
                         ]
 
-                SelectedCollection maybeCollected selected ->
+                SelectedCollection maybeCollected selected uploaded ->
                     let
                         purchase =
                             case Collection.isSoldOut selected of
@@ -271,6 +271,37 @@ body collector =
                                         ]
                                         [ Html.text "purchase again"
                                         ]
+
+                        uploads =
+                            Html.div
+                                [ class "columns"
+                                ]
+                            <|
+                                List.map
+                                    (\datum ->
+                                        Html.div
+                                            [ class "column is-one-third"
+                                            ]
+                                            [ Html.div
+                                                [ class "is-upload"
+                                                ]
+                                                [ Html.div
+                                                    []
+                                                    [ Html.text datum.metadata.title
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.text <|
+                                                        String.concat
+                                                            [ "# of files"
+                                                            , ": "
+                                                            , String.fromInt datum.metadata.zip.count
+                                                            ]
+                                                    ]
+                                                ]
+                                            ]
+                                    )
+                                    uploaded
 
                         view_ =
                             case maybeCollected of
@@ -433,6 +464,11 @@ body collector =
                             [ class "mt-6"
                             ]
                             [ view_
+                            ]
+                        , Html.div
+                            [ class "mt-6"
+                            ]
+                            [ uploads
                             ]
                         ]
 
