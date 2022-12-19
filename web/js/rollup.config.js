@@ -22,7 +22,10 @@ export default {
             preferBuiltins: false
         }),
         typescript(
-            {target: "es2019"}
+            {
+                target: "es2019",
+                allowSyntheticDefaultImports: true
+            }
         ),
         json()
     ]

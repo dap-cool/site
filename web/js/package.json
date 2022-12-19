@@ -9,7 +9,8 @@
     "@solana/buffer-layout": "^4.0.0",
     "@solana/web3.js": "^1.36.0",
     "crypto-browserify": "^3.12.0",
-    "image-conversion": "^2.1.1"
+    "image-conversion": "^2.1.1",
+    "jszip": "^3.10.0"
   },
   "scripts": {
     "build": "sh sync-idl.sh; rollup --config"
