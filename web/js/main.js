@@ -17,8 +17,8 @@ import {creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
-import {compressImage, readImage} from "./util/read-image";
-import {getUploads, upload} from "./anchor/pda/datum-pda";
+import {compressImage, readImageFromElementId} from "./util/blob-util";
+import {getUploads, unlockUpload, upload} from "./anchor/pda/datum-pda";
 
 // init phantom
 let phantom = null;
@@ -123,7 +123,7 @@ export async function main(app, json) {
                         file
                     );
                     // read image
-                    readImage(
+                    readImageFromElementId(
                         "dap-cool-collection-logo",
                         file
                     );
@@ -321,6 +321,27 @@ export async function main(app, json) {
                     more.index
                 )
             }
+            // or collector unlock datum
+        } else if (sender === "collector-unlock-datum") {
+            // parse more json
+            const more = JSON.parse(parsed.more);
+            // unlock datum
+            const unlocked = await unlockUpload(
+                more.datum
+            );
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "collector-datum-unlocked",
+                        more: JSON.stringify(
+                            {
+                                collection: more.collection,
+                                datum: unlocked
+                            }
+                        )
+                    }
+                )
+            );
             // or throw error
         } else {
             const msg = "invalid role sent to js: " + sender;

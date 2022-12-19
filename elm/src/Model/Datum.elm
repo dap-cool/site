@@ -1,6 +1,7 @@
-module Model.Datum exposing (Datum, decode, decoder)
+module Model.Datum exposing (Datum, decode, decode2, decoder, encode)
 
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Model.Collection as Collection exposing (Collection)
 import Model.Mint exposing (Mint)
 import Util.Decode as Util
@@ -47,9 +48,36 @@ type alias File =
     }
 
 
-decode : String -> Result String WithCollection
+encode : Collection -> Datum -> String
+encode collection datum =
+    Encode.encode 0 <|
+        Encode.object
+            [ ( "collection", Collection.encoder collection )
+            , ( "datum"
+              , Encode.object
+                    [ ( "mint", Encode.string datum.mint )
+                    , ( "uploader", Encode.string datum.uploader )
+                    , ( "index", Encode.int datum.index )
+                    , ( "filtered", Encode.bool datum.filtered )
+                    , ( "shadow"
+                      , Encode.object
+                            [ ( "account", Encode.string datum.shadow.account )
+                            , ( "url", Encode.string datum.shadow.url )
+                            ]
+                      )
+                    ]
+              )
+            ]
+
+
+decode : String -> Result String { collection : Collection, datum : Datum }
 decode string =
     Util.decode string decoder_ identity
+
+
+decode2 : String -> Result String WithCollection
+decode2 string =
+    Util.decode string decoder2_ identity
 
 
 decoder : Decode.Decoder Datum
@@ -81,8 +109,15 @@ decoder =
         )
 
 
-decoder_ : Decode.Decoder WithCollection
+decoder_ : Decode.Decoder { collection : Collection, datum : Datum }
 decoder_ =
+    Decode.map2 (\c d -> { collection = c, datum = d })
+        (Decode.field "collection" Collection.decoder)
+        (Decode.field "datum" decoder)
+
+
+decoder2_ : Decode.Decoder WithCollection
+decoder2_ =
     Decode.map2 WithCollection
         (Decode.field "collection" Collection.decoder)
         (Decode.field "datum" <| Decode.list decoder)

@@ -1,5 +1,5 @@
 import {PublicKey} from "@solana/web3.js";
-import {compressImage, readImage} from "../util/read-image";
+import {compressImage, readImageFromElementId} from "../util/blob-util";
 
 export interface CollectionMetadata {
     name: string
@@ -103,7 +103,7 @@ export async function getLogo(mint: PublicKey, metaData: CollectionMetadata): Pr
     const logo = await fetch(metaData.image)
         .then(response => response.blob())
         .then(blob => new File([blob], "logo." + fileType))
-    readImage(
+    readImageFromElementId(
         "img-" + mint.toString(),
         logo
     );

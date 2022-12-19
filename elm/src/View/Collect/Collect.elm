@@ -272,7 +272,30 @@ body collector =
                                         [ Html.text "purchase again"
                                         ]
 
-                        uploads =
+                        uploads maybeUnlockable =
+                            let
+                                unlock datum =
+                                    case maybeUnlockable of
+                                        Just unlockable ->
+                                            Html.div
+                                                []
+                                                [ Html.button
+                                                    [ class "is-button-1"
+                                                    , onClick <|
+                                                        FromCollector <|
+                                                            CollectorMsg.UnlockDatum
+                                                                unlockable
+                                                                datum
+                                                    ]
+                                                    [ Html.text "unlock"
+                                                    ]
+                                                ]
+
+                                        Nothing ->
+                                            Html.div
+                                                []
+                                                []
+                            in
                             Html.div
                                 [ class "columns"
                                 ]
@@ -298,6 +321,7 @@ body collector =
                                                             , String.fromInt datum.metadata.zip.count
                                                             ]
                                                     ]
+                                                , unlock datum
                                                 ]
                                             ]
                                     )
@@ -307,32 +331,40 @@ body collector =
                             case maybeCollected of
                                 Collector.NotLoggedInYet ->
                                     Html.div
-                                        [ class "columns is-mobile"
-                                        ]
+                                        []
                                         [ Html.div
-                                            [ class "column is-half-mobile is-one-third-tablet"
-                                            ]
-                                            [ View.Generic.Collection.Collector.Collector.view selected
-                                            ]
-                                        , Html.div
-                                            [ class "column is-half-mobile is-two-third-tablet"
+                                            [ class "columns is-mobile"
                                             ]
                                             [ Html.div
-                                                []
-                                                [ purchase
+                                                [ class "column is-half-mobile is-one-third-tablet"
+                                                ]
+                                                [ View.Generic.Collection.Collector.Collector.view selected
                                                 ]
                                             , Html.div
-                                                []
-                                                [ Html.button
-                                                    [ class "is-light-text-container-4 mr-2"
-                                                    , onClick <| Msg.Global FromGlobal.Connect
-                                                    ]
-                                                    [ Html.text "Connect Wallet"
-                                                    ]
-                                                , Html.text
-                                                    """ to unlock if you've already purchased.
-                                                    """
+                                                [ class "column is-half-mobile is-two-third-tablet"
                                                 ]
+                                                [ Html.div
+                                                    []
+                                                    [ purchase
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.button
+                                                        [ class "is-light-text-container-4 mr-2"
+                                                        , onClick <| Msg.Global FromGlobal.Connect
+                                                        ]
+                                                        [ Html.text "Connect Wallet"
+                                                        ]
+                                                    , Html.text
+                                                        """ to unlock if you've already purchased.
+                                                        """
+                                                    ]
+                                                ]
+                                            ]
+                                        , Html.div
+                                            [ class "mt-6"
+                                            ]
+                                            [ uploads Nothing
                                             ]
                                         ]
 
@@ -340,119 +372,144 @@ body collector =
                                     case ( found, ataBalance ) of
                                         ( Collector.No, Collector.Positive ) ->
                                             Html.div
-                                                [ class "columns is-mobile"
-                                                ]
+                                                []
                                                 [ Html.div
-                                                    [ class "column is-half-mobile is-one-third-tablet"
+                                                    [ class "columns is-mobile"
                                                     ]
-                                                    [ View.Generic.Collection.Collector.Collector.view selected
+                                                    [ Html.div
+                                                        [ class "column is-half-mobile is-one-third-tablet"
+                                                        ]
+                                                        [ View.Generic.Collection.Collector.Collector.view selected
+                                                        ]
+                                                    , Html.div
+                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        ]
+                                                        [ Html.text
+                                                            """It looks like you already have a positive token balance
+                                                            for this collection 👀
+                                                            """
+                                                        , Html.div
+                                                            []
+                                                            [ Html.button
+                                                                []
+                                                                [ Html.text "Declare"
+                                                                ]
+                                                            , Html.text
+                                                                """ as an official collector to start unlocking stuff 😎
+                                                                """
+                                                            ]
+                                                        ]
                                                     ]
                                                 , Html.div
-                                                    [ class "column is-half-mobile is-two-third-tablet"
+                                                    [ class "mt-6"
                                                     ]
-                                                    [ Html.text
-                                                        """It looks like you already have a positive token balance
-                                                        for this collection 👀
-                                                        """
-                                                    , Html.div
-                                                        []
-                                                        [ Html.button
-                                                            []
-                                                            [ Html.text "Declare"
-                                                            ]
-                                                        , Html.text
-                                                            """ as an official collector to start unlocking stuff 😎
-                                                            """
-                                                        ]
+                                                    [ uploads Nothing
                                                     ]
                                                 ]
 
                                         ( Collector.No, Collector.Zero ) ->
                                             Html.div
-                                                [ class "columns is-mobile"
-                                                ]
+                                                []
                                                 [ Html.div
-                                                    [ class "column is-half-mobile is-one-third-tablet"
+                                                    [ class "columns is-mobile"
                                                     ]
-                                                    [ View.Generic.Collection.Collector.Collector.view selected
+                                                    [ Html.div
+                                                        [ class "column is-half-mobile is-one-third-tablet"
+                                                        ]
+                                                        [ View.Generic.Collection.Collector.Collector.view selected
+                                                        ]
+                                                    , Html.div
+                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        ]
+                                                        [ purchase
+                                                        ]
                                                     ]
                                                 , Html.div
-                                                    [ class "column is-half-mobile is-two-third-tablet"
+                                                    [ class "mt-6"
                                                     ]
-                                                    [ purchase
+                                                    [ uploads Nothing
                                                     ]
                                                 ]
 
                                         ( Collector.Yes collected, Collector.Positive ) ->
                                             Html.div
-                                                [ class "columns is-mobile"
-                                                ]
+                                                []
                                                 [ Html.div
-                                                    [ class "column is-half-mobile is-one-third-tablet"
-                                                    ]
-                                                    [ View.Generic.Collection.Collector.Collector.view selected
-                                                    ]
-                                                , Html.div
-                                                    [ class "column is-half-mobile is-two-third-tablet"
+                                                    [ class "columns is-mobile"
                                                     ]
                                                     [ Html.div
-                                                        []
-                                                        [ Html.text
-                                                            """Welcome back official collector \u{1FAE1}
-                                                            """
+                                                        [ class "column is-half-mobile is-one-third-tablet"
+                                                        ]
+                                                        [ View.Generic.Collection.Collector.Collector.view selected
                                                         ]
                                                     , Html.div
-                                                        []
-                                                        [ Html.text <|
-                                                            String.concat
-                                                                [ "token balance:"
-                                                                , " "
-                                                                , String.fromInt collected.accounts.ata.balance
-                                                                ]
+                                                        [ class "column is-half-mobile is-two-third-tablet"
                                                         ]
-                                                    , Html.div
-                                                        []
-                                                        [ Html.button
+                                                        [ Html.div
                                                             []
-                                                            [ Html.text "Unlock stuff"
+                                                            [ Html.text
+                                                                """Welcome back official collector \u{1FAE1}
+                                                                """
+                                                            ]
+                                                        , Html.div
+                                                            []
+                                                            [ Html.text <|
+                                                                String.concat
+                                                                    [ "token balance:"
+                                                                    , " "
+                                                                    , String.fromInt collected.accounts.ata.balance
+                                                                    ]
+                                                            ]
+                                                        , Html.div
+                                                            []
+                                                            [ purchaseAgain
                                                             ]
                                                         ]
-                                                    , Html.div
-                                                        []
-                                                        [ purchaseAgain
-                                                        ]
+                                                    ]
+                                                , Html.div
+                                                    [ class "mt-6"
+                                                    ]
+                                                    [ uploads <| Just collected
                                                     ]
                                                 ]
 
                                         ( Collector.Yes collected, Collector.Zero ) ->
                                             Html.div
-                                                [ class "columns is-mobile"
-                                                ]
+                                                []
                                                 [ Html.div
-                                                    [ class "column is-half-mobile is-one-third-tablet"
-                                                    ]
-                                                    [ View.Generic.Collection.Collector.Collector.view collected
-                                                    ]
-                                                , Html.div
-                                                    [ class "column is-half-mobile is-two-third-tablet"
+                                                    [ class "columns is-mobile"
                                                     ]
                                                     [ Html.div
-                                                        []
-                                                        [ Html.text
-                                                            """Welcome back official collector \u{1FAE1}
-                                                            """
+                                                        [ class "column is-half-mobile is-one-third-tablet"
+                                                        ]
+                                                        [ View.Generic.Collection.Collector.Collector.view collected
                                                         ]
                                                     , Html.div
-                                                        []
-                                                        [ Html.text
-                                                            """It looks like you've sold or transferred your tokens here
-                                                            which means you can no longer unlock stuff.
-                                                            """
+                                                        [ class "column is-half-mobile is-two-third-tablet"
                                                         ]
-                                                    , Html.div
-                                                        []
-                                                        [ purchaseAgain
+                                                        [ Html.div
+                                                            []
+                                                            [ Html.text
+                                                                """Welcome back official collector \u{1FAE1}
+                                                                """
+                                                            ]
+                                                        , Html.div
+                                                            []
+                                                            [ Html.text
+                                                                """It looks like you've sold or transferred your tokens here
+                                                                which means you can no longer unlock stuff.
+                                                                """
+                                                            ]
+                                                        , Html.div
+                                                            []
+                                                            [ purchaseAgain
+                                                            ]
                                                         ]
+                                                    ]
+                                                , Html.div
+                                                    [ class "mt-6"
+                                                    ]
+                                                    [ uploads Nothing
                                                     ]
                                                 ]
                     in
@@ -465,11 +522,33 @@ body collector =
                             ]
                             [ view_
                             ]
+                        ]
+
+                UnlockedDatum collection datum ->
+                    Html.div
+                        []
+                        [ breadcrumb2 collection
+                        , header collection.meta.handle
                         , Html.div
-                            [ class "mt-6"
+                            [ class "mt-6 columns"
                             ]
-                            [ uploads
-                            ]
+                          <|
+                            List.map
+                                (\file ->
+                                    Html.div
+                                        [ class "column is-one-third"
+                                        ]
+                                        [ Html.div
+                                            [ class "is-upload"
+                                            ]
+                                            [ Html.img
+                                                [ src file.src
+                                                ]
+                                                []
+                                            ]
+                                        ]
+                                )
+                                datum.metadata.zip.files
                         ]
 
                 MaybeExistingCreator _ ->

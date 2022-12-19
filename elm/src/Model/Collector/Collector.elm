@@ -15,12 +15,17 @@ type
       -- select collection
     | SelectedCreator ( Intersection, Remainder ) WithCollections
     | SelectedCollection MaybeCollected Selected Uploaded
+    | UnlockedDatum Collected Datum
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int
 
 
 type alias Selected =
+    Collection
+
+
+type alias Collected =
     Collection
 
 

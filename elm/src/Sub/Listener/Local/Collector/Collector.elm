@@ -11,6 +11,8 @@ type
     | CollectionSelected
       -- purchase collection
     | CollectionPrinted
+      -- unlock datum
+    | DatumUnlocked
 
 
 fromString : String -> Maybe ToCollector
@@ -30,6 +32,9 @@ fromString string =
 
         "collector-collection-printed" ->
             Just CollectionPrinted
+
+        "collector-datum-unlocked" ->
+            Just DatumUnlocked
 
         _ ->
             Nothing

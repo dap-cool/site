@@ -4,6 +4,7 @@ import * as DapSdk from "@dap-cool/sdk";
 import {deriveHandlePda, getHandlePda} from "./handle-pda";
 import {DapCool} from "../idl/dap";
 import {ShdwDrive} from "@shadow-drive/sdk";
+import {readBlob} from "../../util/blob-util";
 
 interface CollectionFromElm {
     meta: {
@@ -11,6 +12,17 @@ interface CollectionFromElm {
     }
     accounts: {
         mint: string
+    }
+}
+
+interface DatumFromElm {
+    mint: string
+    uploader: string
+    index: number
+    filtered: boolean
+    shadow: {
+        account: string,
+        url: string
     }
 }
 
@@ -56,6 +68,59 @@ interface ToElm extends DapSdk.Datum {
                 src: string,
                 type_: string
             }[]
+        }
+    }
+}
+
+export async function unlockUpload(fromElm: DatumFromElm): Promise<ToElm> {
+    // get metadata
+    const metadata = await DapSdk.getMetaData(
+        fromElm.shadow.url
+    );
+    // decrypt
+    const decryptedZip = await DapSdk.decrypt(
+        fromElm.shadow.url,
+        metadata
+    );
+    console.log(decryptedZip);
+    console.log(decryptedZip.files);
+    console.log(decryptedZip.folder("encryptedAssets/"));
+    console.log(decryptedZip.folder("encryptedAssets"));
+    // read files
+    let files = []
+    decryptedZip.folder("encryptedAssets").forEach((_, file) => {
+            if (!file.dir) {
+                file.async("blob").then(function (blob) {
+                        console.log(blob);
+                        const base64 = readBlob(blob);
+                        console.log(base64);
+                        files = files.concat(
+                            {
+                                src: base64,
+                                type: blob.type
+                            }
+                        )
+                    }
+                );
+            }
+        }
+    );
+    return {
+        mint: new PublicKey(fromElm.mint),
+        uploader: new PublicKey(fromElm.uploader),
+        index: fromElm.index,
+        filtered: fromElm.filtered,
+        shadow: {
+            account: new PublicKey(fromElm.shadow.account),
+            url: fromElm.shadow.url
+        },
+        metadata: {
+            title: metadata.title,
+            zip: {
+                count: metadata.zip.count,
+                types: metadata.zip.types,
+                files: files
+            }
         }
     }
 }

@@ -430,6 +430,21 @@ update msg model =
                             }
                     )
 
+                FromCollector.UnlockDatum collection datum ->
+                    ( { model
+                        | state =
+                            { local = model.state.local
+                            , global = model.state.global
+                            , exception = Exception.Waiting
+                            }
+                      }
+                    , sender <|
+                        Sender.encode <|
+                            { sender = Sender.Collect from
+                            , more = Datum.encode collection datum
+                            }
+                    )
+
         FromJs fromJsMsg ->
             case fromJsMsg of
                 -- JS sending success for decoding
@@ -577,7 +592,7 @@ update msg model =
                                                                                 _ ->
                                                                                     model
                                                                     in
-                                                                    Listener.decode model json Datum.decode f
+                                                                    Listener.decode model json Datum.decode2 f
 
                                                                 ToExistingCreator.StillUploading ->
                                                                     let
@@ -770,7 +785,7 @@ update msg model =
                                                                             }
                                                                     }
                                                             in
-                                                            Listener.decode model json Datum.decode f
+                                                            Listener.decode model json Datum.decode2 f
 
                                                         ToCollector.CollectionPrinted ->
                                                             let
@@ -808,6 +823,23 @@ update msg model =
                                                                                 (Global.HasWalletAndHandle hasWalletAndHandle)
                                                             in
                                                             Listener.decode model json WithCollectionForCollector.decode f
+
+                                                        ToCollector.DatumUnlocked ->
+                                                            let
+                                                                f wc =
+                                                                    { model
+                                                                        | state =
+                                                                            { local =
+                                                                                Local.Collect <|
+                                                                                    Collector.UnlockedDatum
+                                                                                        wc.collection
+                                                                                        wc.datum
+                                                                            , global = model.state.global
+                                                                            , exception = Exception.Closed
+                                                                            }
+                                                                    }
+                                                            in
+                                                            Listener.decode model json Datum.decode f
 
                                         -- found msg for global update
                                         Listener.Global toGlobal ->

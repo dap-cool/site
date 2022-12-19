@@ -1,16 +1,26 @@
 /* https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL */
 import {compressAccurately} from "image-conversion";
 
-export function readImage(elementId: any, file: any): void {
-    const img: any = document.getElementById(
+export function readImageFromElementId(elementId: any, file: any): void {
+    let img: any = document.getElementById(
         elementId
     );
+    img.src = readBlob(file);
+}
+
+export function readBlob(blob: Blob): string {
+    let base64: string;
     const reader = new FileReader();
     reader.addEventListener("load", (readEvent) => {
-        img.src = readEvent.target.result;
+        console.log(readEvent);
+        console.log(readEvent.target.result as string);
+        base64 = readEvent.target.result as string;
     });
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(blob);
+    console.log(base64);
+    return base64
 }
+
 
 export async function compressImage(blob: Blob): Promise<Blob> {
     if (blob.size > MAX_IMG_SIZE_IN_BYTES) {
