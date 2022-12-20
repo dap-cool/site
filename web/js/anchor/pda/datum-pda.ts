@@ -5,6 +5,7 @@ import * as DapSdk from "@dap-cool/sdk";
 import {deriveHandlePda, getHandlePda} from "./handle-pda";
 import {DapCool} from "../idl/dap";
 import {ShdwDrive} from "@shadow-drive/sdk";
+import {getFileTypeFromName} from "../../util/blob-util";
 
 interface CollectionFromElm {
     meta: {
@@ -65,7 +66,7 @@ interface ToElm extends DapSdk.Datum {
             count: number
             types: string[]
             files: {
-                src: string,
+                base64: string,
                 type_: string
             }[]
         }
@@ -92,19 +93,22 @@ export async function unlockUpload(fromElm: DatumFromElm): Promise<ToElm> {
     const base64Files = (await Promise.all(
         files.map(async (file: JSZip.JSZipObject) => {
                 if (!file.dir) {
-                    console.log(file.name);
                     const base64: string = await file
                         .async("base64");
+                    const type = getFileTypeFromName(
+                        file.name
+                    );
                     return {
-                        src: "data:image/png;base64," + base64,
-                        type_: ""
+                        base64: base64,
+                        type_: type
                     }
                 } else {
                     return null
                 }
             }
         )
-    )).filter(Boolean) as { src: string, type_: string }[];
+    )).filter(Boolean) as { base64: string, type_: string }[];
+    console.log(base64Files);
     return {
         mint: new PublicKey(fromElm.mint),
         uploader: new PublicKey(fromElm.uploader),

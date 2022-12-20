@@ -1,5 +1,5 @@
 import {PublicKey} from "@solana/web3.js";
-import {compressImage, readImageFromElementId} from "../util/blob-util";
+import {compressImage, getFileTypeFromName, readImageFromElementId} from "../util/blob-util";
 
 export interface CollectionMetadata {
     name: string
@@ -20,9 +20,7 @@ export async function readLogo(): Promise<{ file: File; type: number }> {
         console.log("found selected logo");
         file = fileList[0];
         // parse file-type
-        const fileName = file.name;
-        fileType = fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1);
-        fileType = fileType.toLowerCase();
+        fileType = getFileTypeFromName(file.name)
         // grab bytes
         let blob = file.slice(0, file.size, file.type); // grab buffer
         // compress bytes

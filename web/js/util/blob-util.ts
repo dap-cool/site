@@ -24,6 +24,14 @@ export async function compressImage(blob: Blob): Promise<Blob> {
     return blob
 }
 
+export function getFileTypeFromName(name: string): string {
+    let fileType = name.slice(
+        (Math.max(0, name.lastIndexOf(".")) || Infinity) + 1
+    );
+    fileType = fileType.toLowerCase()
+    return fileType
+}
+
 const MAX_IMG_SIZE_IN_BYTES: number = 200_000;
 
 const MAX_IMG_SIZE_IN_KB: number = 200;

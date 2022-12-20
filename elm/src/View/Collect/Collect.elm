@@ -5,12 +5,14 @@ import Html.Attributes exposing (class, href, placeholder, src, style, target, t
 import Html.Events exposing (onClick, onInput)
 import Model.Collection as Collection exposing (Collection)
 import Model.Collector.Collector as Collector exposing (Collector(..))
+import Model.Datum as Datum
 import Model.Handle as Handle exposing (Handle)
 import Model.State.Local.Local as Local
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
+import View.Generic.Datum.Datum
 
 
 body : Collector -> Html Msg
@@ -541,10 +543,7 @@ body collector =
                                         [ Html.div
                                             [ class "is-upload"
                                             ]
-                                            [ Html.img
-                                                [ src file.src
-                                                ]
-                                                []
+                                            [ View.Generic.Datum.Datum.view file
                                             ]
                                         ]
                                 )

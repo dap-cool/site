@@ -1,4 +1,4 @@
-module Model.Datum exposing (Datum, decode, decode2, decoder, encode)
+module Model.Datum exposing (Datum, File, Src(..), decode, decode2, decoder, encode, toSrc)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -43,9 +43,90 @@ type alias Zip =
 
 
 type alias File =
-    { src : String
+    { base64 : Base64
     , type_ : String
     }
+
+
+type alias Base64 =
+    String
+
+
+type Src
+    = Img DataUri
+    | Audio DataUri
+    | Video DataUri
+    | NotSupported
+
+
+type alias DataUri =
+    String
+
+
+toSrc : File -> Src
+toSrc file =
+    let
+        uri type_ =
+            String.concat
+                [ "data:"
+                , type_
+                , "/"
+                , file.type_ -- subtype
+                , ";base64,"
+                , file.base64
+                ]
+
+        img =
+            Img <| uri "image"
+
+        audio =
+            Audio <| uri "audio"
+
+        video =
+            Video <| uri "video"
+
+        imgList =
+            [ "apng"
+            , "gif"
+            , "ico"
+            , "cur"
+            , "jpg"
+            , "jpeg"
+            , "jfif"
+            , "pjpeg"
+            , "pjp"
+            , "png"
+            , "svg"
+            ]
+
+        audioList =
+            [ "mp3"
+            , "wav"
+            , "ogg"
+            ]
+
+        videoList =
+            [ "mp4"
+            , "webm"
+            , "ogg"
+            ]
+    in
+    case List.member file.type_ imgList of
+        True ->
+            img
+
+        False ->
+            case List.member file.type_ audioList of
+                True ->
+                    audio
+
+                False ->
+                    case List.member file.type_ videoList of
+                        True ->
+                            video
+
+                        False ->
+                            NotSupported
 
 
 encode : Collection -> Datum -> String
@@ -102,7 +183,7 @@ decoder =
                         (Decode.field "files" <|
                             Decode.list <|
                                 Decode.map2 File
-                                    (Decode.field "src" Decode.string)
+                                    (Decode.field "base64" Decode.string)
                                     (Decode.field "type_" Decode.string)
                         )
                 )
