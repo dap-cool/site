@@ -5,7 +5,7 @@ import Html.Attributes exposing (class, href, placeholder, src, style, target, t
 import Html.Events exposing (onClick, onInput)
 import Model.Collection as Collection exposing (Collection)
 import Model.Collector.Collector as Collector exposing (Collector(..))
-import Model.Datum as Datum
+import Model.Datum as Datum exposing (Datum)
 import Model.Handle as Handle exposing (Handle)
 import Model.State.Local.Local as Local
 import Msg.Collector.Collector as CollectorMsg
@@ -309,8 +309,7 @@ body collector =
                                             ]
                                             [ Html.div
                                                 --[ class "is-upload"
-                                                [
-                                                ]
+                                                []
                                                 [ Html.div
                                                     []
                                                     [ Html.text datum.metadata.title
@@ -530,7 +529,7 @@ body collector =
                 UnlockedDatum collection datum ->
                     Html.div
                         []
-                        [ breadcrumb2 collection
+                        [ breadcrumb3 collection datum
                         , header collection.meta.handle
                         , Html.div
                             [ class "mt-6 columns"
@@ -543,8 +542,7 @@ body collector =
                                         ]
                                         [ Html.div
                                             -- [ class "is-upload"
-                                            [
-                                            ]
+                                            []
                                             [ View.Generic.Datum.Datum.view file
                                             ]
                                         ]
@@ -777,5 +775,63 @@ breadcrumb2 collection =
                 , ">"
                 , " "
                 , String.fromInt collection.meta.index
+                ]
+        ]
+
+
+breadcrumb3 : Collection -> Datum -> Html Msg
+breadcrumb3 collection datum =
+    Html.div
+        [ class "is-family-secondary is-light-text-container-6 is-size-6"
+        ]
+        [ Html.a
+            [ class "is-underlined"
+            , Local.href <|
+                Local.Collect <|
+                    Collector.TypingHandle
+                        ""
+            ]
+            [ Html.text <|
+                String.concat
+                    [ "Search creators"
+                    ]
+            ]
+        , Html.text <|
+            String.concat
+                [ " "
+                , ">"
+                , " "
+                ]
+        , Html.a
+            [ class "is-underlined"
+            , Local.href <|
+                Local.Collect <|
+                    Collector.MaybeExistingCreator
+                        collection.meta.handle
+            ]
+            [ Html.text collection.meta.handle
+            ]
+        , Html.text <|
+            String.concat
+                [ " "
+                , ">"
+                , " "
+                ]
+        , Html.a
+            [ class "is-underlined"
+            , Local.href <|
+                Local.Collect <|
+                    Collector.MaybeExistingCollection
+                        collection.meta.handle
+                        collection.meta.index
+            ]
+            [ Html.text <| String.fromInt collection.meta.index
+            ]
+        , Html.text <|
+            String.concat
+                [ " "
+                , ">"
+                , " "
+                , datum.metadata.title
                 ]
         ]
