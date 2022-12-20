@@ -1,5 +1,5 @@
 import {PublicKey} from "@solana/web3.js";
-import {Program, BN, SplToken, AnchorProvider} from "@project-serum/anchor";
+import {Program, SplToken, AnchorProvider} from "@project-serum/anchor";
 import {DapCool} from "../idl/dap";
 import {Collection} from "./collector-pda";
 import {
@@ -45,13 +45,13 @@ interface RawCollectionAuthority {
     symbol: string
     uri: string
     image: number
-    numMinted: BN.BN
-    totalSupply: BN.BN
+    numMinted: any // encoded as BN
+    totalSupply: any // encoded as BN
 }
 
 interface RawSplToken {
     mint: PublicKey
-    amount: BN.BN
+    amount: any // encoded as BN
 }
 
 export async function getManyAuthorityPdaForCollector(
