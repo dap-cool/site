@@ -1,7 +1,7 @@
 module View.Generic.Datum.Datum exposing (view)
 
 import Html exposing (Html)
-import Html.Attributes exposing (src)
+import Html.Attributes exposing (controls, src)
 import Model.Datum as Datum exposing (File, Src(..))
 import Msg.Msg exposing (Msg)
 
@@ -17,15 +17,23 @@ view file =
 
         Audio dataUri ->
             Html.audio
-                [ src dataUri
+                [ controls True
                 ]
-                []
+                [ Html.source
+                    [ src dataUri
+                    ]
+                    []
+                ]
 
         Video dataUri ->
             Html.video
-                [ src dataUri
+                [ controls True
                 ]
-                []
+                [ Html.source
+                    [ src dataUri
+                    ]
+                    []
+                ]
 
         NotSupported ->
             Html.div

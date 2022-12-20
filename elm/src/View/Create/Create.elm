@@ -497,7 +497,7 @@ body creator =
                                             ]
                                         ]
                                     , Html.div
-                                        [ class "columns"
+                                        [ class "columns is-multiline"
                                         ]
                                       <|
                                         List.map
