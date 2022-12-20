@@ -308,7 +308,8 @@ body collector =
                                             [ class "column is-one-third"
                                             ]
                                             [ Html.div
-                                                [ class "is-upload"
+                                                --[ class "is-upload"
+                                                [
                                                 ]
                                                 [ Html.div
                                                     []
@@ -541,7 +542,8 @@ body collector =
                                         [ class "column is-one-third"
                                         ]
                                         [ Html.div
-                                            [ class "is-upload"
+                                            -- [ class "is-upload"
+                                            [
                                             ]
                                             [ View.Generic.Datum.Datum.view file
                                             ]
