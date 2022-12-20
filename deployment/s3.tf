@@ -1,9 +1,9 @@
 #######################################################
 ## DOMAINS ############################################
 resource "aws_s3_bucket" "domain" {
-  bucket = var.domain_name
+  bucket        = var.domain_name
   force_destroy = true
-  acl = "public-read"
+  acl           = "public-read"
   website {
     index_document = "index.html"
   }
@@ -24,9 +24,9 @@ POLICY
 }
 
 resource "aws_s3_bucket" "sub-domain-dev" {
-  bucket = "dev.${var.domain_name}"
+  bucket        = "dev.${var.domain_name}"
   force_destroy = true
-  acl = "public-read"
+  acl           = "public-read"
   website {
     index_document = "index.html"
   }
@@ -47,7 +47,7 @@ POLICY
 }
 
 resource "aws_s3_bucket" "sub-domain-www" {
-  bucket = "www.${var.domain_name}"
+  bucket        = "www.${var.domain_name}"
   force_destroy = true
   website {
     redirect_all_requests_to = var.domain_name
