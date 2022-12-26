@@ -29,9 +29,12 @@ export async function getPhantom(app) {
 
 export function getPhantomProvider() {
     let provider;
-    const maybeProvider = window.phantom.solana;
-    if (maybeProvider && maybeProvider.isPhantom) {
-        provider = maybeProvider
+    try {
+        const maybeProvider = window.phantom.solana;
+        if (maybeProvider && maybeProvider.isPhantom) {
+            provider = maybeProvider
+        }
+    } catch (error) {
     }
     return provider
 }

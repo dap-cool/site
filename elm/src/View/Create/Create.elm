@@ -98,16 +98,6 @@ body creator =
                                 , select
                                 ]
 
-                        New.WaitingForHandleConfirmation ->
-                            Html.div
-                                []
-                                [ header
-                                , Html.div
-                                    [ class "is-loading"
-                                    ]
-                                    []
-                                ]
-
                         New.HandleInvalid string ->
                             Html.div
                                 []

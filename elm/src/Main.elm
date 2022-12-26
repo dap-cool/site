@@ -186,12 +186,9 @@ update msg model =
                                 Handle.Confirm handle ->
                                     ( { model
                                         | state =
-                                            { local =
-                                                Local.Create <|
-                                                    Creator.New <|
-                                                        NewCreator.WaitingForHandleConfirmation
+                                            { local = model.state.local
                                             , global = model.state.global
-                                            , exception = model.state.exception
+                                            , exception = Exception.Waiting
                                             }
                                       }
                                     , sender <|

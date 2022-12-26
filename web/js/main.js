@@ -105,6 +105,12 @@ export async function main(app, json) {
                             validated,
                             handle
                         );
+                    } else {
+                        app.ports.exception.send(
+                            "It looks like there's no wallet installed! " +
+                            "If you're on a mobile device that has the phantom app installed, " +
+                            "open this URL in the app."
+                        );
                     }
                 }
             }
@@ -320,6 +326,12 @@ export async function main(app, json) {
                     more.handle,
                     more.index
                 )
+            } else {
+                app.ports.exception.send(
+                    "It looks like there's no wallet installed! " +
+                    "If you're on a mobile device that has the phantom app installed, " +
+                    "open this URL in the app."
+                );
             }
             // or collector unlock datum
         } else if (sender === "collector-unlock-datum") {
