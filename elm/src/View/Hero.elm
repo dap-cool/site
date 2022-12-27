@@ -91,7 +91,7 @@ view exception global body =
                     in
                     modal <|
                         Html.div
-                            [ class "container"
+                            [ class "mx-6"
                             ]
                             [ exception_
                             ]

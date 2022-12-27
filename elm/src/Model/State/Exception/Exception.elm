@@ -18,6 +18,7 @@ decode : String -> Result String { message : String, href : Maybe Href }
 decode string =
     Util.decode string decoder identity
 
+
 decoder : Decode.Decoder { message : String, href : Maybe Href }
 decoder =
     Decode.map2
