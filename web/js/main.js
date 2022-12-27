@@ -106,10 +106,16 @@ export async function main(app, json) {
                             handle
                         );
                     } else {
+                        const browse = "https://phantom.app/ul/browse/";
+                        const dap = "https://dap.cool/#/admin";
+                        const href = browse + encodeURIComponent(dap);
                         app.ports.exception.send(
-                            "It looks like there's no wallet installed! " +
-                            "If you're on a mobile device that has the phantom app installed, " +
-                            "open this URL in the app."
+                            JSON.stringify(
+                                {
+                                    message: "It looks like there's no wallet installed!",
+                                    href: href
+                                }
+                            )
                         );
                     }
                 }
@@ -311,13 +317,13 @@ export async function main(app, json) {
             }
             // or collector print copy
         } else if (sender === "collector-print-copy") {
+            // parse more json
+            const more = JSON.parse(parsed.more);
             // get phantom
             phantom = await getPhantom(app);
             if (phantom) {
                 // get provider & program
                 const pp = getPP(phantom);
-                // parse more json
-                const more = JSON.parse(parsed.more);
                 // invoke rpc
                 await mintNewCopy(
                     app,
@@ -327,10 +333,16 @@ export async function main(app, json) {
                     more.index
                 )
             } else {
+                const browse = "https://phantom.app/ul/browse/";
+                const dap = "https://dap.cool/#/" + more.handle + "/" + more.index;
+                const href = browse + encodeURIComponent(dap);
                 app.ports.exception.send(
-                    "It looks like there's no wallet installed! " +
-                    "If you're on a mobile device that has the phantom app installed, " +
-                    "open this URL in the app."
+                    JSON.stringify(
+                        {
+                            message: "It looks like there's no wallet installed!",
+                            href: href
+                        }
+                    )
                 );
             }
             // or collector unlock datum

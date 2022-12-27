@@ -1082,15 +1082,28 @@ update msg model =
 
                 -- JS sending exception to catch
                 JsMsg.Exception string ->
-                    ( { model
-                        | state =
-                            { local = model.state.local
-                            , global = model.state.global
-                            , exception = Exception.Open string
-                            }
-                      }
-                    , Cmd.none
-                    )
+                    case Exception.decode string of
+                        Ok exception ->
+                            ( { model
+                                | state =
+                                    { local = model.state.local
+                                    , global = model.state.global
+                                    , exception = Exception.Open exception.message exception.href
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
+                        Err jsonError ->
+                            ( { model
+                                | state =
+                                    { local = Local.Error jsonError
+                                    , global = model.state.global
+                                    , exception = model.state.exception
+                                    }
+                              }
+                            , Cmd.none
+                            )
 
                 -- JS sending error to raise
                 JsMsg.Error string ->

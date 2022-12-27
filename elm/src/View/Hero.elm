@@ -1,7 +1,7 @@
 module View.Hero exposing (view)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, href, target)
 import Html.Events exposing (onClick)
 import Model.State.Exception.Exception as Exception exposing (Exception)
 import Model.State.Global.Global exposing (Global)
@@ -35,9 +35,66 @@ view exception global body =
 
         exceptionModal =
             case exception of
-                Exception.Open string ->
+                Exception.Open message maybeHref ->
+                    let
+                        exception_ =
+                            case maybeHref of
+                                Just href_ ->
+                                    Html.div
+                                        []
+                                        [ Html.div
+                                            []
+                                            [ Html.text message
+                                            ]
+                                        , Html.div
+                                            []
+                                            [ Html.div
+                                                []
+                                                [ Html.text
+                                                    """If you're on a mobile device & have the phantom app installed ⬇️
+                                                    """
+                                                ]
+                                            , Html.a
+                                                [ class "has-sky-blue-text is-underlined"
+                                                , href href_
+                                                , target "_blank"
+                                                ]
+                                                [ Html.text "click here"
+                                                ]
+                                            ]
+                                        , Html.div
+                                            []
+                                            [ Html.div
+                                                []
+                                                [ Html.text
+                                                    """Otherwise, join the party ⬇️
+                                                    """
+                                                ]
+                                            , Html.div
+                                                []
+                                                [ Html.a
+                                                    [ class "has-sky-blue-text is-underlined"
+                                                    , href "https://phantom.app/"
+                                                    , target "_blank"
+                                                    ]
+                                                    [ Html.text "create new solana wallet 😎"
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+
+                                Nothing ->
+                                    Html.div
+                                        []
+                                        [ Html.text message
+                                        ]
+                    in
                     modal <|
-                        Html.text string
+                        Html.div
+                            [ class "container"
+                            ]
+                            [ exception_
+                            ]
 
                 Exception.Waiting ->
                     modal <|

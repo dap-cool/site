@@ -239,7 +239,11 @@ export async function mintNewCopy(
         console.log(error);
         // send caught exception to elm
         app.ports.exception.send(
-            "caught exception printing collection!"
+            JSON.stringify(
+                {
+                    message: "caught exception printing collection!"
+                }
+            )
         );
     }
 }
