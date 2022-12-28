@@ -4,9 +4,10 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 use mpl_token_metadata::state::{PREFIX};
 use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
-    init_new_creator, create_nft, mint_new_copy,
+    init_new_creator, create_nft, mint_new_copy, init_boss,
     create_nft::CreateNftBumps, mint_new_copy::MintNewCopyBumps,
 };
+use crate::pda::boss::Boss;
 use crate::pda::collector::{Collected, Collection, Collector};
 use crate::pda::creator::Creator;
 
@@ -41,6 +42,10 @@ pub mod dap_cool {
 
     pub fn mint_new_copy(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<()> {
         mint_new_copy::ix(ctx, bumps, n)
+    }
+
+    pub fn init_boss(ctx: Context<InitBoss>) -> Result<()> {
+        init_boss::ix(ctx)
     }
 }
 
@@ -137,6 +142,12 @@ pub struct CreateNFT<'info> {
 #[derive(Accounts)]
 #[instruction(bumps: MintNewCopyBumps, n: u8)]
 pub struct MintNewCopy<'info> {
+    #[account(mut,
+    seeds = [
+    pda::boss::SEED.as_bytes()
+    ], bump,
+    )]
+    pub boss: Box<Account<'info, Boss>>,
     #[account(init_if_needed,
     seeds = [
     pda::collector::SEED.as_bytes(),
@@ -193,6 +204,21 @@ pub struct MintNewCopy<'info> {
     payer = payer
     )]
     pub mint_ata: Box<Account<'info, TokenAccount>>,
+    #[account(
+    address = boss.usdc,
+    owner = token_program.key()
+    )]
+    pub usdc: Account<'info, Mint>,
+    #[account(mut,
+    associated_token::mint = usdc,
+    associated_token::authority = payer
+    )]
+    pub usdc_ata_src: Box<Account<'info, TokenAccount>>,
+    #[account(mut,
+    associated_token::mint = usdc,
+    associated_token::authority = handle.authority
+    )]
+    pub usdc_ata_dst_handle: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program
@@ -205,6 +231,24 @@ pub struct MintNewCopy<'info> {
     pub system_program: Program<'info, System>,
     // rent program
     pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Accounts)]
+pub struct InitBoss<'info> {
+    #[account(init,
+    seeds = [
+    pda::boss::SEED.as_bytes(),
+    ], bump,
+    payer = payer,
+    space = pda::boss::SIZE
+    )]
+    pub boss: Account<'info, Boss>,
+    #[account()]
+    pub usdc: Account<'info, Mint>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    // system program
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Clone)]

@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{mint_to, MintTo};
+use anchor_spl::token::{mint_to, transfer, MintTo, Transfer};
 use crate::{MintNewCopy, pda};
 use crate::error::CustomErrors;
 
@@ -28,12 +28,27 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
         ctx.accounts.token_program.to_account_info(),
         mint_ata_cpi_accounts,
     );
+    // build transfer-to-handle instruction
+    let transfer_to_handle_accounts = Transfer {
+        from: ctx.accounts.usdc_ata_src.to_account_info(),
+        to: ctx.accounts.usdc_ata_dst_handle.to_account_info(),
+        authority: ctx.accounts.payer.to_account_info(),
+    };
+    let transfer_to_handle_cpi_context = CpiContext::new(
+        ctx.accounts.token_program.to_account_info(),
+        transfer_to_handle_accounts,
+    );
     // invoke mint-to associated-token-account
     mint_to(
         mint_ata_cpi_context.with_signer(
             signer_seeds
         ),
         1,
+    )?;
+    // invoke transfer-to-handle
+    transfer(
+        transfer_to_handle_cpi_context,
+        15,
     )?;
     // authority
     authority.num_minted = authority_increment;

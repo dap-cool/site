@@ -125,6 +125,11 @@ export type DapCool = {
       "name": "mintNewCopy",
       "accounts": [
         {
+          "name": "boss",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "collector",
           "isMut": true,
           "isSigner": false
@@ -156,6 +161,21 @@ export type DapCool = {
         },
         {
           "name": "mintAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAtaSrc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAtaDstHandle",
           "isMut": true,
           "isSigner": false
         },
@@ -202,6 +222,32 @@ export type DapCool = {
           "type": "u8"
         }
       ]
+    },
+    {
+      "name": "initBoss",
+      "accounts": [
+        {
+          "name": "boss",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -244,6 +290,26 @@ export type DapCool = {
           },
           {
             "name": "totalSupply",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "boss",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "usdc",
+            "type": "publicKey"
+          },
+          {
+            "name": "fee",
             "type": "u64"
           }
         ]
@@ -532,6 +598,11 @@ export const IDL: DapCool = {
       "name": "mintNewCopy",
       "accounts": [
         {
+          "name": "boss",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "collector",
           "isMut": true,
           "isSigner": false
@@ -563,6 +634,21 @@ export const IDL: DapCool = {
         },
         {
           "name": "mintAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAtaSrc",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAtaDstHandle",
           "isMut": true,
           "isSigner": false
         },
@@ -609,6 +695,32 @@ export const IDL: DapCool = {
           "type": "u8"
         }
       ]
+    },
+    {
+      "name": "initBoss",
+      "accounts": [
+        {
+          "name": "boss",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -651,6 +763,26 @@ export const IDL: DapCool = {
           },
           {
             "name": "totalSupply",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "boss",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "usdc",
+            "type": "publicKey"
+          },
+          {
+            "name": "fee",
             "type": "u64"
           }
         ]

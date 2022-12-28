@@ -52,17 +52,12 @@ export type DapCool = {
           "isSigner": true
         },
         {
+          "name": "mintAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "metadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "masterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "masterEditionAta",
           "isMut": true,
           "isSigner": false
         },
@@ -98,6 +93,12 @@ export type DapCool = {
         }
       ],
       "args": [
+        {
+          "name": "bumps",
+          "type": {
+            "defined": "CreateNftBumps"
+          }
+        },
         {
           "name": "name",
           "type": "string"
@@ -111,90 +112,23 @@ export type DapCool = {
           "type": "string"
         },
         {
+          "name": "image",
+          "type": "u8"
+        },
+        {
           "name": "size",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "createCollection",
-      "accounts": [
-        {
-          "name": "handle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEditionAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "n",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "mintNewCopy",
       "accounts": [
+        {
+          "name": "boss",
+          "isMut": true,
+          "isSigner": false
+        },
         {
           "name": "collector",
           "isMut": true,
@@ -206,6 +140,11 @@ export type DapCool = {
           "isSigner": false
         },
         {
+          "name": "collected",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -221,42 +160,22 @@ export type DapCool = {
           "isSigner": false
         },
         {
-          "name": "metadata",
+          "name": "mintAta",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "masterEdition",
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAtaSrc",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "masterEditionAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newMint",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "newMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEditionMark",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEditionAta",
+          "name": "usdcAtaDstHandle",
           "isMut": true,
           "isSigner": false
         },
@@ -293,52 +212,28 @@ export type DapCool = {
       ],
       "args": [
         {
+          "name": "bumps",
+          "type": {
+            "defined": "MintNewCopyBumps"
+          }
+        },
+        {
           "name": "n",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "addNewCopyToCollection",
+      "name": "initBoss",
       "accounts": [
         {
-          "name": "handle",
+          "name": "boss",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
           "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newMetadata",
-          "isMut": true,
           "isSigner": false
         },
         {
@@ -347,32 +242,12 @@ export type DapCool = {
           "isSigner": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "n",
-          "type": "u8"
-        }
-      ]
+      "args": []
     }
   ],
   "accounts": [
@@ -394,18 +269,6 @@ export type DapCool = {
             "type": "publicKey"
           },
           {
-            "name": "collection",
-            "type": "publicKey"
-          },
-          {
-            "name": "numMinted",
-            "type": "u64"
-          },
-          {
-            "name": "totalSupply",
-            "type": "u64"
-          },
-          {
             "name": "name",
             "type": "string"
           },
@@ -416,6 +279,38 @@ export type DapCool = {
           {
             "name": "uri",
             "type": "string"
+          },
+          {
+            "name": "image",
+            "type": "u8"
+          },
+          {
+            "name": "numMinted",
+            "type": "u64"
+          },
+          {
+            "name": "totalSupply",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "boss",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "usdc",
+            "type": "publicKey"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
           }
         ]
       }
@@ -448,6 +343,18 @@ export type DapCool = {
           {
             "name": "index",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collected",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collected",
+            "type": "bool"
           }
         ]
       }
@@ -497,18 +404,49 @@ export type DapCool = {
   ],
   "types": [
     {
+      "name": "CreateNftBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "metadata",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintNewCopyBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "Pinned",
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "collections",
-            "type": {
-              "array": [
-                "u8",
-                10
-              ]
-            }
+            "type": "bytes"
           }
         ]
       }
@@ -519,6 +457,16 @@ export type DapCool = {
       "code": 6000,
       "name": "HandleTooLong",
       "msg": "Max handle length is 16 bytes."
+    },
+    {
+      "code": 6001,
+      "name": "CreatorDistributionTooLarge",
+      "msg": "Creator distribution must be smaller than total supply."
+    },
+    {
+      "code": 6002,
+      "name": "SoldOut",
+      "msg": "Primary sale is sold out. Check secondary markets."
     }
   ]
 };
@@ -577,17 +525,12 @@ export const IDL: DapCool = {
           "isSigner": true
         },
         {
+          "name": "mintAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "metadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "masterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "masterEditionAta",
           "isMut": true,
           "isSigner": false
         },
@@ -623,6 +566,12 @@ export const IDL: DapCool = {
         }
       ],
       "args": [
+        {
+          "name": "bumps",
+          "type": {
+            "defined": "CreateNftBumps"
+          }
+        },
         {
           "name": "name",
           "type": "string"
@@ -636,90 +585,23 @@ export const IDL: DapCool = {
           "type": "string"
         },
         {
+          "name": "image",
+          "type": "u8"
+        },
+        {
           "name": "size",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "createCollection",
-      "accounts": [
-        {
-          "name": "handle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEditionAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "n",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "mintNewCopy",
       "accounts": [
+        {
+          "name": "boss",
+          "isMut": true,
+          "isSigner": false
+        },
         {
           "name": "collector",
           "isMut": true,
@@ -731,6 +613,11 @@ export const IDL: DapCool = {
           "isSigner": false
         },
         {
+          "name": "collected",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": false,
           "isSigner": false
@@ -746,42 +633,22 @@ export const IDL: DapCool = {
           "isSigner": false
         },
         {
-          "name": "metadata",
+          "name": "mintAta",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "masterEdition",
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAtaSrc",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "masterEditionAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newMint",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "newMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEditionMark",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newEditionAta",
+          "name": "usdcAtaDstHandle",
           "isMut": true,
           "isSigner": false
         },
@@ -818,52 +685,28 @@ export const IDL: DapCool = {
       ],
       "args": [
         {
+          "name": "bumps",
+          "type": {
+            "defined": "MintNewCopyBumps"
+          }
+        },
+        {
           "name": "n",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "addNewCopyToCollection",
+      "name": "initBoss",
       "accounts": [
         {
-          "name": "handle",
+          "name": "boss",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
           "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMasterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "newMetadata",
-          "isMut": true,
           "isSigner": false
         },
         {
@@ -872,32 +715,12 @@ export const IDL: DapCool = {
           "isSigner": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "n",
-          "type": "u8"
-        }
-      ]
+      "args": []
     }
   ],
   "accounts": [
@@ -919,18 +742,6 @@ export const IDL: DapCool = {
             "type": "publicKey"
           },
           {
-            "name": "collection",
-            "type": "publicKey"
-          },
-          {
-            "name": "numMinted",
-            "type": "u64"
-          },
-          {
-            "name": "totalSupply",
-            "type": "u64"
-          },
-          {
             "name": "name",
             "type": "string"
           },
@@ -941,6 +752,38 @@ export const IDL: DapCool = {
           {
             "name": "uri",
             "type": "string"
+          },
+          {
+            "name": "image",
+            "type": "u8"
+          },
+          {
+            "name": "numMinted",
+            "type": "u64"
+          },
+          {
+            "name": "totalSupply",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "boss",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "usdc",
+            "type": "publicKey"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
           }
         ]
       }
@@ -973,6 +816,18 @@ export const IDL: DapCool = {
           {
             "name": "index",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collected",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collected",
+            "type": "bool"
           }
         ]
       }
@@ -1022,18 +877,49 @@ export const IDL: DapCool = {
   ],
   "types": [
     {
+      "name": "CreateNftBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          },
+          {
+            "name": "metadata",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintNewCopyBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "handle",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "Pinned",
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "collections",
-            "type": {
-              "array": [
-                "u8",
-                10
-              ]
-            }
+            "type": "bytes"
           }
         ]
       }
@@ -1044,6 +930,16 @@ export const IDL: DapCool = {
       "code": 6000,
       "name": "HandleTooLong",
       "msg": "Max handle length is 16 bytes."
+    },
+    {
+      "code": 6001,
+      "name": "CreatorDistributionTooLarge",
+      "msg": "Creator distribution must be smaller than total supply."
+    },
+    {
+      "code": 6002,
+      "name": "SoldOut",
+      "msg": "Primary sale is sold out. Check secondary markets."
     }
   ]
 };
