@@ -989,6 +989,10 @@ update msg model =
                                                                     )
 
                                                                 -- go back to js for ata balance
+                                                                -- because at this point we have the wallet's collected array
+                                                                -- but the selected not being collected by the wallet
+                                                                -- doesn't imply that the ata has a non-zero balance
+                                                                -- in fact, this is what happens when a wallet buys in 2nd markets
                                                                 Local.Collect (Collector.SelectedCollection _ selected _) ->
                                                                     ( { model
                                                                         | state = bumpedState hasWallet True
@@ -1105,6 +1109,10 @@ update msg model =
                                                                     )
 
                                                                 -- go back to js for ata balance
+                                                                -- because at this point we have the wallet's collected array
+                                                                -- but the selected not being collected by the wallet
+                                                                -- doesn't imply that the ata has a non-zero balance
+                                                                -- in fact, this is what happens when a wallet buys in 2nd markets
                                                                 Local.Collect (Collector.SelectedCollection _ selected _) ->
                                                                     ( { model
                                                                         | state = bumpedState hasWalletAndHandle True
