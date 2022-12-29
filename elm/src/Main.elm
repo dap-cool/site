@@ -871,7 +871,7 @@ update msg model =
                                                                     , Cmd.none
                                                                     )
 
-                                                                -- go back to js for ata balance
+                                                                -- go back to js for ata balance TODO; .find ?
                                                                 Local.Collect (Collector.UnlockedDatum collected datum) ->
                                                                     ( Local.Collect <|
                                                                         Collector.UnlockedDatum
