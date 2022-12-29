@@ -8,22 +8,28 @@ pub const SIZE: usize = 8 // discriminator
     + 4 + MAX_HANDLE_LENGTH
     + INDEX_SIZE
     + MINT_SIZE
-    + NUM_MINTED_SIZE
-    + TOTAL_SUPPLY_SIZE
     + 4 + MAX_NAME_LENGTH
     + 4 + MAX_SYMBOL_LENGTH
     + 4 + MAX_URI_LENGTH
-    + IMAGE_SIZE;
+    + IMAGE_SIZE
+    + NUM_MINTED_SIZE
+    + TOTAL_SUPPLY_SIZE
+    + PRICE_SIZE
+    + FEE_SIZE;
 
 const INDEX_SIZE: usize = 1;
 
 const MINT_SIZE: usize = 32;
 
+const IMAGE_SIZE: usize = 1;
+
 const NUM_MINTED_SIZE: usize = 8;
 
 const TOTAL_SUPPLY_SIZE: usize = 8;
 
-const IMAGE_SIZE: usize = 1;
+const PRICE_SIZE: usize = 8;
+
+const FEE_SIZE: usize = 2;
 
 #[account]
 pub struct Authority {
@@ -39,4 +45,6 @@ pub struct Authority {
     // math
     pub num_minted: u64,
     pub total_supply: u64,
+    pub price: u64,
+    pub fee: u16,
 }

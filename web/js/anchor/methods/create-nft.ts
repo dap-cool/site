@@ -285,7 +285,10 @@ export async function creatNft(
                     form.meta.symbol as any,
                     metadataUrl as any,
                     logo.type as any,
-                    new BN(10) // TODO; supply
+                    new BN(10), // TODO; supply
+                    new BN(2), // TODO; creator distribution
+                    new BN(25000), // TODO; price
+                    500 as any // TODO; fee
                 )
                 .accounts(
                     {

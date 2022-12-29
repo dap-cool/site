@@ -3,7 +3,6 @@ use anchor_spl::token::{mint_to, MintTo};
 use mpl_token_metadata::instruction::{
     create_metadata_accounts_v3, sign_metadata, update_primary_sale_happened_via_token,
 };
-use mpl_token_metadata::state::CollectionDetails;
 use crate::{CreateNFT, pda};
 use crate::error::CustomErrors;
 
@@ -15,6 +14,9 @@ pub fn ix(
     uri: String,
     image: u8,
     size: u64,
+    creator_distribution: u64,
+    price: u64,
+    fee: u16,
 ) -> Result<()> {
     // increment collection
     let increment = ctx.accounts.handle.num_collections + 1;
@@ -43,12 +45,12 @@ pub fn ix(
                 share: 100,
             }
         ]),
-        500,
+        fee,
         false,
         true,
         None,
         None,
-        Some(CollectionDetails::V1 { size }),
+        None,
     );
     // build sign metadata instruction
     let ix_sign_metadata = sign_metadata(
@@ -96,7 +98,6 @@ pub fn ix(
         ],
     )?;
     // invoke mint-to associated-token-account
-    let creator_distribution: u64 = 1; // TODO; expose as arg
     assert_valid_distribution(
         size,
         creator_distribution,
@@ -128,8 +129,10 @@ pub fn ix(
     authority.uri = uri; // already validated by metaplex
     authority.image = image;
     // math
-    authority.total_supply = size;
     authority.num_minted = creator_distribution;
+    authority.total_supply = size;
+    authority.price = price;
+    authority.fee = fee;
     // increment collection
     let handle = &mut ctx.accounts.handle;
     handle.num_collections = increment;

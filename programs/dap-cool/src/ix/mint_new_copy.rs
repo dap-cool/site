@@ -48,7 +48,7 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
     // invoke transfer-to-handle
     transfer(
         transfer_to_handle_cpi_context,
-        15,
+        authority.price,
     )?;
     // authority
     authority.num_minted = authority_increment;

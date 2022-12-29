@@ -133,6 +133,18 @@ export type DapCool = {
         {
           "name": "size",
           "type": "u64"
+        },
+        {
+          "name": "creatorDistribution",
+          "type": "u64"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        },
+        {
+          "name": "fee",
+          "type": "u16"
         }
       ]
     },
@@ -306,6 +318,14 @@ export type DapCool = {
           {
             "name": "totalSupply",
             "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u16"
           }
         ]
       }
@@ -629,6 +649,18 @@ export const IDL: DapCool = {
         {
           "name": "size",
           "type": "u64"
+        },
+        {
+          "name": "creatorDistribution",
+          "type": "u64"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        },
+        {
+          "name": "fee",
+          "type": "u16"
         }
       ]
     },
@@ -802,6 +834,14 @@ export const IDL: DapCool = {
           {
             "name": "totalSupply",
             "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u16"
           }
         ]
       }

@@ -18,7 +18,7 @@ export async function getBossPda(program: Program<DapCool>, pda: BossPda): Promi
     return {
         authority: fetched.authority,
         usdc: fetched.usdc,
-        fee: fetched.fee.toNumber()
+        fee: (fetched.fee as any).toNumber()
     }
 }
 

@@ -36,8 +36,11 @@ pub mod dap_cool {
         uri: String,
         image: u8,
         size: u64,
+        creator_distribution: u64,
+        price: u64,
+        fee: u16,
     ) -> Result<()> {
-        create_nft::ix(ctx, bumps, name, symbol, uri, image, size)
+        create_nft::ix(ctx, bumps, name, symbol, uri, image, size, creator_distribution, price, fee)
     }
 
     pub fn mint_new_copy(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<()> {
