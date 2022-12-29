@@ -138,6 +138,7 @@ pub fn ix(
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct CreateNftBumps {
+    pub boss: u8,
     pub handle: u8,
     pub authority: u8,
     pub metadata: u8,

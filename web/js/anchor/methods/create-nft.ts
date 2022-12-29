@@ -9,15 +9,15 @@ import {
     getManyAuthorityPdaForCollector,
     getManyAuthorityPdaForCreator
 } from "../pda/authority-pda";
+import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
+import {deriveBossPda, getBossPda} from "../pda/boss-pda";
 import {
-    MPL_EDITION,
     MPL_PREFIX,
     MPL_TOKEN_METADATA_PROGRAM_ID, SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
     SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {buildMetaData, readLogo} from "../../shdw/shdw";
 import {DapCool} from "../idl/dap";
-import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 
 export interface Form {
     step: number
@@ -73,11 +73,6 @@ export async function creatNft(
         console.log("could not find collector on-chain");
         collected = [];
     }
-    // derive handle pda with bump
-    let handlePda = await deriveHandlePda(
-        programs.dap,
-        handle.handle
-    );
     // increment authority index
     const authorityIndex: number = handle.numCollections + 1;
     // kick off upload steps
@@ -224,6 +219,19 @@ export async function creatNft(
                 form.shdw.account
             );
             const metadataUrl = url + "meta.json";
+            // derive & fetch boss pda
+            const bossPda = deriveBossPda(
+                programs.dap
+            );
+            const boss = await getBossPda(
+                programs.dap,
+                bossPda
+            );
+            // derive handle pda with bump
+            let handlePda = await deriveHandlePda(
+                programs.dap,
+                handle.handle
+            );
             // derive authority pda
             const authorityPda = await deriveAuthorityPda(
                 programs.dap,
@@ -252,8 +260,19 @@ export async function creatNft(
                 ],
                 MPL_TOKEN_METADATA_PROGRAM_ID
             );
+            // derive usdc ata
+            let usdcAta;
+            [usdcAta, _] = PublicKey.findProgramAddressSync(
+                [
+                    provider.wallet.publicKey.toBuffer(),
+                    SPL_TOKEN_PROGRAM_ID.toBuffer(),
+                    boss.usdc.toBuffer()
+                ],
+                SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+            );
             // bump bumps
             const bumps = {
+                boss: bossPda.bump,
                 handle: handlePda.bump,
                 authority: authorityPda.bump,
                 metadata: metadataBump,
@@ -270,11 +289,14 @@ export async function creatNft(
                 )
                 .accounts(
                     {
+                        boss: bossPda.address,
                         handle: handlePda.address,
                         authority: authorityPda.address,
                         mint: mint.publicKey,
                         mintAta: mintAta,
                         metadata: metadataPda,
+                        usdc: boss.usdc,
+                        usdcAta: usdcAta,
                         payer: provider.wallet.publicKey,
                         tokenProgram: SPL_TOKEN_PROGRAM_ID,
                         associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,

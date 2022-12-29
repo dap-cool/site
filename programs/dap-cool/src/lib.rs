@@ -82,6 +82,13 @@ pub struct InitNewCreator<'info> {
 #[derive(Accounts)]
 #[instruction(bumps: CreateNftBumps)]
 pub struct CreateNFT<'info> {
+    #[account(
+    seeds = [
+    pda::boss::SEED.as_bytes()
+    ],
+    bump = bumps.boss
+    )]
+    pub boss: Box<Account<'info, Boss>>,
     #[account(mut,
     seeds = [
     pda::handle::SEED.as_bytes(),
@@ -125,6 +132,17 @@ pub struct CreateNFT<'info> {
     )]
     /// CHECK: uninitialized metadata
     pub metadata: UncheckedAccount<'info>,
+    #[account(
+    address = boss.usdc,
+    owner = token_program.key()
+    )]
+    pub usdc: Account<'info, Mint>,
+    #[account(init_if_needed,
+    associated_token::mint = usdc,
+    associated_token::authority = payer,
+    payer = payer
+    )]
+    pub usdc_ata: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
     pub payer: Signer<'info>,
     // token program

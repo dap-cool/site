@@ -37,6 +37,11 @@ export type DapCool = {
       "name": "createNft",
       "accounts": [
         {
+          "name": "boss",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": true,
           "isSigner": false
@@ -58,6 +63,16 @@ export type DapCool = {
         },
         {
           "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAta",
           "isMut": true,
           "isSigner": false
         },
@@ -408,6 +423,10 @@ export type DapCool = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "boss",
+            "type": "u8"
+          },
           {
             "name": "handle",
             "type": "u8"
@@ -514,6 +533,11 @@ export const IDL: DapCool = {
       "name": "createNft",
       "accounts": [
         {
+          "name": "boss",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": true,
           "isSigner": false
@@ -535,6 +559,16 @@ export const IDL: DapCool = {
         },
         {
           "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAta",
           "isMut": true,
           "isSigner": false
         },
@@ -885,6 +919,10 @@ export const IDL: DapCool = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "boss",
+            "type": "u8"
+          },
           {
             "name": "handle",
             "type": "u8"
