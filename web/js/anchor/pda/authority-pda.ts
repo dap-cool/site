@@ -13,9 +13,7 @@ export interface AuthorityPda {
     bump: number
 }
 
-// TODO; math
 export interface CollectionAuthority {
-    // meta
     meta: {
         handle: string
         index: number
@@ -23,11 +21,11 @@ export interface CollectionAuthority {
         symbol: string
         uri: string
         image: string
-        // math
+    }
+    math: {
         numMinted: number // decoded as BN
         totalSupply: number // decoded as BN
     }
-    // accounts
     accounts: {
         pda: PublicKey
         mint: PublicKey
@@ -139,7 +137,9 @@ async function getManyAuthorityPda(
                         name: raw.name,
                         symbol: raw.symbol,
                         uri: raw.uri,
-                        image: getImageUrl(raw.uri, raw.image),
+                        image: getImageUrl(raw.uri, raw.image)
+                    },
+                    math: {
                         numMinted: raw.numMinted.toNumber(),
                         totalSupply: raw.totalSupply.toNumber()
                     },
@@ -216,6 +216,8 @@ export async function getAuthorityPda(
             symbol: raw.symbol,
             uri: raw.uri,
             image: getImageUrl(raw.uri, raw.image),
+        },
+        math: {
             numMinted: raw.numMinted.toNumber(),
             totalSupply: raw.totalSupply.toNumber()
         },

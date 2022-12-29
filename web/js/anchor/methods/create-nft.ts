@@ -323,7 +323,8 @@ export async function creatNft(
                     symbol: form.meta.symbol,
                     uri: metadataUrl,
                     image: getImageUrl(metadataUrl, logo.type),
-                    // math
+                },
+                math: {
                     numMinted: 1, // TODO; creator-distribution?
                     totalSupply: 10, // TODO; supply
                 },
