@@ -13,6 +13,7 @@ export interface AuthorityPda {
     bump: number
 }
 
+// TODO; math
 export interface CollectionAuthority {
     // meta
     meta: {

@@ -9,6 +9,7 @@ import Util.Decode as Util
 
 type alias Collection =
     { meta : Meta
+    , math: Math
     , accounts : Accounts
     }
 
@@ -20,7 +21,10 @@ type alias Meta =
     , symbol : String
     , image : String
     , uri : String
-    , numMinted : Int -- encoded as big-int
+    }
+
+type alias Math =
+    { numMinted : Int -- encoded as big-int
     , totalSupply : Int -- encoded as big-int
     }
 
@@ -66,10 +70,14 @@ encoder collection =
                 , ( "image", Encode.string collection.meta.image )
                 , ( "symbol", Encode.string collection.meta.symbol )
                 , ( "uri", Encode.string collection.meta.uri )
-                , ( "numMinted", Encode.int collection.meta.numMinted )
-                , ( "totalSupply", Encode.int collection.meta.totalSupply )
                 ]
           )
+        , ("math"
+            , Encode.object
+                [ ( "numMinted", Encode.int collection.math.numMinted )
+                , ( "totalSupply", Encode.int collection.math.totalSupply )
+                ]
+        )
         , ( "accounts"
           , Encode.object
                 [ ( "pda", Encode.string collection.accounts.pda )
@@ -96,15 +104,18 @@ decodeList string =
 
 decoder : Decode.Decoder Collection
 decoder =
-    Decode.map2 Collection
+    Decode.map3 Collection
         (Decode.field "meta" <|
-            Decode.map8 Meta
+            Decode.map6 Meta
                 (Decode.field "handle" Decode.string)
                 (Decode.field "index" Decode.int)
                 (Decode.field "name" Decode.string)
                 (Decode.field "symbol" Decode.string)
                 (Decode.field "image" Decode.string)
                 (Decode.field "uri" Decode.string)
+        )
+        (Decode.field "math" <|
+            Decode.map2 Math
                 (Decode.field "numMinted" Decode.int)
                 (Decode.field "totalSupply" Decode.int)
         )
@@ -121,7 +132,7 @@ decoder =
 
 isSoldOut : Collection -> Bool
 isSoldOut collection =
-    collection.meta.totalSupply == collection.meta.numMinted
+    collection.math.totalSupply == collection.math.numMinted
 
 
 isEmpty : Collection -> Bool

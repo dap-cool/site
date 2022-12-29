@@ -55,11 +55,11 @@ view_ collection select =
                             ]
                             [ Html.text <|
                                 String.concat
-                                    [ String.fromInt (collection.meta.totalSupply - collection.meta.numMinted)
+                                    [ String.fromInt (collection.math.totalSupply - collection.math.numMinted)
                                     , " "
                                     , "still available out of"
                                     , " "
-                                    , String.fromInt collection.meta.totalSupply
+                                    , String.fromInt collection.math.totalSupply
                                     ]
                             ]
                         ]
