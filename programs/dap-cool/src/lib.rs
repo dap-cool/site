@@ -145,7 +145,8 @@ pub struct MintNewCopy<'info> {
     #[account(mut,
     seeds = [
     pda::boss::SEED.as_bytes()
-    ], bump,
+    ],
+    bump = bumps.boss
     )]
     pub boss: Box<Account<'info, Boss>>,
     #[account(init_if_needed,

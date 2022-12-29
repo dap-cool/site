@@ -22,6 +22,7 @@ import {
 } from "../pda/collector-pda";
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
 import {getUploads} from "../pda/datum-pda";
+import {deriveBossPda, getBossPda} from "../pda/boss-pda";
 
 export async function mintNewCopy(
     app,
@@ -34,6 +35,14 @@ export async function mintNewCopy(
     index: number
 ) {
     try {
+        // derive & fetch boss pda
+        const bossPda = deriveBossPda(
+            programs.dap
+        );
+        const boss = await getBossPda(
+            programs.dap,
+            bossPda
+        );
         // derive collector pda
         const collectorPda = await deriveCollectorPda(
             provider,
@@ -71,10 +80,14 @@ export async function mintNewCopy(
             programs.dap,
             collectorNextCollectionIndex
         );
-        // derive handle pda
+        // derive & fetch handle pda
         const handlePda = await deriveHandlePda(
             programs.dap,
             handle
+        );
+        const fetchedHandle = await getHandlePda(
+            programs.dap,
+            handlePda.address
         );
         // derive authority pda with bump
         const authorityPda = await deriveAuthorityPda(
@@ -106,7 +119,7 @@ export async function mintNewCopy(
             console.log("first time collecting this item")
             collectedBefore = false;
         }
-        // derive associated-token-account
+        // derive mint ata
         let mintAta, _;
         [mintAta, _] = PublicKey.findProgramAddressSync(
             [
@@ -116,11 +129,32 @@ export async function mintNewCopy(
             ],
             SPL_ASSOCIATED_TOKEN_PROGRAM_ID
         );
+        // derive usdc ata (from src)
+        let usdcAtaSrc;
+        [usdcAtaSrc, _] = PublicKey.findProgramAddressSync(
+            [
+                provider.wallet.publicKey.toBuffer(),
+                SPL_TOKEN_PROGRAM_ID.toBuffer(),
+                boss.usdc.toBuffer()
+            ],
+            SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+        );
+        // derive usdc ata (to handle as dst)
+        let usdcAtaDstHandle;
+        [usdcAtaDstHandle, _] = PublicKey.findProgramAddressSync(
+            [
+                fetchedHandle.authority.toBuffer(),
+                SPL_TOKEN_PROGRAM_ID.toBuffer(),
+                boss.usdc.toBuffer()
+            ],
+            SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+        );
         // build bumps
         const bumps = {
+            boss: bossPda.bump,
             handle: handlePda.bump,
             authority: authorityPda.bump,
-        }
+        };
         // invoke rpc
         console.log("minting new copy");
         await programs.dap.methods
@@ -130,6 +164,7 @@ export async function mintNewCopy(
             )
             .accounts(
                 {
+                    boss: bossPda.address,
                     collector: collectorPda.address,
                     collectionPda: collectionPda.address,
                     collected: collectedPda.address,
@@ -137,6 +172,9 @@ export async function mintNewCopy(
                     authority: authorityPda.address,
                     mint: authority.accounts.mint,
                     mintAta: mintAta,
+                    usdc: boss.usdc,
+                    usdcAtaSrc: usdcAtaSrc,
+                    usdcAtaDstHandle: usdcAtaDstHandle,
                     payer: provider.wallet.publicKey,
                     tokenProgram: SPL_TOKEN_PROGRAM_ID,
                     associatedTokenProgram: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,

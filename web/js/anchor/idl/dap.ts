@@ -429,6 +429,10 @@ export type DapCool = {
         "kind": "struct",
         "fields": [
           {
+            "name": "boss",
+            "type": "u8"
+          },
+          {
             "name": "handle",
             "type": "u8"
           },
@@ -901,6 +905,10 @@ export const IDL: DapCool = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "boss",
+            "type": "u8"
+          },
           {
             "name": "handle",
             "type": "u8"

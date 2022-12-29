@@ -72,6 +72,7 @@ pub fn ix(ctx: Context<MintNewCopy>, bumps: MintNewCopyBumps, n: u8) -> Result<(
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct MintNewCopyBumps {
+    pub boss: u8,
     pub handle: u8,
     pub authority: u8,
 }
