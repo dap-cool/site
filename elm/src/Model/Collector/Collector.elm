@@ -15,7 +15,7 @@ type
       -- select collection
     | SelectedCreator ( Intersection, Remainder ) WithCollections
     | SelectedCollection MaybeCollected Selected Uploaded
-    | UnlockedDatum Collected Datum
+    | UnlockedDatum Collected Unlocked Uploaded
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int
@@ -31,6 +31,10 @@ type alias Collected =
 
 type alias Uploaded =
     List Datum
+
+
+type alias Unlocked =
+    Datum
 
 
 type MaybeCollected

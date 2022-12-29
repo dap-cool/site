@@ -288,6 +288,7 @@ body collector =
                                                             CollectorMsg.UnlockDatum
                                                                 unlockable
                                                                 datum
+                                                                uploaded
                                                     ]
                                                     [ Html.text "unlock"
                                                     ]
@@ -526,7 +527,7 @@ body collector =
                             ]
                         ]
 
-                UnlockedDatum collection datum ->
+                UnlockedDatum collection datum _ ->
                     Html.div
                         []
                         [ breadcrumb3 collection datum

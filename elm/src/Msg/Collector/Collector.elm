@@ -9,7 +9,7 @@ type FromCollector
     = HandleForm Handle.Form
     | SelectCollection Handle Int
     | PrintCopy Handle Int
-    | UnlockDatum Collection Datum
+    | UnlockDatum Collection Datum (List Datum)
 
 
 toString : FromCollector -> String
@@ -24,7 +24,7 @@ toString collector =
         PrintCopy _ _ ->
             "collector-print-copy"
 
-        UnlockDatum _ _ ->
+        UnlockDatum _ _ _ ->
             "collector-unlock-datum"
 
         _ ->

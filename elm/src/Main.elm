@@ -427,7 +427,7 @@ update msg model =
                             }
                     )
 
-                FromCollector.UnlockDatum collection datum ->
+                FromCollector.UnlockDatum collection datum uploaded ->
                     ( { model
                         | state =
                             { local = model.state.local
@@ -438,7 +438,7 @@ update msg model =
                     , sender <|
                         Sender.encode <|
                             { sender = Sender.Collect from
-                            , more = Datum.encode collection datum
+                            , more = Datum.encode collection datum uploaded
                             }
                     )
 
@@ -831,6 +831,7 @@ update msg model =
                                                                                     Collector.UnlockedDatum
                                                                                         wc.collection
                                                                                         wc.datum
+                                                                                        wc.uploaded
                                                                             , global = model.state.global
                                                                             , exception = Exception.Closed
                                                                             }
@@ -843,72 +844,46 @@ update msg model =
                                             case toGlobal of
                                                 ToGlobal.DisconnectWallet ->
                                                     let
-                                                        ( local, exception, cmd ) =
+                                                        local =
                                                             case model.state.local of
                                                                 Local.Create _ ->
-                                                                    ( Local.Create <| Creator.New <| NewCreator.Top
-                                                                    , model.state.exception
-                                                                    , Cmd.none
-                                                                    )
+                                                                    Local.Create <| Creator.New <| NewCreator.Top
 
                                                                 Local.Collect (Collector.SelectedCreator _ withCollections) ->
-                                                                    ( Local.Collect <|
+                                                                    Local.Collect <|
                                                                         Collector.SelectedCreator
                                                                             ( [], withCollections.collections )
                                                                             -- no intersection
                                                                             withCollections
-                                                                    , model.state.exception
-                                                                    , Cmd.none
-                                                                    )
 
                                                                 Local.Collect (Collector.SelectedCollection _ selected uploaded) ->
-                                                                    ( Local.Collect <|
+                                                                    Local.Collect <|
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
                                                                             selected
                                                                             uploaded
-                                                                    , model.state.exception
-                                                                    , Cmd.none
-                                                                    )
 
-                                                                -- go back to js for ata balance TODO; .find ?
-                                                                Local.Collect (Collector.UnlockedDatum collected datum) ->
-                                                                    ( Local.Collect <|
-                                                                        Collector.UnlockedDatum
+                                                                Local.Collect (Collector.UnlockedDatum collected _ uploaded) ->
+                                                                    Local.Collect <|
+                                                                        Collector.SelectedCollection
+                                                                            Collector.NotLoggedInYet
                                                                             collected
-                                                                            datum
-                                                                    , Exception.Waiting
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Collect <|
-                                                                                    FromCollector.SelectCollection
-                                                                                        collected.meta.handle
-                                                                                        collected.meta.index
-                                                                            , more =
-                                                                                AlmostExistingCollection.encode
-                                                                                    { handle = collected.meta.handle
-                                                                                    , index = collected.meta.index
-                                                                                    }
-                                                                            }
-                                                                    )
+                                                                            uploaded
 
                                                                 _ ->
-                                                                    ( model.state.local
-                                                                    , model.state.exception
-                                                                    , Cmd.none
-                                                                    )
+                                                                    model.state.local
                                                     in
                                                     ( { model
                                                         | state =
                                                             { local = local
                                                             , global = Global.NoWalletYet
-                                                            , exception = exception
+                                                            , exception = model.state.exception
                                                             }
                                                       }
-                                                    , cmd
+                                                    , Cmd.none
                                                     )
 
+                                                -- TODO; open exception modal
                                                 ToGlobal.FoundMissingWalletPlugin ->
                                                     ( { model
                                                         | state =
@@ -1013,7 +988,7 @@ update msg model =
                                                                     )
 
                                                                 -- go back to js for ata balance
-                                                                Local.Collect (Collector.UnlockedDatum collected _) ->
+                                                                Local.Collect (Collector.UnlockedDatum collected _ _) ->
                                                                     ( { model
                                                                         | state = bumpedState hasWallet True
                                                                       }
@@ -1133,7 +1108,7 @@ update msg model =
                                                                     )
 
                                                                 -- go back to js for ata balance
-                                                                Local.Collect (Collector.UnlockedDatum collected _) ->
+                                                                Local.Collect (Collector.UnlockedDatum collected _ _) ->
                                                                     ( { model
                                                                         | state = bumpedState hasWalletAndHandle True
                                                                       }

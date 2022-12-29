@@ -360,7 +360,8 @@ export async function main(app, json) {
                         more: JSON.stringify(
                             {
                                 collection: more.collection,
-                                datum: unlocked
+                                datum: unlocked,
+                                uploaded: more.uploaded
                             }
                         )
                     }

@@ -129,29 +129,54 @@ toSrc file =
                             NotSupported
 
 
-encode : Collection -> Datum -> String
-encode collection datum =
+encode : Collection -> Datum -> List Datum -> String
+encode collection datum uploaded =
     Encode.encode 0 <|
         Encode.object
             [ ( "collection", Collection.encoder collection )
-            , ( "datum"
-              , Encode.object
-                    [ ( "mint", Encode.string datum.mint )
-                    , ( "uploader", Encode.string datum.uploader )
-                    , ( "index", Encode.int datum.index )
-                    , ( "filtered", Encode.bool datum.filtered )
-                    , ( "shadow"
-                      , Encode.object
-                            [ ( "account", Encode.string datum.shadow.account )
-                            , ( "url", Encode.string datum.shadow.url )
-                            ]
-                      )
-                    ]
-              )
+            , ( "datum", encoder datum )
+            , ( "uploaded", Encode.list encoder uploaded )
             ]
 
 
-decode : String -> Result String { collection : Collection, datum : Datum }
+encoder : Datum -> Encode.Value
+encoder datum =
+    Encode.object
+        [ ( "mint", Encode.string datum.mint )
+        , ( "uploader", Encode.string datum.uploader )
+        , ( "index", Encode.int datum.index )
+        , ( "filtered", Encode.bool datum.filtered )
+        , ( "shadow"
+          , Encode.object
+                [ ( "account", Encode.string datum.shadow.account )
+                , ( "url", Encode.string datum.shadow.url )
+                ]
+          )
+        , ( "metadata"
+          , Encode.object
+                [ ( "title", Encode.string datum.metadata.title )
+                , ( "zip"
+                  , Encode.object
+                        [ ( "count", Encode.int datum.metadata.zip.count )
+                        , ( "types", Encode.list Encode.string datum.metadata.zip.types )
+                        , ( "files"
+                          , Encode.list
+                                (\f ->
+                                    Encode.object
+                                        [ ( "base64", Encode.string f.base64 )
+                                        , ( "type_", Encode.string f.type_ )
+                                        ]
+                                )
+                                datum.metadata.zip.files
+                          )
+                        ]
+                  )
+                ]
+          )
+        ]
+
+
+decode : String -> Result String { collection : Collection, datum : Datum, uploaded : List Datum }
 decode string =
     Util.decode string decoder_ identity
 
@@ -190,11 +215,12 @@ decoder =
         )
 
 
-decoder_ : Decode.Decoder { collection : Collection, datum : Datum }
+decoder_ : Decode.Decoder { collection : Collection, datum : Datum, uploaded : List Datum }
 decoder_ =
-    Decode.map2 (\c d -> { collection = c, datum = d })
+    Decode.map3 (\c d u -> { collection = c, datum = d, uploaded = u })
         (Decode.field "collection" Collection.decoder)
         (Decode.field "datum" decoder)
+        (Decode.field "uploaded" <| Decode.list decoder)
 
 
 decoder2_ : Decode.Decoder WithCollection
