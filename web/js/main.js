@@ -25,23 +25,6 @@ let phantom = null;
 
 export async function main(app, json) {
     console.log(json);
-    // listen for wallet change
-    const phantomProvider = getPhantomProvider();
-    if (phantomProvider) {
-        phantomProvider.on("accountChanged", async () => {
-            console.log("wallet changed");
-            // fetch state if previously connected
-            if (phantom) {
-                phantom = await getPhantom(app);
-                const pp = getPP(phantom);
-                await getGlobal(
-                    app,
-                    pp.provider,
-                    pp.programs
-                );
-            }
-        });
-    }
     try {
         // parse json as object
         const parsed = JSON.parse(json);
@@ -379,5 +362,24 @@ export async function main(app, json) {
         app.ports.error.send(
             error.toString()
         );
+    }
+}
+
+export async function onWalletChange(app) {
+    const phantomProvider = getPhantomProvider();
+    if (phantomProvider) {
+        phantomProvider.on("accountChanged", async () => {
+            console.log("wallet changed");
+            // fetch state if previously connected
+            if (phantom) {
+                phantom = await getPhantom(app);
+                const pp = getPP(phantom);
+                await getGlobal(
+                    app,
+                    pp.provider,
+                    pp.programs
+                );
+            }
+        });
     }
 }
