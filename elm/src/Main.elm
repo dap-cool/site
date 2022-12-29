@@ -732,7 +732,7 @@ update msg model =
                                                         ToCollector.CollectionSelected ->
                                                             let
                                                                 ata collection =
-                                                                    case collection.accounts.ata.balance == 0 of
+                                                                    case Collection.isEmpty collection of
                                                                         True ->
                                                                             Collector.Zero
 
