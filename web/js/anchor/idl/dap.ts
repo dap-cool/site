@@ -141,7 +141,7 @@ export type DapCool = {
       "accounts": [
         {
           "name": "boss",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -637,7 +637,7 @@ export const IDL: DapCool = {
       "accounts": [
         {
           "name": "boss",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {

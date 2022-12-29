@@ -160,7 +160,7 @@ pub struct CreateNFT<'info> {
 #[derive(Accounts)]
 #[instruction(bumps: MintNewCopyBumps, n: u8)]
 pub struct MintNewCopy<'info> {
-    #[account(mut,
+    #[account(
     seeds = [
     pda::boss::SEED.as_bytes()
     ],
