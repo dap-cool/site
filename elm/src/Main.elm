@@ -843,36 +843,70 @@ update msg model =
                                             case toGlobal of
                                                 ToGlobal.DisconnectWallet ->
                                                     let
-                                                        local =
+                                                        ( local, exception, cmd ) =
                                                             case model.state.local of
                                                                 Local.Create _ ->
-                                                                    Local.Create <| Creator.New <| NewCreator.Top
+                                                                    ( Local.Create <| Creator.New <| NewCreator.Top
+                                                                    , model.state.exception
+                                                                    , Cmd.none
+                                                                    )
 
                                                                 Local.Collect (Collector.SelectedCreator _ withCollections) ->
-                                                                    Local.Collect <|
+                                                                    ( Local.Collect <|
                                                                         Collector.SelectedCreator
                                                                             ( [], withCollections.collections )
                                                                             -- no intersection
                                                                             withCollections
+                                                                    , model.state.exception
+                                                                    , Cmd.none
+                                                                    )
 
                                                                 Local.Collect (Collector.SelectedCollection _ selected uploaded) ->
-                                                                    Local.Collect <|
+                                                                    ( Local.Collect <|
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
                                                                             selected
                                                                             uploaded
+                                                                    , model.state.exception
+                                                                    , Cmd.none
+                                                                    )
+
+                                                                -- go back to js for ata balance
+                                                                Local.Collect (Collector.UnlockedDatum collected datum) ->
+                                                                    ( Local.Collect <|
+                                                                        Collector.UnlockedDatum
+                                                                            collected
+                                                                            datum
+                                                                    , Exception.Waiting
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.SelectCollection
+                                                                                        collected.meta.handle
+                                                                                        collected.meta.index
+                                                                            , more =
+                                                                                AlmostExistingCollection.encode
+                                                                                    { handle = collected.meta.handle
+                                                                                    , index = collected.meta.index
+                                                                                    }
+                                                                            }
+                                                                    )
 
                                                                 _ ->
-                                                                    model.state.local
+                                                                    ( model.state.local
+                                                                    , model.state.exception
+                                                                    , Cmd.none
+                                                                    )
                                                     in
                                                     ( { model
                                                         | state =
                                                             { local = local
                                                             , global = Global.NoWalletYet
-                                                            , exception = model.state.exception
+                                                            , exception = exception
                                                             }
                                                       }
-                                                    , Cmd.none
+                                                    , cmd
                                                     )
 
                                                 ToGlobal.FoundMissingWalletPlugin ->
@@ -891,18 +925,29 @@ update msg model =
                                                         state =
                                                             model.state
 
-                                                        bumpedState hasWallet =
-                                                            { state
-                                                                | global =
+                                                        bumpedState hasWallet waiting =
+                                                            let
+                                                                global =
                                                                     Global.HasWallet
                                                                         hasWallet
-                                                                , exception = model.state.exception
-                                                            }
+                                                            in
+                                                            case waiting of
+                                                                True ->
+                                                                    { state
+                                                                        | global = global
+                                                                        , exception = Exception.Waiting
+                                                                    }
 
-                                                        bumpedLocal hasWallet local =
+                                                                False ->
+                                                                    { state
+                                                                        | global = global
+                                                                        , exception = model.state.exception
+                                                                    }
+
+                                                        bumpedLocal hasWallet local waiting =
                                                             let
                                                                 bumpedState_ =
-                                                                    bumpedState hasWallet
+                                                                    bumpedState hasWallet waiting
                                                             in
                                                             { bumpedState_
                                                                 | local = local
@@ -919,6 +964,7 @@ update msg model =
                                                                                     Creator.New <|
                                                                                         NewCreator.Top
                                                                                 )
+                                                                                False
                                                                       }
                                                                     , Cmd.none
                                                                     )
@@ -937,13 +983,16 @@ update msg model =
                                                                                         )
                                                                                         withCollections
                                                                                 )
+                                                                                False
                                                                       }
                                                                     , Cmd.none
                                                                     )
 
                                                                 -- go back to js for ata balance
                                                                 Local.Collect (Collector.SelectedCollection _ selected _) ->
-                                                                    ( { model | state = bumpedState hasWallet }
+                                                                    ( { model
+                                                                        | state = bumpedState hasWallet True
+                                                                      }
                                                                     , sender <|
                                                                         Sender.encode <|
                                                                             { sender =
@@ -959,9 +1008,29 @@ update msg model =
                                                                             }
                                                                     )
 
+                                                                -- go back to js for ata balance
+                                                                Local.Collect (Collector.UnlockedDatum collected _) ->
+                                                                    ( { model
+                                                                        | state = bumpedState hasWallet True
+                                                                      }
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.SelectCollection
+                                                                                        collected.meta.handle
+                                                                                        collected.meta.index
+                                                                            , more =
+                                                                                AlmostExistingCollection.encode
+                                                                                    { handle = collected.meta.handle
+                                                                                    , index = collected.meta.index
+                                                                                    }
+                                                                            }
+                                                                    )
+
                                                                 -- update global & move on
                                                                 _ ->
-                                                                    ( { model | state = bumpedState hasWallet }
+                                                                    ( { model | state = bumpedState hasWallet False }
                                                                     , Cmd.none
                                                                     )
                                                     in
@@ -972,18 +1041,29 @@ update msg model =
                                                         state =
                                                             model.state
 
-                                                        bumpedState hasWalletAndHandle =
-                                                            { state
-                                                                | global =
+                                                        bumpedState hasWalletAndHandle waiting =
+                                                            let
+                                                                global =
                                                                     Global.HasWalletAndHandle
                                                                         hasWalletAndHandle
-                                                                , exception = model.state.exception
-                                                            }
+                                                            in
+                                                            case waiting of
+                                                                True ->
+                                                                    { state
+                                                                        | global = global
+                                                                        , exception = Exception.Waiting
+                                                                    }
 
-                                                        bumpedLocal hasWallet local =
+                                                                False ->
+                                                                    { state
+                                                                        | global = global
+                                                                        , exception = model.state.exception
+                                                                    }
+
+                                                        bumpedLocal hasWalletAndHandle local waiting =
                                                             let
                                                                 bumpedState_ =
-                                                                    bumpedState hasWallet
+                                                                    bumpedState hasWalletAndHandle waiting
                                                             in
                                                             { bumpedState_
                                                                 | local = local
@@ -1000,6 +1080,7 @@ update msg model =
                                                                                     Creator.Existing hasWalletAndHandle <|
                                                                                         ExistingCreator.Top
                                                                                 )
+                                                                                False
                                                                       }
                                                                     , Cmd.none
                                                                     )
@@ -1018,13 +1099,16 @@ update msg model =
                                                                                         )
                                                                                         withCollections
                                                                                 )
+                                                                                False
                                                                       }
                                                                     , Cmd.none
                                                                     )
 
                                                                 -- go back to js for ata balance
                                                                 Local.Collect (Collector.SelectedCollection _ selected _) ->
-                                                                    ( { model | state = bumpedState hasWalletAndHandle }
+                                                                    ( { model
+                                                                        | state = bumpedState hasWalletAndHandle True
+                                                                      }
                                                                     , sender <|
                                                                         Sender.encode <|
                                                                             { sender =
@@ -1040,9 +1124,31 @@ update msg model =
                                                                             }
                                                                     )
 
+                                                                -- go back to js for ata balance
+                                                                Local.Collect (Collector.UnlockedDatum collected _) ->
+                                                                    ( { model
+                                                                        | state = bumpedState hasWalletAndHandle True
+                                                                      }
+                                                                    , sender <|
+                                                                        Sender.encode <|
+                                                                            { sender =
+                                                                                Sender.Collect <|
+                                                                                    FromCollector.SelectCollection
+                                                                                        collected.meta.handle
+                                                                                        collected.meta.index
+                                                                            , more =
+                                                                                AlmostExistingCollection.encode
+                                                                                    { handle = collected.meta.handle
+                                                                                    , index = collected.meta.index
+                                                                                    }
+                                                                            }
+                                                                    )
+
                                                                 -- update global & move on
                                                                 _ ->
-                                                                    ( { model | state = bumpedState hasWalletAndHandle }
+                                                                    ( { model
+                                                                        | state = bumpedState hasWalletAndHandle False
+                                                                      }
                                                                     , Cmd.none
                                                                     )
                                                     in
