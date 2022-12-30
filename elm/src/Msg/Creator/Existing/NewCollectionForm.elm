@@ -7,6 +7,7 @@ type NewCollectionForm
     = Image
     | Name String NewCollection.MaybeMetaForm
     | Symbol String NewCollection.MaybeMetaForm
+    | TotalSupply String NewCollection.MaybeMetaForm
     | CreatorDistribution String NewCollection.MaybeMetaForm
     | Price String NewCollection.MaybeMetaForm
     | Fee String NewCollection.MaybeMetaForm

@@ -261,39 +261,71 @@ update msg model =
                                     in
                                     bump form_
 
+                                NewCollectionForm.TotalSupply string form ->
+                                    let
+                                        form_ =
+                                            case string of
+                                                "" ->
+                                                    { form | totalSupply = Nothing }
+
+                                                nes ->
+                                                    case String.toInt nes of
+                                                        Just int ->
+                                                            { form | totalSupply = Just int }
+
+                                                        Nothing ->
+                                                            form
+                                    in
+                                    bump form_
+
                                 NewCollectionForm.CreatorDistribution string form ->
                                     let
                                         form_ =
-                                            case String.toInt string of
-                                                Just int ->
-                                                    { form | creatorDistribution = Just int }
-
-                                                Nothing ->
+                                            case string of
+                                                "" ->
                                                     { form | creatorDistribution = Nothing }
+
+                                                nes ->
+                                                    case String.toInt nes of
+                                                        Just int ->
+                                                            { form | creatorDistribution = Just int }
+
+                                                        Nothing ->
+                                                            form
                                     in
                                     bump form_
 
                                 NewCollectionForm.Price string form ->
                                     let
                                         form_ =
-                                            case String.toInt string of
-                                                Just int ->
-                                                    { form | price = Just int }
-
-                                                Nothing ->
+                                            case string of
+                                                "" ->
                                                     { form | price = Nothing }
+
+                                                nes ->
+                                                    case String.toFloat nes of
+                                                        Just float ->
+                                                            { form | price = Just float }
+
+                                                        Nothing ->
+                                                            form
                                     in
                                     bump form_
 
                                 NewCollectionForm.Fee string form ->
                                     let
                                         form_ =
-                                            case String.toInt string of
-                                                Just int ->
-                                                    { form | fee = Just int }
-
-                                                Nothing ->
+                                            case string of
+                                                "" ->
                                                     { form | fee = Nothing }
+
+                                                nes ->
+                                                    case String.toFloat nes of
+                                                        Just float ->
+                                                            { form | fee = Just float }
+
+                                                        Nothing ->
+                                                            form
                                     in
                                     bump form_
 

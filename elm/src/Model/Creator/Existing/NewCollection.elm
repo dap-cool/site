@@ -35,18 +35,20 @@ type alias WithGlobal =
 type alias MaybeMetaForm =
     { name : Maybe String
     , symbol : Maybe String
+    , totalSupply : Maybe Int
     , creatorDistribution : Maybe Int
-    , price : Maybe Int
-    , fee : Maybe Int
+    , price : Maybe Float
+    , fee : Maybe Float
     }
 
 
 type alias MetaForm =
     { name : String
     , symbol : String
+    , totalSupply : Int
     , creatorDistribution : Int
-    , price : Int
-    , fee : Int
+    , price : Float
+    , fee : Float
     }
 
 
@@ -59,6 +61,7 @@ default : MaybeMetaForm
 default =
     { name = Nothing
     , symbol = Nothing
+    , totalSupply = Nothing
     , creatorDistribution = Nothing
     , price = Nothing
     , fee = Nothing
@@ -84,9 +87,10 @@ encode form =
                   , Encode.object
                         [ ( "name", Encode.string form.meta.name )
                         , ( "symbol", Encode.string form.meta.symbol )
+                        , ( "totalSupply", Encode.int form.meta.totalSupply )
                         , ( "creatorDistribution", Encode.int form.meta.creatorDistribution )
-                        , ( "price", Encode.int form.meta.price )
-                        , ( "fee", Encode.int form.meta.fee )
+                        , ( "price", Encode.float form.meta.price )
+                        , ( "fee", Encode.float form.meta.fee )
                         ]
                   )
                 , ( "shdw"
@@ -113,12 +117,13 @@ decoder =
                 (Decode.field "step" Decode.int)
                 (Decode.field "retries" Decode.int)
                 (Decode.field "meta" <|
-                    Decode.map5 MetaForm
+                    Decode.map6 MetaForm
                         (Decode.field "name" Decode.string)
                         (Decode.field "symbol" Decode.string)
+                        (Decode.field "totalSupply" Decode.int)
                         (Decode.field "creatorDistribution" Decode.int)
-                        (Decode.field "price" Decode.int)
-                        (Decode.field "fee" Decode.int)
+                        (Decode.field "price" Decode.float)
+                        (Decode.field "fee" Decode.float)
                 )
                 (Decode.maybe <|
                     Decode.field "shdw" <|
