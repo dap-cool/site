@@ -25,6 +25,10 @@ export interface Form {
     meta: {
         name: string
         symbol: string
+        totalSupply: number
+        creatorDistribution: number
+        price: number
+        fee: number
     }
     shdw: {
         account: PublicKey
@@ -277,6 +281,10 @@ export async function creatNft(
                 authority: authorityPda.bump,
                 metadata: metadataBump,
             }
+            // normalize price
+            const price = form.meta.price * 100000;
+            // normalize fee
+            const fee = form.meta.fee * 100;
             // invoke rpc
             await programs.dap.methods
                 .createNft(
@@ -285,10 +293,10 @@ export async function creatNft(
                     form.meta.symbol as any,
                     metadataUrl as any,
                     logo.type as any,
-                    new BN(10), // TODO; supply
-                    new BN(2), // TODO; creator distribution
-                    new BN(25000), // TODO; price
-                    500 as any // TODO; fee
+                    new BN(form.meta.totalSupply),
+                    new BN(form.meta.creatorDistribution),
+                    new BN(price),
+                    fee as any
                 )
                 .accounts(
                     {
@@ -325,16 +333,16 @@ export async function creatNft(
                     image: getImageUrl(metadataUrl, logo.type),
                 },
                 math: {
-                    numMinted: 1, // TODO; creator-distribution?
-                    totalSupply: 10, // TODO; supply
-                    price: 25000, // TODO; price
-                    fee: 500 // TODO; fee
+                    numMinted: form.meta.creatorDistribution,
+                    totalSupply: form.meta.totalSupply,
+                    price: price,
+                    fee: fee
                 },
                 accounts: {
                     pda: authorityPda.address,
                     mint: mint.publicKey,
                     ata: {
-                        balance: 1 // TODO; creator-distribution?
+                        balance: form.meta.creatorDistribution
                     }
                 }
             } as CollectionAuthority;
