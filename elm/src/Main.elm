@@ -511,7 +511,7 @@ update msg model =
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             hasWalletAndHandle
-                                                                                    , exception = model.state.exception
+                                                                                    , exception = Exception.Closed
                                                                                     }
                                                                             }
                                                                     in
