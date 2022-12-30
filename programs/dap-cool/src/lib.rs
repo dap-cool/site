@@ -15,7 +15,7 @@ pub mod pda;
 pub mod ix;
 pub mod error;
 
-declare_id!("54eGWoBhZePCHVUWScjFznKx7ZUaLwa8qCenauN5ncLK");
+declare_id!("CVRiPDJVgYb4cwrwL56LVFoB3tifgmP6QZDfxfmvXonS");
 
 #[program]
 pub mod dap_cool {

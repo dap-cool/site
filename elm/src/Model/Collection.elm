@@ -26,6 +26,8 @@ type alias Meta =
 type alias Math =
     { numMinted : Int -- encoded as big-int
     , totalSupply : Int -- encoded as big-int
+    , price : Int -- encoded as big-int
+    , fee : Int
     }
 
 
@@ -76,6 +78,8 @@ encoder collection =
             , Encode.object
                 [ ( "numMinted", Encode.int collection.math.numMinted )
                 , ( "totalSupply", Encode.int collection.math.totalSupply )
+                , ( "price", Encode.int collection.math.price)
+                , ( "fee", Encode.int collection.math.fee )
                 ]
         )
         , ( "accounts"
@@ -115,9 +119,11 @@ decoder =
                 (Decode.field "uri" Decode.string)
         )
         (Decode.field "math" <|
-            Decode.map2 Math
+            Decode.map4 Math
                 (Decode.field "numMinted" Decode.int)
                 (Decode.field "totalSupply" Decode.int)
+                (Decode.field "price" Decode.int)
+                (Decode.field "fee" Decode.int)
         )
         (Decode.field "accounts" <|
             Decode.map3 Accounts

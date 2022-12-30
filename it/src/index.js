@@ -21,7 +21,7 @@ const provider = new AnchorProvider(
 );
 const program = new Program(
     IDL,
-    new web3.PublicKey("54eGWoBhZePCHVUWScjFznKx7ZUaLwa8qCenauN5ncLK"),
+    new web3.PublicKey("CVRiPDJVgYb4cwrwL56LVFoB3tifgmP6QZDfxfmvXonS"),
     provider
 );
 // set usdc address

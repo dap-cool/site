@@ -37,6 +37,11 @@ export type DapCool = {
       "name": "createNft",
       "accounts": [
         {
+          "name": "boss",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": true,
           "isSigner": false
@@ -58,6 +63,16 @@ export type DapCool = {
         },
         {
           "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAta",
           "isMut": true,
           "isSigner": false
         },
@@ -118,6 +133,18 @@ export type DapCool = {
         {
           "name": "size",
           "type": "u64"
+        },
+        {
+          "name": "creatorDistribution",
+          "type": "u64"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        },
+        {
+          "name": "fee",
+          "type": "u16"
         }
       ]
     },
@@ -126,7 +153,7 @@ export type DapCool = {
       "accounts": [
         {
           "name": "boss",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -291,6 +318,14 @@ export type DapCool = {
           {
             "name": "totalSupply",
             "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u16"
           }
         ]
       }
@@ -409,6 +444,10 @@ export type DapCool = {
         "kind": "struct",
         "fields": [
           {
+            "name": "boss",
+            "type": "u8"
+          },
+          {
             "name": "handle",
             "type": "u8"
           },
@@ -428,6 +467,10 @@ export type DapCool = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "boss",
+            "type": "u8"
+          },
           {
             "name": "handle",
             "type": "u8"
@@ -510,6 +553,11 @@ export const IDL: DapCool = {
       "name": "createNft",
       "accounts": [
         {
+          "name": "boss",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "handle",
           "isMut": true,
           "isSigner": false
@@ -531,6 +579,16 @@ export const IDL: DapCool = {
         },
         {
           "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcAta",
           "isMut": true,
           "isSigner": false
         },
@@ -591,6 +649,18 @@ export const IDL: DapCool = {
         {
           "name": "size",
           "type": "u64"
+        },
+        {
+          "name": "creatorDistribution",
+          "type": "u64"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        },
+        {
+          "name": "fee",
+          "type": "u16"
         }
       ]
     },
@@ -599,7 +669,7 @@ export const IDL: DapCool = {
       "accounts": [
         {
           "name": "boss",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -764,6 +834,14 @@ export const IDL: DapCool = {
           {
             "name": "totalSupply",
             "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u16"
           }
         ]
       }
@@ -882,6 +960,10 @@ export const IDL: DapCool = {
         "kind": "struct",
         "fields": [
           {
+            "name": "boss",
+            "type": "u8"
+          },
+          {
             "name": "handle",
             "type": "u8"
           },
@@ -901,6 +983,10 @@ export const IDL: DapCool = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "boss",
+            "type": "u8"
+          },
           {
             "name": "handle",
             "type": "u8"

@@ -25,6 +25,8 @@ export interface CollectionAuthority {
     math: {
         numMinted: number // decoded as BN
         totalSupply: number // decoded as BN
+        price: number // decoded as BN
+        fee: number
     }
     accounts: {
         pda: PublicKey
@@ -46,6 +48,8 @@ interface RawCollectionAuthority {
     image: number
     numMinted: any // encoded as BN
     totalSupply: any // encoded as BN
+    price: any // encoded as BN
+    fee: number
 }
 
 interface RawSplToken {
@@ -141,7 +145,9 @@ async function getManyAuthorityPda(
                     },
                     math: {
                         numMinted: raw.numMinted.toNumber(),
-                        totalSupply: raw.totalSupply.toNumber()
+                        totalSupply: raw.totalSupply.toNumber(),
+                        price: raw.price.toNumber(),
+                        fee: raw.fee
                     },
                     accounts: {
                         pda: pda.address,
@@ -219,7 +225,9 @@ export async function getAuthorityPda(
         },
         math: {
             numMinted: raw.numMinted.toNumber(),
-            totalSupply: raw.totalSupply.toNumber()
+            totalSupply: raw.totalSupply.toNumber(),
+            price: raw.price.toNumber(),
+            fee: raw.fee
         },
         accounts: {
             pda: authorityPda.address,

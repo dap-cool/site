@@ -327,6 +327,8 @@ export async function creatNft(
                 math: {
                     numMinted: 1, // TODO; creator-distribution?
                     totalSupply: 10, // TODO; supply
+                    price: 25000, // TODO; price
+                    fee: 500 // TODO; fee
                 },
                 accounts: {
                     pda: authorityPda.address,
