@@ -282,9 +282,9 @@ export async function creatNft(
                 metadata: metadataBump,
             }
             // normalize price
-            const price = form.meta.price * 100000;
+            const price = Math.floor(form.meta.price * 1000000);
             // normalize fee
-            const fee = form.meta.fee * 100;
+            const fee = Math.floor(form.meta.fee * 100);
             // invoke rpc
             await programs.dap.methods
                 .createNft(

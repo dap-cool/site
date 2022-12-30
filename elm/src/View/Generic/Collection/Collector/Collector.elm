@@ -47,7 +47,7 @@ select collection =
                     [ Html.text <|
                         String.concat
                             [ String.fromFloat <|
-                                (Basics.toFloat collection.math.price / 100000)
+                                (Basics.toFloat collection.math.price / 1000000)
                             , " "
                             , "USDC"
                             ]
