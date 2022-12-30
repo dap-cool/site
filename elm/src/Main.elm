@@ -218,48 +218,84 @@ update msg model =
                             )
 
                         FromExistingCreator.NewCollectionForm newCollectionForm ->
+                            let
+                                bump form =
+                                    ( { model
+                                        | state =
+                                            { local =
+                                                Local.Create <|
+                                                    Creator.Existing hasWalletAndHandle <|
+                                                        ExistingCreator.CreatingNewCollection <|
+                                                            NewCollection.Input <|
+                                                                NewCollection.No
+                                                                    form
+                                            , global = model.state.global
+                                            , exception = model.state.exception
+                                            }
+                                      }
+                                    , Cmd.none
+                                    )
+                            in
                             case newCollectionForm of
-                                NewCollectionForm.Name stringForm newCollection ->
+                                NewCollectionForm.Name string form ->
                                     let
-                                        bumpNewCollection =
-                                            { newCollection | name = stringForm }
-                                    in
-                                    ( { model
-                                        | state =
-                                            { local =
-                                                Local.Create <|
-                                                    Creator.Existing hasWalletAndHandle <|
-                                                        ExistingCreator.CreatingNewCollection <|
-                                                            NewCollection.Input <|
-                                                                NewCollection.No
-                                                                    bumpNewCollection
-                                            , global = model.state.global
-                                            , exception = model.state.exception
-                                            }
-                                      }
-                                    , Cmd.none
-                                    )
+                                        form_ =
+                                            case string of
+                                                "" ->
+                                                    { form | name = Nothing }
 
-                                NewCollectionForm.Symbol stringForm newCollection ->
-                                    let
-                                        bumpNewCollection =
-                                            { newCollection | symbol = stringForm }
+                                                nes ->
+                                                    { form | name = Just nes }
                                     in
-                                    ( { model
-                                        | state =
-                                            { local =
-                                                Local.Create <|
-                                                    Creator.Existing hasWalletAndHandle <|
-                                                        ExistingCreator.CreatingNewCollection <|
-                                                            NewCollection.Input <|
-                                                                NewCollection.No
-                                                                    bumpNewCollection
-                                            , global = model.state.global
-                                            , exception = model.state.exception
-                                            }
-                                      }
-                                    , Cmd.none
-                                    )
+                                    bump form_
+
+                                NewCollectionForm.Symbol string form ->
+                                    let
+                                        form_ =
+                                            case string of
+                                                "" ->
+                                                    { form | symbol = Nothing }
+
+                                                nes ->
+                                                    { form | symbol = Just nes }
+                                    in
+                                    bump form_
+
+                                NewCollectionForm.CreatorDistribution string form ->
+                                    let
+                                        form_ =
+                                            case String.toInt string of
+                                                Just int ->
+                                                    { form | creatorDistribution = Just int }
+
+                                                Nothing ->
+                                                    { form | creatorDistribution = Nothing }
+                                    in
+                                    bump form_
+
+                                NewCollectionForm.Price string form ->
+                                    let
+                                        form_ =
+                                            case String.toInt string of
+                                                Just int ->
+                                                    { form | price = Just int }
+
+                                                Nothing ->
+                                                    { form | price = Nothing }
+                                    in
+                                    bump form_
+
+                                NewCollectionForm.Fee string form ->
+                                    let
+                                        form_ =
+                                            case String.toInt string of
+                                                Just int ->
+                                                    { form | fee = Just int }
+
+                                                Nothing ->
+                                                    { form | fee = Nothing }
+                                    in
+                                    bump form_
 
                                 NewCollectionForm.Image ->
                                     ( model

@@ -9,7 +9,7 @@ import Util.Decode as Util
 
 type alias Collection =
     { meta : Meta
-    , math: Math
+    , math : Math
     , accounts : Accounts
     }
 
@@ -22,6 +22,7 @@ type alias Meta =
     , image : String
     , uri : String
     }
+
 
 type alias Math =
     { numMinted : Int -- encoded as big-int
@@ -74,14 +75,14 @@ encoder collection =
                 , ( "uri", Encode.string collection.meta.uri )
                 ]
           )
-        , ("math"
-            , Encode.object
+        , ( "math"
+          , Encode.object
                 [ ( "numMinted", Encode.int collection.math.numMinted )
                 , ( "totalSupply", Encode.int collection.math.totalSupply )
-                , ( "price", Encode.int collection.math.price)
+                , ( "price", Encode.int collection.math.price )
                 , ( "fee", Encode.int collection.math.fee )
                 ]
-        )
+          )
         , ( "accounts"
           , Encode.object
                 [ ( "pda", Encode.string collection.accounts.pda )

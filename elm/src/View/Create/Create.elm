@@ -1,7 +1,7 @@
 module View.Create.Create exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (accept, class, href, id, multiple, placeholder, src, style, target, type_, width)
+import Html.Attributes exposing (accept, class, default, href, id, multiple, placeholder, src, step, style, target, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Creator.Creator exposing (Creator(..))
@@ -311,6 +311,94 @@ body creator =
                                                             ]
                                                         ]
 
+                                        cdForm =
+                                            case submitted of
+                                                NewCollection.Yes _ ->
+                                                    Html.div
+                                                        []
+                                                        []
+
+                                                NewCollection.No form ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.div
+                                                            [ class "field"
+                                                            ]
+                                                            [ Html.p
+                                                                [ class "control has-icons-left"
+                                                                ]
+                                                                [ Html.input
+                                                                    [ class "input"
+                                                                    , type_ "number"
+                                                                    , placeholder "How many to mint to yourself?"
+                                                                    , value "1"
+                                                                    , onInput <|
+                                                                        \s ->
+                                                                            FromCreator <|
+                                                                                CreatorMsg.Existing fromGlobal <|
+                                                                                    ExistingMsg.NewCollectionForm <|
+                                                                                        NewCollectionForm.CreatorDistribution
+                                                                                            (String.toUpper s)
+                                                                                            form
+                                                                    ]
+                                                                    []
+                                                                , Html.span
+                                                                    [ class "icon is-left"
+                                                                    ]
+                                                                    [ Html.i
+                                                                        [ class "fas fa-file-signature"
+                                                                        ]
+                                                                        []
+                                                                    ]
+                                                                ]
+                                                            ]
+                                                        ]
+
+                                        -- TODO; numeric forms / js get precision right
+                                        priceForm =
+                                            case submitted of
+                                                NewCollection.Yes _ ->
+                                                    Html.div
+                                                        []
+                                                        []
+
+                                                NewCollection.No form ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.div
+                                                            [ class "field"
+                                                            ]
+                                                            [ Html.p
+                                                                [ class "control has-icons-left"
+                                                                ]
+                                                                [ Html.input
+                                                                    [ class "input"
+                                                                    , type_ "number"
+                                                                    , placeholder "How many to mint to yourself?"
+                                                                    , value "1"
+                                                                    , step "1.0"
+                                                                    , onInput <|
+                                                                        \s ->
+                                                                            FromCreator <|
+                                                                                CreatorMsg.Existing fromGlobal <|
+                                                                                    ExistingMsg.NewCollectionForm <|
+                                                                                        NewCollectionForm.CreatorDistribution
+                                                                                            (String.toUpper s)
+                                                                                            form
+                                                                    ]
+                                                                    []
+                                                                , Html.span
+                                                                    [ class "icon is-left"
+                                                                    ]
+                                                                    [ Html.i
+                                                                        [ class "fas fa-file-signature"
+                                                                        ]
+                                                                        []
+                                                                    ]
+                                                                ]
+                                                            ]
+                                                        ]
+
                                         create =
                                             case submitted of
                                                 NewCollection.Yes _ ->
@@ -319,15 +407,8 @@ body creator =
                                                         []
 
                                                 NewCollection.No form ->
-                                                    let
-                                                        e1 =
-                                                            String.isEmpty form.name
-
-                                                        e2 =
-                                                            String.isEmpty form.symbol
-                                                    in
-                                                    case ( e1, e2 ) of
-                                                        ( False, False ) ->
+                                                    case ( form.name, form.symbol, ( form.creatorDistribution, form.price, form.fee ) ) of
+                                                        ( Just name, Just symbol, ( Just cd, Just price, Just fee ) ) ->
                                                             Html.div
                                                                 []
                                                                 [ Html.button
@@ -335,7 +416,13 @@ body creator =
                                                                     , onClick <|
                                                                         FromCreator <|
                                                                             CreatorMsg.Existing fromGlobal <|
-                                                                                ExistingMsg.CreateNewNft form
+                                                                                ExistingMsg.CreateNewNft
+                                                                                    { name = name
+                                                                                    , symbol = symbol
+                                                                                    , creatorDistribution = cd
+                                                                                    , price = price
+                                                                                    , fee = fee
+                                                                                    }
                                                                     ]
                                                                     [ Html.text
                                                                         """create nft "original" edition

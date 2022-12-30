@@ -1,4 +1,4 @@
-module Model.Creator.Existing.NewCollection exposing (MetaForm, NewCollection(..), Submitted(..), decode, default, encode)
+module Model.Creator.Existing.NewCollection exposing (MaybeMetaForm, MetaForm, NewCollection(..), Submitted(..), decode, default, encode)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -15,7 +15,7 @@ type NewCollection
 
 type Submitted
     = Yes Form -- needs to be in same div as input for DOM preservation
-    | No MetaForm
+    | No MaybeMetaForm
 
 
 type alias Form =
@@ -32,9 +32,21 @@ type alias WithGlobal =
     }
 
 
+type alias MaybeMetaForm =
+    { name : Maybe String
+    , symbol : Maybe String
+    , creatorDistribution : Maybe Int
+    , price : Maybe Int
+    , fee : Maybe Int
+    }
+
+
 type alias MetaForm =
     { name : String
     , symbol : String
+    , creatorDistribution : Int
+    , price : Int
+    , fee : Int
     }
 
 
@@ -43,10 +55,13 @@ type alias ShdwForm =
     }
 
 
-default : MetaForm
+default : MaybeMetaForm
 default =
-    { name = ""
-    , symbol = ""
+    { name = Nothing
+    , symbol = Nothing
+    , creatorDistribution = Nothing
+    , price = Nothing
+    , fee = Nothing
     }
 
 
@@ -69,6 +84,9 @@ encode form =
                   , Encode.object
                         [ ( "name", Encode.string form.meta.name )
                         , ( "symbol", Encode.string form.meta.symbol )
+                        , ( "creatorDistribution", Encode.int form.meta.creatorDistribution )
+                        , ( "price", Encode.int form.meta.price )
+                        , ( "fee", Encode.int form.meta.fee )
                         ]
                   )
                 , ( "shdw"
@@ -95,9 +113,12 @@ decoder =
                 (Decode.field "step" Decode.int)
                 (Decode.field "retries" Decode.int)
                 (Decode.field "meta" <|
-                    Decode.map2 MetaForm
+                    Decode.map5 MetaForm
                         (Decode.field "name" Decode.string)
                         (Decode.field "symbol" Decode.string)
+                        (Decode.field "creatorDistribution" Decode.int)
+                        (Decode.field "price" Decode.int)
+                        (Decode.field "fee" Decode.int)
                 )
                 (Decode.maybe <|
                     Decode.field "shdw" <|
