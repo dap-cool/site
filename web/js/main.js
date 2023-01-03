@@ -204,6 +204,7 @@ export async function main(app, json) {
             // or creator select files to upload
         } else if (sender === "creator-select-files-to-upload") {
             // select files
+            // TODO; add listen event
             const imgSelector = document.getElementById(
                 "dap-cool-collection-upload-selector"
             );
