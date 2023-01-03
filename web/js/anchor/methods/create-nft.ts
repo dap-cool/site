@@ -174,7 +174,7 @@ export async function creatNft(
                 authorityIndex,
                 form.meta.name,
                 form.meta.symbol,
-                "description", // TODO;
+                "description", // TODO; form
                 logoUrl
             );
             // upload logo + metadata
