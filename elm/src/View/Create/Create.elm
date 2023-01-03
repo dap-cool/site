@@ -199,35 +199,100 @@ body creator =
                                 NewCollection.Input submitted ->
                                     let
                                         imageForm =
-                                            Html.div
-                                                []
-                                                [ Html.input
-                                                    [ id "dap-cool-collection-logo-selector"
-                                                    , type_ "file"
-                                                    , accept <|
-                                                        String.join
-                                                            ", "
-                                                            [ ".jpg"
-                                                            , ".jpeg"
-                                                            , ".png"
-                                                            ]
-                                                    , onClick <|
-                                                        FromCreator <|
-                                                            CreatorMsg.Existing fromGlobal <|
-                                                                ExistingMsg.NewCollectionForm
-                                                                    NewCollectionForm.Image
-                                                    ]
-                                                    []
-                                                , Html.div
-                                                    []
-                                                    [ Html.img
-                                                        [ src "images/upload/default-pfp.jpg"
-                                                        , width 500
-                                                        , id "dap-cool-collection-logo"
-                                                        ]
+                                            case submitted of
+                                                NewCollection.Yes form ->
+                                                    Html.div
                                                         []
-                                                    ]
-                                                ]
+                                                        [ Html.img
+                                                            [ src form.meta.logo.base64
+                                                            , width 500
+                                                            ]
+                                                            []
+                                                        ]
+
+                                                NewCollection.No maybeMetaForm ->
+                                                    let
+                                                        selector name =
+                                                            Html.div
+                                                                [ class "file has-name"
+                                                                ]
+                                                                [ Html.label
+                                                                    [ class "file-label"
+                                                                    ]
+                                                                    [ Html.input
+                                                                        [ id "dap-cool-collection-logo-selector"
+                                                                        , class "file-input"
+                                                                        , type_ "file"
+                                                                        , accept <|
+                                                                            String.join
+                                                                                ", "
+                                                                                [ ".jpg"
+                                                                                , ".jpeg"
+                                                                                , ".png"
+                                                                                ]
+                                                                        , onClick <|
+                                                                            FromCreator <|
+                                                                                CreatorMsg.Existing fromGlobal <|
+                                                                                    ExistingMsg.NewCollectionForm
+                                                                                        NewCollectionForm.Image
+                                                                        ]
+                                                                        []
+                                                                    , Html.span
+                                                                        [ class "file-cta"
+                                                                        ]
+                                                                        [ Html.span
+                                                                            [ class "file-icon"
+                                                                            ]
+                                                                            [ Html.i
+                                                                                [ class "fas fa-upload"
+                                                                                ]
+                                                                                []
+                                                                            ]
+                                                                        , Html.span
+                                                                            [ class "file-label"
+                                                                            ]
+                                                                            [ Html.text "Select a logo for your new coin . . ."
+                                                                            ]
+                                                                        ]
+                                                                    , Html.span
+                                                                        [ class "file-name"
+                                                                        ]
+                                                                        [ Html.text name
+                                                                        ]
+                                                                    ]
+                                                                ]
+
+                                                        ( logoImg, logoName ) =
+                                                            case maybeMetaForm.logo of
+                                                                Just logo ->
+                                                                    ( Html.div
+                                                                        []
+                                                                        [ Html.img
+                                                                            [ src logo.base64
+                                                                            , width 500
+                                                                            ]
+                                                                            []
+                                                                        ]
+                                                                    , logo.name
+                                                                    )
+
+                                                                Nothing ->
+                                                                    ( Html.div
+                                                                        []
+                                                                        [ Html.img
+                                                                            [ src "images/upload/default-pfp.jpg"
+                                                                            , width 500
+                                                                            ]
+                                                                            []
+                                                                        ]
+                                                                    , "Waiting . . ."
+                                                                    )
+                                                    in
+                                                    Html.div
+                                                        []
+                                                        [ selector logoName
+                                                        , logoImg
+                                                        ]
 
                                         nameForm =
                                             case submitted of
@@ -489,8 +554,8 @@ body creator =
                                                         []
 
                                                 NewCollection.No form ->
-                                                    case ( form.name, form.symbol, ( ( form.totalSupply, form.creatorDistribution ), form.price, form.fee ) ) of
-                                                        ( Just name, Just symbol, ( ( Just totalSupply, Just cd ), Just price, Just fee ) ) ->
+                                                    case ( form.logo, ( form.name, form.symbol ), ( ( form.totalSupply, form.creatorDistribution ), form.price, form.fee ) ) of
+                                                        ( Just logo, ( Just name, Just symbol ), ( ( Just totalSupply, Just cd ), Just price, Just fee ) ) ->
                                                             Html.div
                                                                 []
                                                                 [ Html.button
@@ -499,7 +564,8 @@ body creator =
                                                                         FromCreator <|
                                                                             CreatorMsg.Existing fromGlobal <|
                                                                                 ExistingMsg.CreateNewNft
-                                                                                    { name = name
+                                                                                    { logo = logo
+                                                                                    , name = name
                                                                                     , symbol = symbol
                                                                                     , totalSupply = totalSupply
                                                                                     , creatorDistribution = cd
@@ -697,12 +763,38 @@ body creator =
                         Existing.Uploading collection form ->
                             let
                                 selector =
-                                    Html.input
-                                        [ id "dap-cool-collection-upload-selector"
-                                        , type_ "file"
-                                        , multiple True
+                                    Html.div
+                                        [ class "file is-boxed"
                                         ]
-                                        []
+                                        [ Html.label
+                                            [ class "file-label"
+                                            ]
+                                            [ Html.input
+                                                [ id "dap-cool-collection-upload-selector"
+                                                , class "file-input"
+                                                , type_ "file"
+                                                , multiple True
+                                                ]
+                                                []
+                                            , Html.span
+                                                [ class "file-cta"
+                                                ]
+                                                [ Html.span
+                                                    [ class "file-icon"
+                                                    ]
+                                                    [ Html.i
+                                                        [ class "fas fa-upload"
+                                                        ]
+                                                        []
+                                                    ]
+                                                , Html.span
+                                                    [ class "file-label"
+                                                    ]
+                                                    [ Html.text "Select files to upload . . . "
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
 
                                 title =
                                     case form.title of

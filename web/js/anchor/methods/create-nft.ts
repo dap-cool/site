@@ -16,13 +16,18 @@ import {
     MPL_TOKEN_METADATA_PROGRAM_ID, SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
     SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
-import {buildMetaData, readLogo} from "../../shdw/shdw";
+import {buildMetaData, encodeFileType} from "../../shdw/shdw";
 import {DapCool} from "../idl/dap";
+import {dataUrlToBlob, getFileTypeFromBlob} from "../../util/blob-util";
 
-export interface Form {
+interface Form {
     step: number
     retries: number
     meta: {
+        logo: {
+            name: string
+            base64: string
+        }
         name: string
         symbol: string
         totalSupply: number
@@ -82,13 +87,15 @@ export async function creatNft(
     // kick off upload steps
     if (form.step === 1) {
         try {
-            // read logo from input
-            const logo = await readLogo();
+            // read logo from form
+            const logo = await dataUrlToBlob(
+                form.meta.logo.base64
+            );
             // provision space
             form.shdw = await provision(
                 provider.connection,
                 provider.wallet,
-                logo.file
+                logo as any
             );
             // bump form
             form.step = 2;
@@ -139,8 +146,18 @@ export async function creatNft(
         }
     } else if (form.step === 2) {
         try {
-            // read logo from input
-            const logo = await readLogo();
+            // read logo from form
+            const logo_ = await dataUrlToBlob(
+                form.meta.logo.base64
+            );
+            const friendlyBlobType = getFileTypeFromBlob(
+                logo_
+            );
+            const logo = new File(
+                [logo_],
+                "logo." + friendlyBlobType,
+                {type: logo_.type}
+            );
             // build url
             const url = buildUrl(
                 form.shdw.account
@@ -151,18 +168,18 @@ export async function creatNft(
                 provider.wallet
             );
             // build metadata
-            const logoUrl = url + logo.file.name;
+            const logoUrl = url + logo.name;
             const metadata: File = buildMetaData(
                 handle.handle,
                 authorityIndex,
                 form.meta.name,
                 form.meta.symbol,
-                "description",
+                "description", // TODO;
                 logoUrl
             );
             // upload logo + metadata
             await uploadMultipleFiles(
-                [logo.file, metadata],
+                [logo, metadata],
                 form.shdw.drive,
                 form.shdw.account
             );
@@ -216,8 +233,16 @@ export async function creatNft(
         }
     } else if (form.step === 3) {
         try {
-            // read logo from input
-            const logo = await readLogo();
+            // read logo from form
+            const logo = await dataUrlToBlob(
+                form.meta.logo.base64
+            );
+            const friendlyBlobType = getFileTypeFromBlob(
+                logo
+            );
+            const encodedLogoType = encodeFileType(
+                friendlyBlobType
+            );
             // build url
             const url = buildUrl(
                 form.shdw.account
@@ -292,7 +317,7 @@ export async function creatNft(
                     form.meta.name as any,
                     form.meta.symbol as any,
                     metadataUrl as any,
-                    logo.type as any,
+                    encodedLogoType as any,
                     new BN(form.meta.totalSupply),
                     new BN(form.meta.creatorDistribution),
                     new BN(price),
@@ -330,7 +355,7 @@ export async function creatNft(
                     name: form.meta.name,
                     symbol: form.meta.symbol,
                     uri: metadataUrl,
-                    image: getImageUrl(metadataUrl, logo.type),
+                    image: getImageUrl(metadataUrl, encodedLogoType),
                 },
                 math: {
                     numMinted: form.meta.creatorDistribution,

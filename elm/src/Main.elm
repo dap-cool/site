@@ -587,6 +587,37 @@ update msg model =
 
                                                         ToCreator.Existing existing ->
                                                             case existing of
+                                                                ToExistingCreator.SelectedNewNftLogo ->
+                                                                    let
+                                                                        f logo =
+                                                                            case model.state.local of
+                                                                                Local.Create (Creator.Existing hasWalletAndHandle (ExistingCreator.CreatingNewCollection (NewCollection.Input (NewCollection.No form)))) ->
+                                                                                    let
+                                                                                        bump =
+                                                                                            { form | logo = Just logo }
+                                                                                    in
+                                                                                    ( { model
+                                                                                        | state =
+                                                                                            { local =
+                                                                                                Local.Create <|
+                                                                                                    Creator.Existing hasWalletAndHandle <|
+                                                                                                        ExistingCreator.CreatingNewCollection <|
+                                                                                                            NewCollection.Input <|
+                                                                                                                NewCollection.No bump
+                                                                                            , global = model.state.global
+                                                                                            , exception = model.state.exception
+                                                                                            }
+                                                                                      }
+                                                                                    , Cmd.none
+                                                                                    )
+
+                                                                                _ ->
+                                                                                    ( model
+                                                                                    , Cmd.none
+                                                                                    )
+                                                                    in
+                                                                    Listener.decode2 model json NewCollection.decodeLogo f
+
                                                                 ToExistingCreator.CreatingNewNft ->
                                                                     let
                                                                         f decoded =

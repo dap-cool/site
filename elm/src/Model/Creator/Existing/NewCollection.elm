@@ -1,4 +1,4 @@
-module Model.Creator.Existing.NewCollection exposing (MaybeMetaForm, MetaForm, NewCollection(..), Submitted(..), decode, default, encode)
+module Model.Creator.Existing.NewCollection exposing (MaybeMetaForm, MetaForm, NewCollection(..), Submitted(..), decode, decodeLogo, default, encode)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -33,7 +33,8 @@ type alias WithGlobal =
 
 
 type alias MaybeMetaForm =
-    { name : Maybe String
+    { logo : Maybe Logo
+    , name : Maybe String
     , symbol : Maybe String
     , totalSupply : Maybe Int
     , creatorDistribution : Maybe Int
@@ -42,8 +43,15 @@ type alias MaybeMetaForm =
     }
 
 
-type alias MetaForm =
+type alias Logo =
     { name : String
+    , base64 : String
+    }
+
+
+type alias MetaForm =
+    { logo : Logo
+    , name : String
     , symbol : String
     , totalSupply : Int
     , creatorDistribution : Int
@@ -59,7 +67,8 @@ type alias ShdwForm =
 
 default : MaybeMetaForm
 default =
-    { name = Nothing
+    { logo = Nothing
+    , name = Nothing
     , symbol = Nothing
     , totalSupply = Nothing
     , creatorDistribution = Nothing
@@ -85,7 +94,13 @@ encode form =
                 , ( "retries", Encode.int form.retries )
                 , ( "meta"
                   , Encode.object
-                        [ ( "name", Encode.string form.meta.name )
+                        [ ( "logo"
+                          , Encode.object
+                                [ ( "name", Encode.string form.meta.logo.name )
+                                , ( "base64", Encode.string form.meta.logo.base64 )
+                                ]
+                          )
+                        , ( "name", Encode.string form.meta.name )
                         , ( "symbol", Encode.string form.meta.symbol )
                         , ( "totalSupply", Encode.int form.meta.totalSupply )
                         , ( "creatorDistribution", Encode.int form.meta.creatorDistribution )
@@ -117,7 +132,8 @@ decoder =
                 (Decode.field "step" Decode.int)
                 (Decode.field "retries" Decode.int)
                 (Decode.field "meta" <|
-                    Decode.map6 MetaForm
+                    Decode.map7 MetaForm
+                        (Decode.field "logo" logoDecoder)
                         (Decode.field "name" Decode.string)
                         (Decode.field "symbol" Decode.string)
                         (Decode.field "totalSupply" Decode.int)
@@ -131,3 +147,15 @@ decoder =
                             (Decode.field "account" Decode.string)
                 )
         )
+
+
+decodeLogo : String -> Result String Logo
+decodeLogo string =
+    Util.decode string logoDecoder identity
+
+
+logoDecoder : Decode.Decoder Logo
+logoDecoder =
+    Decode.map2 Logo
+        (Decode.field "name" Decode.string)
+        (Decode.field "base64" Decode.string)

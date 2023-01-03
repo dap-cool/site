@@ -1,6 +1,3 @@
-import {PublicKey} from "@solana/web3.js";
-import {compressImage, getFileTypeFromName, readImageFromElementId} from "../util/blob-util";
-
 export interface CollectionMetadata {
     name: string
     symbol: string
@@ -9,35 +6,7 @@ export interface CollectionMetadata {
     external_url: string
 }
 
-export async function readLogo(): Promise<{ file: File; type: number }> {
-    const imgSelector: HTMLInputElement = document.getElementById(
-        "dap-cool-collection-logo-selector"
-    ) as HTMLInputElement;
-    console.log(imgSelector);
-    const fileList = imgSelector.files;
-    let file: File, fileType: string;
-    if (fileList && fileList.length === 1) {
-        console.log("found selected logo");
-        file = fileList[0];
-        // parse file-type
-        fileType = getFileTypeFromName(file.name)
-        // grab bytes
-        let blob = file.slice(0, file.size, file.type); // grab buffer
-        // compress bytes
-        blob = await compressImage(blob);
-        // rename file
-        console.log("renaming file")
-        file = new File([blob], "logo." + fileType, {type: file.type});
-    } else {
-        console.log("could not find logo")
-    }
-    return {
-        file: file as File,
-        type: encodeFileType(fileType)
-    }
-}
-
-function encodeFileType(fileType: string): number {
+export function encodeFileType(fileType: string): number {
     let encoded: number;
     switch (fileType) {
         case "jpg": {
@@ -91,18 +60,4 @@ export async function getMetaData(url: string): Promise<CollectionMetadata> {
         image: fetched.image,
         external_url: fetched.external_url
     }
-}
-
-export async function getLogo(mint: PublicKey, metaData: CollectionMetadata): Promise<void> {
-    const url = metaData.image;
-    const fileType = url.slice(
-        (Math.max(0, url.lastIndexOf(".")) || Infinity) + 1
-    );
-    const logo = await fetch(metaData.image)
-        .then(response => response.blob())
-        .then(blob => new File([blob], "logo." + fileType))
-    readImageFromElementId(
-        "img-" + mint.toString(),
-        logo
-    );
 }

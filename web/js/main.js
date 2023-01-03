@@ -17,7 +17,7 @@ import {creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
-import {compressImage, readImageFromElementId} from "./util/blob-util";
+import {blobToDataUrl, compressImage} from "./util/blob-util";
 import {getUploads, unlockUpload, upload} from "./anchor/pda/datum-pda";
 
 // init phantom
@@ -112,15 +112,30 @@ export async function main(app, json) {
                 // capture file list
                 const fileList = selectEvent.target.files;
                 if (fileList.length === 1) {
+                    // select file
                     let file = fileList[0];
+                    const fileName = file.name;
                     // compress image
                     file = await compressImage(
                         file
                     );
-                    // read image
-                    readImageFromElementId(
-                        "dap-cool-collection-logo",
+                    // convert to base64
+                    const base64 = await blobToDataUrl(
                         file
+                    );
+                    // send image name to elm
+                    app.ports.success.send(
+                        JSON.stringify(
+                            {
+                                listener: "creator-selected-new-nft-logo",
+                                more: JSON.stringify(
+                                    {
+                                        name: fileName,
+                                        base64: base64
+                                    }
+                                )
+                            }
+                        )
                     );
                 }
             });

@@ -1,15 +1,15 @@
 /* https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL */
 import {compressAccurately} from "image-conversion";
 
-export function readImageFromElementId(elementId: any, file: any): void {
-    const img: any = document.getElementById(
-        elementId
-    );
+export const blobToDataUrl = (blob: Blob) => new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.addEventListener("load", (readEvent) => {
-        img.src = readEvent.target.result;
-    });
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(blob);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+export async function dataUrlToBlob(url: string): Promise<Blob> {
+    return fetch(url).then(response => response.blob())
 }
 
 export async function compressImage(blob: Blob): Promise<Blob> {
@@ -25,8 +25,16 @@ export async function compressImage(blob: Blob): Promise<Blob> {
 }
 
 export function getFileTypeFromName(name: string): string {
-    let fileType = name.slice(
-        (Math.max(0, name.lastIndexOf(".")) || Infinity) + 1
+    return getFileTypeFromString(name, ".")
+}
+
+export function getFileTypeFromBlob(blob: Blob): string {
+    return getFileTypeFromString(blob.type, "/")
+}
+
+function getFileTypeFromString(string: string, splitOn: string): string {
+    let fileType = string.slice(
+        (Math.max(0, string.lastIndexOf(splitOn)) || Infinity) + 1
     );
     fileType = fileType.toLowerCase()
     return fileType
