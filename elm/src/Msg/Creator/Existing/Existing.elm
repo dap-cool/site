@@ -16,6 +16,7 @@ type
       -- existing collection
     | SelectCollection Collection
     | StartUploading Collection
+    | SelectFilesToUpload
     | TypingUploadTitle Collection String
     | Upload Collection UploadForm
 
@@ -36,6 +37,9 @@ toString existing =
 
         SelectCollection _ ->
             "creator-select-collection"
+
+        SelectFilesToUpload ->
+            "creator-select-files-to-upload"
 
         Upload _ _ ->
             "creator-upload"

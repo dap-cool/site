@@ -9,6 +9,7 @@ type
     | CreatedNewNft
       -- uploading
     | SelectedCollection
+    | SelectedFilesToUpload
     | StillUploading
     | UploadSuccessful
 
@@ -27,6 +28,9 @@ fromString string =
 
         "creator-selected-collection" ->
             Just <| SelectedCollection
+
+        "creator-selected-files-to-upload" ->
+            Just <| SelectedFilesToUpload
 
         "creator-still-uploading" ->
             Just <| StillUploading

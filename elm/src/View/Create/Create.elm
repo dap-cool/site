@@ -764,9 +764,9 @@ body creator =
                             let
                                 selector =
                                     Html.div
-                                        [ class "file is-boxed"
+                                        [ class "file has-name"
                                         ]
-                                        [ Html.label -- TODO; file names, etc
+                                        [ Html.label
                                             [ class "file-label"
                                             ]
                                             [ Html.input
@@ -774,6 +774,10 @@ body creator =
                                                 , class "file-input"
                                                 , type_ "file"
                                                 , multiple True
+                                                , onClick <|
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing fromGlobal <|
+                                                            ExistingMsg.SelectFilesToUpload
                                                 ]
                                                 []
                                             , Html.span
@@ -793,7 +797,28 @@ body creator =
                                                     [ Html.text "Select files to upload . . . "
                                                     ]
                                                 ]
+                                            , Html.span
+                                                [ class "file-name"
+                                                ]
+                                                [ Html.text <|
+                                                    String.concat
+                                                        [ String.fromInt form.files.count
+                                                        , " "
+                                                        , "files selected"
+                                                        ]
+                                                ]
                                             ]
+                                        ]
+
+                                files =
+                                    Html.div
+                                        []
+                                        [ Html.text <|
+                                            String.concat
+                                                [ String.fromInt form.files.count
+                                                , " "
+                                                , "files selected"
+                                                ]
                                         ]
 
                                 title =
@@ -836,6 +861,27 @@ body creator =
                                 step =
                                     case form.step of
                                         0 ->
+                                            let
+                                                upload =
+                                                    case form.files.count > 0 of
+                                                        True ->
+                                                            Html.div
+                                                                []
+                                                                [ Html.button
+                                                                    [ onClick <|
+                                                                        FromCreator <|
+                                                                            CreatorMsg.Existing fromGlobal <|
+                                                                                ExistingMsg.Upload collection uploadForm
+                                                                    ]
+                                                                    [ Html.text "upload"
+                                                                    ]
+                                                                ]
+
+                                                        False ->
+                                                            Html.div
+                                                                []
+                                                                []
+                                            in
                                             Html.div
                                                 []
                                                 [ selector
@@ -856,23 +902,14 @@ body creator =
                                                             []
                                                         ]
                                                     ]
-                                                , Html.div
-                                                    []
-                                                    [ Html.button
-                                                        [ onClick <|
-                                                            FromCreator <|
-                                                                CreatorMsg.Existing fromGlobal <|
-                                                                    ExistingMsg.Upload collection uploadForm
-                                                        ]
-                                                        [ Html.text "upload"
-                                                        ]
-                                                    ]
+                                                , upload
                                                 ]
 
                                         int ->
                                             Html.div
                                                 []
-                                                [ selector
+                                                [ title
+                                                , files
                                                 , Html.div
                                                     []
                                                     [ Html.text <|

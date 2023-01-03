@@ -1,4 +1,4 @@
-module Model.Creator.Existing.UploadForm exposing (UploadForm, decode, encode, init, title)
+module Model.Creator.Existing.UploadForm exposing (UploadForm, decode, decodeFiles, encode, files, init, title)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -10,6 +10,7 @@ import Util.Decode as Util
 type alias UploadForm =
     { step : Int
     , retries : Int
+    , files : Files
     , title : String
     , shadow : Maybe Mint
     , litArgs : Maybe LitArgs
@@ -27,11 +28,27 @@ type alias LitArgs =
     }
 
 
+type alias Files =
+    { count : Int
+    , files : List File
+    }
+
+
+type alias File =
+    { name : String
+    , dataUrl : String
+    }
+
+
 init : UploadForm
 init =
     { step = 0
     , retries = 0
     , title = ""
+    , files =
+        { count = 0
+        , files = []
+        }
     , shadow = Nothing
     , litArgs = Nothing
     }
@@ -40,6 +57,11 @@ init =
 title : String -> UploadForm
 title string =
     { init | title = string }
+
+
+files : Files -> UploadForm -> UploadForm
+files files_ form =
+    { form | files = files_ }
 
 
 encode : Collection -> UploadForm -> String
@@ -78,6 +100,21 @@ encode collection form =
               , Encode.object
                     [ ( "step", Encode.int form.step )
                     , ( "retries", Encode.int form.retries )
+                    , ( "files"
+                      , Encode.object
+                            [ ( "count", Encode.int form.files.count )
+                            , ( "files"
+                              , Encode.list
+                                    (\file ->
+                                        Encode.object
+                                            [ ( "name", Encode.string file.name )
+                                            , ( "dataUrl", Encode.string file.dataUrl )
+                                            ]
+                                    )
+                                    form.files.files
+                              )
+                            ]
+                      )
                     , ( "title", Encode.string form.title )
                     , ( "shadow", maybeShadow )
                     , ( "litArgs", maybeLitArgs )
@@ -95,9 +132,10 @@ decoder =
     Decode.map3 (\c f r -> { collection = c, form = f, recursive = r })
         (Decode.field "collection" Collection.decoder)
         (Decode.field "form" <|
-            Decode.map5 UploadForm
+            Decode.map6 UploadForm
                 (Decode.field "step" Decode.int)
                 (Decode.field "retries" Decode.int)
+                (Decode.field "files" filesDecoder)
                 (Decode.field "title" Decode.string)
                 (Decode.maybe <| Decode.field "shadow" Decode.string)
                 (Decode.maybe <|
@@ -114,3 +152,20 @@ decoder =
                 )
         )
         (Decode.field "recursive" Decode.bool)
+
+
+decodeFiles : String -> Result String Files
+decodeFiles string =
+    Util.decode string filesDecoder identity
+
+
+filesDecoder : Decode.Decoder Files
+filesDecoder =
+    Decode.map2 Files
+        (Decode.field "count" Decode.int)
+        (Decode.field "files" <|
+            Decode.list <|
+                Decode.map2 File
+                    (Decode.field "name" Decode.string)
+                    (Decode.field "dataUrl" Decode.string)
+        )

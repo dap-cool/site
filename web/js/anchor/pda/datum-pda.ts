@@ -5,7 +5,7 @@ import * as DapSdk from "@dap-cool/sdk";
 import {deriveHandlePda, getHandlePda} from "./handle-pda";
 import {DapCool} from "../idl/dap";
 import {ShdwDrive} from "@shadow-drive/sdk";
-import {getFileTypeFromName} from "../../util/blob-util";
+import {blobToDataUrl, getFileTypeFromName} from "../../util/blob-util";
 
 interface CollectionFromElm {
     meta: {
@@ -32,6 +32,14 @@ interface FormFromElm {
     step: number
     retries: number
     // meta
+    files: {
+        count: number
+        files: {
+                name: string
+                dataUrl: string
+            }[]
+            | File []
+    }
     title: string
     // shadow-drive account
     shadow: string | null
@@ -44,6 +52,10 @@ interface Form {
     step: number
     retries: number
     // meta
+    files: {
+        count: number
+        files: File[]
+    }
     title: string
     // shadow-drive
     shadow: {
@@ -192,12 +204,12 @@ export async function upload(
     app: any,
     provider: AnchorProvider,
     collection: CollectionFromElm,
-    formFromElm: FormFromElm,
-    files: FileList
+    formFromElm: FormFromElm
 ): Promise<void> {
     let form = {
         step: formFromElm.step,
         retries: formFromElm.retries,
+        files: formFromElm.files,
         title: formFromElm.title,
         shadow: null,
         litArgs: formFromElm.litArgs,
@@ -211,7 +223,7 @@ export async function upload(
             );
             // encrypt
             form.encrypted = await DapSdk.encrypt(
-                files,
+                form.files.files as any,
                 litArgs
             );
             // provision storage on shadow drive
@@ -246,7 +258,10 @@ export async function upload(
         } catch (error) {
             console.log(error);
             // send retry to elm
-            formFromElm.retries += 1;
+            formFromElm = await bumpFormForRetry(
+                formFromElm,
+                form
+            );
             console.log(formFromElm);
             app.ports.success.send(
                 JSON.stringify(
@@ -276,7 +291,7 @@ export async function upload(
                 }
                 // if shadow is undefined so is encrypted
                 form.encrypted = await DapSdk.encrypt(
-                    files,
+                    form.files.files as any,
                     form.litArgs
                 );
             }
@@ -287,8 +302,8 @@ export async function upload(
                 lit: form.litArgs,
                 title: form.title,
                 zip: {
-                    count: files.length,
-                    types: Array.from(files).map(file => file.type)
+                    count: form.files.count,
+                    types: form.files.files.map(file => file.type)
                 },
                 timestamp: Date.now()
             };
@@ -323,7 +338,10 @@ export async function upload(
         } catch (error) {
             console.log(error);
             // send retry to elm
-            formFromElm.retries += 1;
+            formFromElm = await bumpFormForRetry(
+                formFromElm,
+                form
+            );
             app.ports.success.send(
                 JSON.stringify(
                     {
@@ -373,7 +391,10 @@ export async function upload(
         } catch (error) {
             console.log(error);
             // send retry to elm
-            formFromElm.retries += 1;
+            formFromElm = await bumpFormForRetry(
+                formFromElm,
+                form
+            );
             app.ports.success.send(
                 JSON.stringify(
                     {
@@ -390,4 +411,20 @@ export async function upload(
             );
         }
     }
+}
+
+async function bumpFormForRetry(fromElm: FormFromElm, fromJs: Form): Promise<FormFromElm> {
+    fromElm.retries += 1;
+    fromElm.files.files = await Promise.all(
+        fromJs.files.files.map(async (file) => {
+                const dataUrl = await blobToDataUrl(file);
+                console.log(dataUrl);
+                return {
+                    name: file.name,
+                    dataUrl: dataUrl as any
+                }
+            }
+        )
+    );
+    return fromElm
 }

@@ -398,6 +398,12 @@ update msg model =
                             , Cmd.none
                             )
 
+                        FromExistingCreator.SelectFilesToUpload ->
+                            ( model
+                            , sender <| Sender.encode0 <| Sender.Create from
+                              -- prepare image form events
+                            )
+
                         FromExistingCreator.TypingUploadTitle collection title ->
                             ( { model
                                 | state =
@@ -689,6 +695,29 @@ update msg model =
                                                                                     model
                                                                     in
                                                                     Listener.decode model json Datum.decode2 f
+
+                                                                ToExistingCreator.SelectedFilesToUpload ->
+                                                                    let
+                                                                        f files =
+                                                                            case model.state.local of
+                                                                                Local.Create (Creator.Existing hasWalletAndHandle (ExistingCreator.Uploading collection form)) ->
+                                                                                    { model
+                                                                                        | state =
+                                                                                            { local =
+                                                                                                Local.Create <|
+                                                                                                    Creator.Existing hasWalletAndHandle <|
+                                                                                                        ExistingCreator.Uploading
+                                                                                                            collection
+                                                                                                            (UploadForm.files files form)
+                                                                                            , global = model.state.global
+                                                                                            , exception = model.state.exception
+                                                                                            }
+                                                                                    }
+
+                                                                                _ ->
+                                                                                    model
+                                                                    in
+                                                                    Listener.decode model json UploadForm.decodeFiles f
 
                                                                 ToExistingCreator.StillUploading ->
                                                                     let

@@ -17,7 +17,7 @@ import {creatNft} from "./anchor/methods/create-nft";
 import {mintNewCopy} from "./anchor/methods/mint-new-copy";
 import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
-import {blobToDataUrl, compressImage} from "./util/blob-util";
+import {blobToDataUrl, compressImage, dataUrlToBlob} from "./util/blob-util";
 import {getUploads, unlockUpload, upload} from "./anchor/pda/datum-pda";
 
 // init phantom
@@ -201,6 +201,41 @@ export async function main(app, json) {
                     );
                 }
             }
+            // or creator select files to upload
+        } else if (sender === "creator-select-files-to-upload") {
+            // select files
+            const imgSelector = document.getElementById(
+                "dap-cool-collection-upload-selector"
+            );
+            console.log(imgSelector);
+            console.log(imgSelector.files);
+            const files = await Promise.all(
+                Array.from(imgSelector.files).map(async (file) => {
+                        const dataUrl = await blobToDataUrl(
+                            file
+                        );
+                        console.log(dataUrl);
+                        return {
+                            name: file.name,
+                            dataUrl: dataUrl
+                        }
+                    }
+                )
+            );
+            console.log(files);
+            app.ports.success.send(
+                JSON.stringify(
+                    {
+                        listener: "creator-selected-files-to-upload",
+                        more: JSON.stringify(
+                            {
+                                count: files.length,
+                                files: files
+                            }
+                        )
+                    }
+                )
+            );
             // or creator upload
         } else if (sender === "creator-upload") {
             // get provider & program
@@ -208,18 +243,34 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // select files
-            const imgSelector = document.getElementById(
-                "dap-cool-collection-upload-selector"
-            );
-            const files = imgSelector.files;
-            console.log(files);
+            if (more.form.files.count > 0) {
+                more.form.files.files = await Promise.all(
+                    more.form.files.files.map(async (file) => {
+                            const blob = await dataUrlToBlob(
+                                file.dataUrl
+                            );
+                            console.log(blob);
+                            return new File([blob], file.name)
+                        }
+                    )
+                );
+            } else {
+                const imgSelector = document.getElementById(
+                    "dap-cool-collection-upload-selector"
+                );
+                console.log(imgSelector);
+                // pack files as data-url array
+                const fileArray = Array.from(imgSelector.files);
+                console.log(fileArray);
+                more.form.files.count = fileArray.length;
+                more.form.files.files = fileArray;
+            }
             // upload
             await upload(
                 app,
                 pp.provider,
                 more.collection,
-                more.form,
-                files
+                more.form
             );
             // or creator select collection
         } else if (sender === "creator-select-collection") {
