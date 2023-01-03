@@ -766,7 +766,7 @@ body creator =
                                     Html.div
                                         [ class "file is-boxed"
                                         ]
-                                        [ Html.label
+                                        [ Html.label -- TODO; file names, etc
                                             [ class "file-label"
                                             ]
                                             [ Html.input
