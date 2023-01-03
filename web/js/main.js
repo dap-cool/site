@@ -108,37 +108,40 @@ export async function main(app, json) {
             const imgSelector = document.getElementById(
                 "dap-cool-collection-logo-selector"
             );
-            imgSelector.addEventListener("change", async (selectEvent) => {
-                // capture file list
-                const fileList = selectEvent.target.files;
-                if (fileList.length === 1) {
-                    // select file
-                    let file = fileList[0];
-                    const fileName = file.name;
-                    // compress image
-                    file = await compressImage(
-                        file
-                    );
-                    // convert to base64
-                    const base64 = await blobToDataUrl(
-                        file
-                    );
-                    // send image name to elm
-                    app.ports.success.send(
-                        JSON.stringify(
-                            {
-                                listener: "creator-selected-new-nft-logo",
-                                more: JSON.stringify(
-                                    {
-                                        name: fileName,
-                                        base64: base64
-                                    }
-                                )
-                            }
-                        )
-                    );
-                }
-            });
+            if (!imgSelector.hasAttribute("listenerOnClick")) {
+                imgSelector.addEventListener("change", async (selectEvent) => {
+                    // capture file list
+                    const fileList = selectEvent.target.files;
+                    if (fileList.length === 1) {
+                        // select file
+                        let file = fileList[0];
+                        const fileName = file.name;
+                        // compress image
+                        file = await compressImage(
+                            file
+                        );
+                        // convert to base64
+                        const base64 = await blobToDataUrl(
+                            file
+                        );
+                        // send image name to elm
+                        app.ports.success.send(
+                            JSON.stringify(
+                                {
+                                    listener: "creator-selected-new-nft-logo",
+                                    more: JSON.stringify(
+                                        {
+                                            name: fileName,
+                                            base64: base64
+                                        }
+                                    )
+                                }
+                            )
+                        );
+                    }
+                });
+            }
+            imgSelector.setAttribute("listenerOnClick", "true");
             // or creator create new nft
         } else if (sender === "creator-create-new-nft") {
             // get provider & program
