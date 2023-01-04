@@ -897,7 +897,10 @@ body creator =
                                                                 \s ->
                                                                     FromCreator <|
                                                                         CreatorMsg.Existing fromGlobal <|
-                                                                            ExistingMsg.TypingUploadTitle collection s
+                                                                            ExistingMsg.TypingUploadTitle
+                                                                                collection
+                                                                                form
+                                                                                s
                                                             ]
                                                             []
                                                         ]

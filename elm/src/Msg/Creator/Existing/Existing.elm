@@ -17,7 +17,7 @@ type
     | SelectCollection Collection
     | StartUploading Collection
     | SelectFilesToUpload
-    | TypingUploadTitle Collection String
+    | TypingUploadTitle Collection UploadForm String
     | Upload Collection UploadForm
 
 

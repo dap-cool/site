@@ -54,9 +54,9 @@ init =
     }
 
 
-title : String -> UploadForm
-title string =
-    { init | title = string }
+title : String -> UploadForm -> UploadForm
+title string form =
+    { form | title = string }
 
 
 files : Files -> UploadForm -> UploadForm

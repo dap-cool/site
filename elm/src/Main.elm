@@ -404,7 +404,7 @@ update msg model =
                               -- prepare image form events
                             )
 
-                        FromExistingCreator.TypingUploadTitle collection title ->
+                        FromExistingCreator.TypingUploadTitle collection form title ->
                             ( { model
                                 | state =
                                     { local =
@@ -412,7 +412,7 @@ update msg model =
                                             Creator.Existing hasWalletAndHandle <|
                                                 ExistingCreator.Uploading
                                                     collection
-                                                    (UploadForm.title title)
+                                                    (UploadForm.title title form)
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }
