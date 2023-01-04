@@ -204,39 +204,43 @@ export async function main(app, json) {
             // or creator select files to upload
         } else if (sender === "creator-select-files-to-upload") {
             // select files
-            // TODO; add listen event
             const imgSelector = document.getElementById(
                 "dap-cool-collection-upload-selector"
             );
-            console.log(imgSelector);
-            console.log(imgSelector.files);
-            const files = await Promise.all(
-                Array.from(imgSelector.files).map(async (file) => {
-                        const dataUrl = await blobToDataUrl(
-                            file
+            if (!imgSelector.hasAttribute("listenerOnClick")) {
+                imgSelector.addEventListener("change", async (selectEvent) => {
+                    // capture file list
+                    const fileList = selectEvent.target.files;
+                    if (fileList.length > 0) {
+                        const files = await Promise.all(
+                            Array.from(fileList).map(async (file) => {
+                                    const dataUrl = await blobToDataUrl(
+                                        file
+                                    );
+                                    return {
+                                        name: file.name,
+                                        dataUrl: dataUrl
+                                    }
+                                }
+                            )
                         );
-                        console.log(dataUrl);
-                        return {
-                            name: file.name,
-                            dataUrl: dataUrl
-                        }
+                        app.ports.success.send(
+                            JSON.stringify(
+                                {
+                                    listener: "creator-selected-files-to-upload",
+                                    more: JSON.stringify(
+                                        {
+                                            count: files.length,
+                                            files: files
+                                        }
+                                    )
+                                }
+                            )
+                        );
                     }
-                )
-            );
-            console.log(files);
-            app.ports.success.send(
-                JSON.stringify(
-                    {
-                        listener: "creator-selected-files-to-upload",
-                        more: JSON.stringify(
-                            {
-                                count: files.length,
-                                files: files
-                            }
-                        )
-                    }
-                )
-            );
+                });
+            }
+            imgSelector.setAttribute("listenerOnClick", "true");
             // or creator upload
         } else if (sender === "creator-upload") {
             // get provider & program
@@ -245,34 +249,32 @@ export async function main(app, json) {
             const more = JSON.parse(parsed.more);
             // select files
             if (more.form.files.count > 0) {
-                more.form.files.files = await Promise.all(
+                // unpack data-url array
+                const files = await Promise.all(
                     more.form.files.files.map(async (file) => {
                             const blob = await dataUrlToBlob(
                                 file.dataUrl
                             );
-                            console.log(blob);
-                            return new File([blob], file.name)
+                            return new File(
+                                [blob],
+                                file.name,
+                                {type: blob.type}
+                            )
                         }
                     )
                 );
-            } else {
-                const imgSelector = document.getElementById(
-                    "dap-cool-collection-upload-selector"
+                more.form.files = {
+                    count: files.length,
+                    files: files
+                };
+                // upload
+                await upload(
+                    app,
+                    pp.provider,
+                    more.collection,
+                    more.form
                 );
-                console.log(imgSelector);
-                // pack files as data-url array
-                const fileArray = Array.from(imgSelector.files);
-                console.log(fileArray);
-                more.form.files.count = fileArray.length;
-                more.form.files.files = fileArray;
             }
-            // upload
-            await upload(
-                app,
-                pp.provider,
-                more.collection,
-                more.form
-            );
             // or creator select collection
         } else if (sender === "creator-select-collection") {
             // get provider & program
@@ -285,7 +287,6 @@ export async function main(app, json) {
                 pp.programs.dap,
                 more
             );
-            console.log(uploads);
             app.ports.success.send(
                 JSON.stringify(
                     {

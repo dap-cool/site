@@ -120,7 +120,6 @@ export async function unlockUpload(fromElm: DatumFromElm): Promise<ToElm> {
             }
         )
     )).filter(Boolean) as { base64: string, type_: string }[];
-    console.log(base64Files);
     return {
         mint: new PublicKey(fromElm.mint),
         uploader: new PublicKey(fromElm.uploader),
@@ -206,6 +205,7 @@ export async function upload(
     collection: CollectionFromElm,
     formFromElm: FormFromElm
 ): Promise<void> {
+    // transform elm-form to js-form
     let form = {
         step: formFromElm.step,
         retries: formFromElm.retries,
@@ -215,6 +215,15 @@ export async function upload(
         litArgs: formFromElm.litArgs,
         encrypted: null,
     } as Form;
+    // bump elm-form for retries/next-steps
+    const dataUrls = await fileArrayToDataUrlArray(
+        formFromElm.files.files as File[]
+    );
+    formFromElm.files = {
+        count: formFromElm.files.count,
+        files: dataUrls
+    };
+    // start recursive retries
     if (form.step === 1) {
         try {
             // build encryption args
@@ -258,11 +267,7 @@ export async function upload(
         } catch (error) {
             console.log(error);
             // send retry to elm
-            formFromElm = await bumpFormForRetry(
-                formFromElm,
-                form
-            );
-            console.log(formFromElm);
+            formFromElm.retries += 1;
             app.ports.success.send(
                 JSON.stringify(
                     {
@@ -281,8 +286,6 @@ export async function upload(
     }
     if (form.step === 2) {
         try {
-            console.log(form);
-            console.log(formFromElm);
             // check for shadow
             if (!form.shadow) {
                 form.shadow = {
@@ -295,7 +298,6 @@ export async function upload(
                     form.litArgs
                 );
             }
-            console.log(form);
             // build metadata
             const metadata = {
                 key: form.encrypted.key,
@@ -338,10 +340,7 @@ export async function upload(
         } catch (error) {
             console.log(error);
             // send retry to elm
-            formFromElm = await bumpFormForRetry(
-                formFromElm,
-                form
-            );
+            formFromElm.retries += 1;
             app.ports.success.send(
                 JSON.stringify(
                     {
@@ -391,10 +390,7 @@ export async function upload(
         } catch (error) {
             console.log(error);
             // send retry to elm
-            formFromElm = await bumpFormForRetry(
-                formFromElm,
-                form
-            );
+            formFromElm.retries += 1;
             app.ports.success.send(
                 JSON.stringify(
                     {
@@ -413,18 +409,15 @@ export async function upload(
     }
 }
 
-async function bumpFormForRetry(fromElm: FormFromElm, fromJs: Form): Promise<FormFromElm> {
-    fromElm.retries += 1;
-    fromElm.files.files = await Promise.all(
-        fromJs.files.files.map(async (file) => {
+async function fileArrayToDataUrlArray(files: File[]): Promise<{name: string, dataUrl: string}[]> {
+    return await Promise.all(
+        files.map(async (file) => {
                 const dataUrl = await blobToDataUrl(file);
-                console.log(dataUrl);
                 return {
                     name: file.name,
-                    dataUrl: dataUrl as any
+                    dataUrl: dataUrl as string
                 }
             }
         )
     );
-    return fromElm
 }
