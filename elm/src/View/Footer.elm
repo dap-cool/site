@@ -14,23 +14,6 @@ view =
             [ class "level-item"
             ]
             [ Html.a
-                [ href "https://twitter.com/bigtimetapin"
-                , target "_blank"
-                ]
-                [ Html.span
-                    [ class "icon is-medium"
-                    ]
-                    [ Html.i
-                        [ class "fab fa-sm fa-twitter"
-                        ]
-                        []
-                    ]
-                ]
-            ]
-        , Html.div
-            [ class "level-item"
-            ]
-            [ Html.a
                 [ href "https://github.com/bigtimetapin/somos-crowd"
                 , target "_blank"
                 ]
