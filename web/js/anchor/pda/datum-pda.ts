@@ -82,6 +82,7 @@ interface ToElm extends DapSdk.Datum {
                 type_: string
             }[]
         }
+        timestamp: number
     }
 }
 
@@ -135,7 +136,8 @@ export async function unlockUpload(fromElm: DatumFromElm): Promise<ToElm> {
                 count: metadata.zip.count,
                 types: metadata.zip.types,
                 files: base64Files
-            }
+            },
+            timestamp: metadata.timestamp
         }
     }
 }
@@ -188,6 +190,7 @@ export async function getUploads(
                             types: metadata.zip.types,
                             files: []
                         },
+                        timestamp: metadata.timestamp
                     }
                     return toElm
                 }
@@ -409,7 +412,7 @@ export async function upload(
     }
 }
 
-async function fileArrayToDataUrlArray(files: File[]): Promise<{name: string, dataUrl: string}[]> {
+async function fileArrayToDataUrlArray(files: File[]): Promise<{ name: string, dataUrl: string }[]> {
     return await Promise.all(
         files.map(async (file) => {
                 const dataUrl = await blobToDataUrl(file);

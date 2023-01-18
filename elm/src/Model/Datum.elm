@@ -32,6 +32,7 @@ type alias Shadow =
 type alias Metadata =
     { title : String
     , zip : Zip
+    , timestamp : Int
     }
 
 
@@ -171,6 +172,7 @@ encoder datum =
                           )
                         ]
                   )
+                , ( "timestamp", Encode.int datum.metadata.timestamp )
                 ]
           )
         ]
@@ -199,7 +201,7 @@ decoder =
                 (Decode.field "url" Decode.string)
         )
         (Decode.field "metadata" <|
-            Decode.map2 Metadata
+            Decode.map3 Metadata
                 (Decode.field "title" Decode.string)
                 (Decode.field "zip" <|
                     Decode.map3 Zip
@@ -212,6 +214,7 @@ decoder =
                                     (Decode.field "type_" Decode.string)
                         )
                 )
+                (Decode.field "timestamp" Decode.int)
         )
 
 

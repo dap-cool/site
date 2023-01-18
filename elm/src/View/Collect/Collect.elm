@@ -276,6 +276,7 @@ body collector =
 
                         uploads maybeUnlockable =
                             let
+                                unlock : Datum -> Html Msg
                                 unlock datum =
                                     case maybeUnlockable of
                                         Just unlockable ->
@@ -298,37 +299,97 @@ body collector =
                                             Html.div
                                                 []
                                                 []
-                            in
-                            Html.div
-                                [ class "columns is-multiline"
-                                ]
-                            <|
-                                List.map
-                                    (\datum ->
-                                        Html.div
-                                            [ class "column is-one-third"
-                                            ]
+
+                                row : Datum -> Html Msg
+                                row datum =
+                                    Html.tr
+                                        []
+                                        [ Html.td
+                                            []
                                             [ Html.div
-                                                --[ class "is-upload"
-                                                []
-                                                [ Html.div
-                                                    []
-                                                    [ Html.text datum.metadata.title
-                                                    ]
-                                                , Html.div
-                                                    []
-                                                    [ Html.text <|
-                                                        String.concat
-                                                            [ "# of files"
-                                                            , ": "
-                                                            , String.fromInt datum.metadata.zip.count
-                                                            ]
-                                                    ]
-                                                , unlock datum
+                                                [ class "is-text-container-4 is-size-4"
+                                                ]
+                                                [ Html.text datum.metadata.title
                                                 ]
                                             ]
-                                    )
-                                    uploaded
+                                        , Html.td
+                                            []
+                                            [ Html.div
+                                                [ class "is-text-container-4 is-size-4"
+                                                ]
+                                                [ Html.text <|
+                                                    String.fromInt datum.metadata.zip.count
+                                                ]
+                                            ]
+                                        , Html.td
+                                            []
+                                            [ Html.div
+                                                [ class "is-text-container-4 is-size-4"
+                                                ]
+                                                [ Html.text <|
+                                                    String.fromInt datum.metadata.timestamp
+                                                ]
+                                            ]
+                                        , Html.td
+                                            []
+                                            [ Html.div
+                                                [ class "is-text-container-4 is-size-4"
+                                                ]
+                                                [ unlock datum
+                                                ]
+                                            ]
+                                        ]
+
+                                rows : Html Msg
+                                rows =
+                                    Html.tbody
+                                        []
+                                    <|
+                                        List.map
+                                            row
+                                            uploaded
+                            in
+                            Html.div
+                                [ class "table-container"
+                                ]
+                                [ Html.table
+                                    [ class "table is-fullwidth"
+                                    ]
+                                    [ Html.thead
+                                        []
+                                        [ Html.tr
+                                            []
+                                            [ Html.th
+                                                []
+                                                [ Html.text <|
+                                                    String.concat
+                                                        [ "Collectables"
+                                                        , " "
+                                                        , "("
+                                                        , String.fromInt <| List.length uploaded
+                                                        , ")"
+                                                        ]
+                                                ]
+                                            , Html.th
+                                                []
+                                                [ Html.text
+                                                    """Files
+                                                    """
+                                                ]
+                                            , Html.th
+                                                []
+                                                [ Html.text
+                                                    """Uploaded
+                                                    """
+                                                ]
+                                            , Html.th
+                                                []
+                                                []
+                                            ]
+                                        ]
+                                    , rows
+                                    ]
+                                ]
 
                         view_ =
                             case maybeCollected of
