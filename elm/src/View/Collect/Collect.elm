@@ -342,11 +342,7 @@ body collector =
                                                 [ class "column is-half-mobile is-one-third-tablet"
                                                 ]
                                                 [ View.Generic.Collection.Collector.Collector.view selected
-                                                ]
-                                            , Html.div
-                                                [ class "column is-half-mobile is-two-third-tablet"
-                                                ]
-                                                [ Html.div
+                                                , Html.div
                                                     []
                                                     [ purchase
                                                     ]
@@ -363,11 +359,14 @@ body collector =
                                                         """
                                                     ]
                                                 ]
-                                            ]
-                                        , Html.div
-                                            [ class "mt-6"
-                                            ]
-                                            [ uploads Nothing
+                                            , Html.div
+                                                [ class "column is-half-mobile is-two-third-tablet"
+                                                ]
+                                                [ Html.div
+                                                    []
+                                                    [ uploads Nothing
+                                                    ]
+                                                ]
                                             ]
                                         ]
 
@@ -383,11 +382,7 @@ body collector =
                                                         [ class "column is-half-mobile is-one-third-tablet"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
-                                                        ]
-                                                    , Html.div
-                                                        [ class "column is-half-mobile is-two-third-tablet"
-                                                        ]
-                                                        [ Html.text
+                                                        , Html.text
                                                             """It looks like you already have a positive token balance
                                                             for this collection 👀
                                                             """
@@ -402,11 +397,14 @@ body collector =
                                                                 """
                                                             ]
                                                         ]
-                                                    ]
-                                                , Html.div
-                                                    [ class "mt-6"
-                                                    ]
-                                                    [ uploads Nothing
+                                                    , Html.div
+                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        ]
+                                                        [ Html.div
+                                                            []
+                                                            [ uploads Nothing
+                                                            ]
+                                                        ]
                                                     ]
                                                 ]
 
@@ -420,17 +418,16 @@ body collector =
                                                         [ class "column is-half-mobile is-one-third-tablet"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
+                                                        , Html.div
+                                                            []
+                                                            [ purchase
+                                                            ]
                                                         ]
                                                     , Html.div
                                                         [ class "column is-half-mobile is-two-third-tablet"
                                                         ]
-                                                        [ purchase
+                                                        [ uploads Nothing
                                                         ]
-                                                    ]
-                                                , Html.div
-                                                    [ class "mt-6"
-                                                    ]
-                                                    [ uploads Nothing
                                                     ]
                                                 ]
 
@@ -444,11 +441,7 @@ body collector =
                                                         [ class "column is-half-mobile is-one-third-tablet"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
-                                                        ]
-                                                    , Html.div
-                                                        [ class "column is-half-mobile is-two-third-tablet"
-                                                        ]
-                                                        [ Html.div
+                                                        , Html.div
                                                             []
                                                             [ Html.text
                                                                 """Welcome back official collector \u{1FAE1}
@@ -468,11 +461,14 @@ body collector =
                                                             [ purchaseAgain
                                                             ]
                                                         ]
-                                                    ]
-                                                , Html.div
-                                                    [ class "mt-6"
-                                                    ]
-                                                    [ uploads <| Just collected
+                                                    , Html.div
+                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        ]
+                                                        [ Html.div
+                                                            []
+                                                            [ uploads <| Just collected
+                                                            ]
+                                                        ]
                                                     ]
                                                 ]
 
@@ -486,11 +482,7 @@ body collector =
                                                         [ class "column is-half-mobile is-one-third-tablet"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view collected
-                                                        ]
-                                                    , Html.div
-                                                        [ class "column is-half-mobile is-two-third-tablet"
-                                                        ]
-                                                        [ Html.div
+                                                        , Html.div
                                                             []
                                                             [ Html.text
                                                                 """Welcome back official collector \u{1FAE1}
@@ -508,11 +500,14 @@ body collector =
                                                             [ purchaseAgain
                                                             ]
                                                         ]
-                                                    ]
-                                                , Html.div
-                                                    [ class "mt-6"
-                                                    ]
-                                                    [ uploads Nothing
+                                                    , Html.div
+                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        ]
+                                                        [ Html.div
+                                                            []
+                                                            [ uploads Nothing
+                                                            ]
+                                                        ]
                                                     ]
                                                 ]
                     in
