@@ -106,7 +106,7 @@ viewWallet global =
                         ]
                     ]
                 , Html.div
-                    [ class "is-light-text-container-4 is-family-secondary"
+                    [ class "is-light-text-container-4 is-family-secondary is-size-5"
                     ]
                     [ Html.text <|
                         Wallet.slice hasWallet.wallet
