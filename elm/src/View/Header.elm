@@ -87,12 +87,6 @@ viewWallet global =
                 []
                 []
 
-        Connecting ->
-            Html.div
-                [ class "is-loading-tiny"
-                ]
-                []
-
         HasWallet hasWallet ->
             Html.div
                 []
@@ -147,11 +141,6 @@ viewGlobal global =
                 []
                 [ Html.text "no-wallet-installed"
                 ]
-
-        Connecting ->
-            Html.div
-                []
-                []
 
         HasWallet _ ->
             Html.div

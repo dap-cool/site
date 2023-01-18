@@ -1005,7 +1005,7 @@ update msg model =
                                                         | state =
                                                             { local = local
                                                             , global = Global.NoWalletYet
-                                                            , exception = model.state.exception
+                                                            , exception = Exception.Closed
                                                             }
                                                       }
                                                     , Cmd.none
@@ -1017,7 +1017,7 @@ update msg model =
                                                         | state =
                                                             { local = model.state.local
                                                             , global = Global.WalletMissing
-                                                            , exception = model.state.exception
+                                                            , exception = Exception.Closed
                                                             }
                                                       }
                                                     , Cmd.none
@@ -1044,7 +1044,7 @@ update msg model =
                                                                 False ->
                                                                     { state
                                                                         | global = global
-                                                                        , exception = model.state.exception
+                                                                        , exception = Exception.Closed
                                                                     }
 
                                                         bumpedLocal hasWallet local waiting =
@@ -1164,7 +1164,7 @@ update msg model =
                                                                 False ->
                                                                     { state
                                                                         | global = global
-                                                                        , exception = model.state.exception
+                                                                        , exception = Exception.Closed
                                                                     }
 
                                                         bumpedLocal hasWalletAndHandle local waiting =
@@ -1322,24 +1322,12 @@ update msg model =
                             , Cmd.none
                             )
 
-                -- JS sending error to raise
-                JsMsg.Error string ->
-                    ( { model
-                        | state =
-                            { local = Local.Error string
-                            , global = model.state.global
-                            , exception = model.state.exception
-                            }
-                      }
-                    , Cmd.none
-                    )
-
         Global fromGlobal ->
             ( { model
                 | state =
                     { local = model.state.local
-                    , global = Global.Connecting
-                    , exception = model.state.exception
+                    , global = model.state.global
+                    , exception = Exception.Waiting
                     }
               }
             , sender <| Sender.encode0 <| Sender.Global fromGlobal

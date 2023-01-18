@@ -424,14 +424,22 @@ export async function main(app, json) {
             // or throw error
         } else {
             const msg = "invalid role sent to js: " + sender;
-            app.ports.error.send(
-                msg
+            app.ports.exception.send(
+                JSON.stringify(
+                    {
+                        message: msg
+                    }
+                )
             );
         }
     } catch (error) {
         console.log(error);
-        app.ports.error.send(
-            error.toString()
+        app.ports.exception.send(
+            JSON.stringify(
+                {
+                    message: error.toString()
+                }
+            )
         );
     }
 }

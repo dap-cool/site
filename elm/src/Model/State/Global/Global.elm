@@ -7,7 +7,6 @@ import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
 type Global
     = NoWalletYet
     | WalletMissing -- no browser extension found
-    | Connecting -- or disconnecting
     | HasWallet HasWallet
     | HasWalletAndHandle HasWalletAndHandle
 
