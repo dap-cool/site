@@ -16,10 +16,10 @@ import Msg.Msg as Msg exposing (Msg(..))
 view : Global -> Html Msg
 view global =
     Html.nav
-        [ class "level is-size-4" -- is-navbar level is-mobile is-size-4
+        [ class "level has-text-centered is-size-4" -- is-navbar level is-mobile is-size-4
         ]
         [ Html.div
-            [ class "level-left ml-5 my-3"
+            [ class "level-left mx-5 my-3"
             ]
             [ Html.div
                 [ class "level-item"
@@ -40,17 +40,17 @@ view global =
                 ]
             ]
         , Html.div
-            [ class "level-right mr-5 my-3"
+            [ class "level-right mx-5 my-3"
             ]
             [ Html.div
-                [ class "level-item"
+                [ class "level-item mx-3"
                 ]
                 [ Html.span
                     [ class "icon-text"
                     ]
                     [ Html.span
                         []
-                        [ viewWallet global
+                        [ viewGlobal global
                         ]
                     , Html.span
                         [ class "icon"
@@ -65,7 +65,7 @@ view global =
             , Html.div
                 [ class "level-item"
                 ]
-                [ viewGlobal global
+                [ viewWallet global
                 ]
             ]
         ]
@@ -76,7 +76,7 @@ viewWallet global =
     case global of
         NoWalletYet ->
             Html.button
-                [ class "is-light-text-container-4 mr-2"
+                [ class "is-button-2 is-light-text-container-4"
                 , onClick <| Msg.Global FromGlobal.Connect
                 ]
                 [ Html.text "Connect Wallet"
@@ -93,12 +93,44 @@ viewWallet global =
                 ]
                 []
 
-        _ ->
-            Html.button
-                [ class "is-light-text-container-4 mr-2"
-                , onClick <| Msg.Global FromGlobal.Disconnect
+        HasWallet hasWallet ->
+            Html.div
+                []
+                [ Html.div
+                    []
+                    [ Html.button
+                        [ class "is-button-2 is-light-text-container-4"
+                        , onClick <| Msg.Global FromGlobal.Disconnect
+                        ]
+                        [ Html.text "Disconnect Wallet"
+                        ]
+                    ]
+                , Html.div
+                    [ class "is-light-text-container-4 is-family-secondary"
+                    ]
+                    [ Html.text <|
+                        Wallet.slice hasWallet.wallet
+                    ]
                 ]
-                [ Html.text "Disconnect Wallet"
+
+        HasWalletAndHandle hasWalletAndHandle ->
+            Html.div
+                []
+                [ Html.div
+                    []
+                    [ Html.button
+                        [ class "is-button-2 is-light-text-container-4"
+                        , onClick <| Msg.Global FromGlobal.Disconnect
+                        ]
+                        [ Html.text "Disconnect Wallet"
+                        ]
+                    ]
+                , Html.div
+                    [ class "is-light-text-container-4 is-family-secondary is-size-5"
+                    ]
+                    [ Html.text <|
+                        Wallet.slice hasWalletAndHandle.wallet
+                    ]
                 ]
 
 
@@ -108,8 +140,7 @@ viewGlobal global =
         NoWalletYet ->
             Html.div
                 []
-                [ Html.text "no-wallet-yet"
-                ]
+                []
 
         WalletMissing ->
             Html.div
@@ -119,58 +150,25 @@ viewGlobal global =
 
         Connecting ->
             Html.div
-                [ class "is-loading-tiny"
-                ]
+                []
                 []
 
-        HasWallet hasWallet ->
+        HasWallet _ ->
             Html.div
                 []
-                [ Html.div
-                    []
-                    [ Html.text <|
-                        String.concat
-                            [ "wallet:"
-                            , " "
-                            , Wallet.slice hasWallet.wallet
-                            ]
+                [ Html.a
+                    [ Local.href <| Local.Create (Creator.New NewCreator.Top)
                     ]
-                , Html.div
-                    []
-                    [ Html.text
-                        """no-handle-yet
-                        """
-                    , Html.div
-                        []
-                        [ Html.a
-                            [ Local.href <| Local.Create (Creator.New NewCreator.Top)
-                            , class "has-sky-blue-text"
-                            ]
-                            [ Html.text "create-handle-now"
-                            ]
-                        ]
+                    [ Html.text "start uploading 💹"
                     ]
                 ]
 
         HasWalletAndHandle hasWalletAndHandle ->
             Html.div
                 []
-                [ Html.div
-                    []
-                    [ Html.text <|
-                        String.concat
-                            [ "wallet:"
-                            , " "
-                            , Wallet.slice hasWalletAndHandle.wallet
-                            ]
+                [ Html.a
+                    [ Local.href <| Local.Create (Creator.New NewCreator.Top)
                     ]
-                , Html.div
-                    []
-                    [ Html.a
-                        [ Local.href <| Local.Create (Creator.New NewCreator.Top)
-                        , class "has-sky-blue-text"
-                        ]
-                        [ Html.text hasWalletAndHandle.handle
-                        ]
+                    [ Html.text hasWalletAndHandle.handle
                     ]
                 ]
