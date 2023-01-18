@@ -283,7 +283,7 @@ body collector =
                                             Html.div
                                                 []
                                                 [ Html.button
-                                                    [ class "is-button-3"
+                                                    [ class "is-button-3 is-size-5"
                                                     , onClick <|
                                                         FromCollector <|
                                                             CollectorMsg.UnlockDatum
@@ -318,7 +318,7 @@ body collector =
                                         , Html.td
                                             []
                                             [ Html.div
-                                                [ class "is-text-container-4 is-size-4"
+                                                [ class "is-text-container-5 is-size-5"
                                                 ]
                                                 [ Html.text <|
                                                     String.fromInt datum.metadata.zip.count
@@ -327,7 +327,7 @@ body collector =
                                         , Html.td
                                             []
                                             [ Html.div
-                                                [ class "is-text-container-4 is-size-4"
+                                                [ class "is-text-container-5 is-size-5"
                                                 ]
                                                 [ Html.text <|
                                                     String.fromInt datum.metadata.timestamp
@@ -336,8 +336,7 @@ body collector =
                                         , Html.td
                                             []
                                             [ Html.div
-                                                [ class "is-text-container-4 is-size-4"
-                                                ]
+                                                []
                                                 [ unlock datum
                                                 ]
                                             ]
@@ -363,7 +362,9 @@ body collector =
                                         [ Html.tr
                                             []
                                             [ Html.th
-                                                []
+                                                [ class "is-light-text-container-6 is-size-6 is-family-secondary"
+                                                , style "opacity" "50%"
+                                                ]
                                                 [ Html.text <|
                                                     String.concat
                                                         [ "Collectables"
@@ -374,13 +375,17 @@ body collector =
                                                         ]
                                                 ]
                                             , Html.th
-                                                []
+                                                [ class "is-light-text-container-6 is-size-6 is-family-secondary"
+                                                , style "opacity" "50%"
+                                                ]
                                                 [ Html.text
                                                     """Files
                                                     """
                                                 ]
                                             , Html.th
-                                                []
+                                                [ class "is-light-text-container-6 is-size-6 is-family-secondary"
+                                                , style "opacity" "50%"
+                                                ]
                                                 [ Html.text
                                                     """Uploaded
                                                     """
@@ -400,10 +405,10 @@ body collector =
                                     Html.div
                                         []
                                         [ Html.div
-                                            [ class "columns is-mobile"
+                                            [ class "columns"
                                             ]
                                             [ Html.div
-                                                [ class "column is-half-mobile is-one-third-tablet"
+                                                [ class "column is-half"
                                                 ]
                                                 [ View.Generic.Collection.Collector.Collector.view selected
                                                 , Html.div
@@ -424,7 +429,7 @@ body collector =
                                                     ]
                                                 ]
                                             , Html.div
-                                                [ class "column is-half-mobile is-two-third-tablet"
+                                                [ class "column is-half"
                                                 ]
                                                 [ Html.div
                                                     []
@@ -440,10 +445,10 @@ body collector =
                                             Html.div
                                                 []
                                                 [ Html.div
-                                                    [ class "columns is-mobile"
+                                                    [ class "columns"
                                                     ]
                                                     [ Html.div
-                                                        [ class "column is-half-mobile is-one-third-tablet"
+                                                        [ class "column is-half"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
                                                         , Html.text
@@ -462,7 +467,7 @@ body collector =
                                                             ]
                                                         ]
                                                     , Html.div
-                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        [ class "column is-half"
                                                         ]
                                                         [ Html.div
                                                             []
@@ -476,10 +481,10 @@ body collector =
                                             Html.div
                                                 []
                                                 [ Html.div
-                                                    [ class "columns is-mobile"
+                                                    [ class "columns"
                                                     ]
                                                     [ Html.div
-                                                        [ class "column is-half-mobile is-one-third-tablet"
+                                                        [ class "column is-half"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
                                                         , Html.div
@@ -488,7 +493,7 @@ body collector =
                                                             ]
                                                         ]
                                                     , Html.div
-                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        [ class "column is-half"
                                                         ]
                                                         [ uploads Nothing
                                                         ]
@@ -499,10 +504,10 @@ body collector =
                                             Html.div
                                                 []
                                                 [ Html.div
-                                                    [ class "columns is-mobile"
+                                                    [ class "columns"
                                                     ]
                                                     [ Html.div
-                                                        [ class "column is-half-mobile is-one-third-tablet"
+                                                        [ class "column is-half"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
                                                         , Html.div
@@ -526,7 +531,7 @@ body collector =
                                                             ]
                                                         ]
                                                     , Html.div
-                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        [ class "column is-half"
                                                         ]
                                                         [ Html.div
                                                             []
@@ -540,10 +545,10 @@ body collector =
                                             Html.div
                                                 []
                                                 [ Html.div
-                                                    [ class "columns is-mobile"
+                                                    [ class "columns"
                                                     ]
                                                     [ Html.div
-                                                        [ class "column is-half-mobile is-one-third-tablet"
+                                                        [ class "column is-half"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view collected
                                                         , Html.div
@@ -565,7 +570,7 @@ body collector =
                                                             ]
                                                         ]
                                                     , Html.div
-                                                        [ class "column is-half-mobile is-two-third-tablet"
+                                                        [ class "column is-half"
                                                         ]
                                                         [ Html.div
                                                             []
