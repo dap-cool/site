@@ -283,7 +283,7 @@ body collector =
                                             Html.div
                                                 []
                                                 [ Html.button
-                                                    [ class "is-button-1"
+                                                    [ class "is-button-3"
                                                     , onClick <|
                                                         FromCollector <|
                                                             CollectorMsg.UnlockDatum
@@ -298,7 +298,10 @@ body collector =
                                         Nothing ->
                                             Html.div
                                                 []
-                                                []
+                                                [ Html.text
+                                                    """🔒
+                                                    """
+                                                ]
 
                                 row : Datum -> Html Msg
                                 row datum =

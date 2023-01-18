@@ -97,7 +97,7 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // buttons /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-.is-button-1, .is-button-2 {
+.is-button-1, .is-button-2, .is-button-3 {
   width: 100%;
   background-color: #2B2B2B;
   color: #FDF9EF;
@@ -111,7 +111,15 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
   border-color: #2B2B2B;
 }
 
-.is-button-1:hover, .is-button-2:hover {
+.is-button-3 {
+  height: 40px;
+  width: 120px !important;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid #FFFFFF
+}
+
+.is-button-1:hover, .is-button-2:hover, .is-button-3:hover {
   background-color: #FDF9EF;
   color: #2B2B2B;
 }
