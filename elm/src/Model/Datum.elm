@@ -1,4 +1,4 @@
-module Model.Datum exposing (Datum, File, Src(..), decode, decode2, decoder, encode, toSrc)
+module Model.Datum exposing (Datum, File, Src(..), decode, decode2, decoder, encode, insert, toSrc)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -130,14 +130,10 @@ toSrc file =
                             NotSupported
 
 
-encode : Collection -> Datum -> List Datum -> String
-encode collection datum uploaded =
+encode : Datum -> String
+encode datum =
     Encode.encode 0 <|
-        Encode.object
-            [ ( "collection", Collection.encoder collection )
-            , ( "datum", encoder datum )
-            , ( "uploaded", Encode.list encoder uploaded )
-            ]
+        encoder datum
 
 
 encoder : Datum -> Encode.Value
@@ -178,9 +174,9 @@ encoder datum =
         ]
 
 
-decode : String -> Result String { collection : Collection, datum : Datum, uploaded : List Datum }
+decode : String -> Result String Datum
 decode string =
-    Util.decode string decoder_ identity
+    Util.decode string decoder identity
 
 
 decode2 : String -> Result String WithCollection
@@ -218,16 +214,22 @@ decoder =
         )
 
 
-decoder_ : Decode.Decoder { collection : Collection, datum : Datum, uploaded : List Datum }
-decoder_ =
-    Decode.map3 (\c d u -> { collection = c, datum = d, uploaded = u })
-        (Decode.field "collection" Collection.decoder)
-        (Decode.field "datum" decoder)
-        (Decode.field "uploaded" <| Decode.list decoder)
-
-
 decoder2_ : Decode.Decoder WithCollection
 decoder2_ =
     Decode.map2 WithCollection
         (Decode.field "collection" Collection.decoder)
         (Decode.field "datum" <| Decode.list decoder)
+
+
+insert : Datum -> List Datum -> List Datum
+insert datum list =
+    List.map
+        (\d ->
+            case datum.index == d.index of
+                True ->
+                    datum
+
+                False ->
+                    d
+        )
+        list

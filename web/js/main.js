@@ -402,21 +402,17 @@ export async function main(app, json) {
             // or collector unlock datum
         } else if (sender === "collector-unlock-datum") {
             // parse more json
-            const more = JSON.parse(parsed.more);
+            const datum = JSON.parse(parsed.more);
             // unlock datum
             const unlocked = await unlockUpload(
-                more.datum
+                datum
             );
             app.ports.success.send(
                 JSON.stringify(
                     {
                         listener: "collector-datum-unlocked",
                         more: JSON.stringify(
-                            {
-                                collection: more.collection,
-                                datum: unlocked,
-                                uploaded: more.uploaded
-                            }
+                            unlocked
                         )
                     }
                 )

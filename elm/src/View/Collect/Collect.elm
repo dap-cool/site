@@ -274,12 +274,12 @@ body collector =
                                         [ Html.text "purchase again"
                                         ]
 
-                        uploads maybeUnlockable =
+                        uploads unlockable =
                             let
                                 unlock : Datum -> Html Msg
                                 unlock datum =
-                                    case maybeUnlockable of
-                                        Just unlockable ->
+                                    case unlockable of
+                                        True ->
                                             Html.div
                                                 []
                                                 [ Html.button
@@ -287,15 +287,13 @@ body collector =
                                                     , onClick <|
                                                         FromCollector <|
                                                             CollectorMsg.UnlockDatum
-                                                                unlockable
                                                                 datum
-                                                                uploaded
                                                     ]
                                                     [ Html.text "unlock"
                                                     ]
                                                 ]
 
-                                        Nothing ->
+                                        False ->
                                             Html.div
                                                 []
                                                 [ Html.text
@@ -433,7 +431,7 @@ body collector =
                                                 ]
                                                 [ Html.div
                                                     []
-                                                    [ uploads Nothing
+                                                    [ uploads False
                                                     ]
                                                 ]
                                             ]
@@ -471,7 +469,7 @@ body collector =
                                                         ]
                                                         [ Html.div
                                                             []
-                                                            [ uploads Nothing
+                                                            [ uploads False
                                                             ]
                                                         ]
                                                     ]
@@ -495,7 +493,7 @@ body collector =
                                                     , Html.div
                                                         [ class "column is-half"
                                                         ]
-                                                        [ uploads Nothing
+                                                        [ uploads False
                                                         ]
                                                     ]
                                                 ]
@@ -535,7 +533,7 @@ body collector =
                                                         ]
                                                         [ Html.div
                                                             []
-                                                            [ uploads <| Just collected
+                                                            [ uploads True
                                                             ]
                                                         ]
                                                     ]
@@ -574,7 +572,7 @@ body collector =
                                                         ]
                                                         [ Html.div
                                                             []
-                                                            [ uploads Nothing
+                                                            [ uploads False
                                                             ]
                                                         ]
                                                     ]
@@ -589,30 +587,6 @@ body collector =
                             ]
                             [ view_
                             ]
-                        ]
-
-                UnlockedDatum collection datum _ ->
-                    Html.div
-                        []
-                        [ breadcrumb3 collection datum
-                        , header collection.meta.handle
-                        , Html.div
-                            [ class "mt-6 columns"
-                            ]
-                          <|
-                            List.map
-                                (\file ->
-                                    Html.div
-                                        [ class "column is-one-third"
-                                        ]
-                                        [ Html.div
-                                            -- [ class "is-upload"
-                                            []
-                                            [ View.Generic.Datum.Datum.view file
-                                            ]
-                                        ]
-                                )
-                                datum.metadata.zip.files
                         ]
 
                 MaybeExistingCreator _ ->
@@ -840,63 +814,5 @@ breadcrumb2 collection =
                 , ">"
                 , " "
                 , String.fromInt collection.meta.index
-                ]
-        ]
-
-
-breadcrumb3 : Collection -> Datum -> Html Msg
-breadcrumb3 collection datum =
-    Html.div
-        [ class "is-family-secondary is-light-text-container-6 is-size-6"
-        ]
-        [ Html.a
-            [ class "is-underlined"
-            , Local.href <|
-                Local.Collect <|
-                    Collector.TypingHandle
-                        ""
-            ]
-            [ Html.text <|
-                String.concat
-                    [ "Search creators"
-                    ]
-            ]
-        , Html.text <|
-            String.concat
-                [ " "
-                , ">"
-                , " "
-                ]
-        , Html.a
-            [ class "is-underlined"
-            , Local.href <|
-                Local.Collect <|
-                    Collector.MaybeExistingCreator
-                        collection.meta.handle
-            ]
-            [ Html.text collection.meta.handle
-            ]
-        , Html.text <|
-            String.concat
-                [ " "
-                , ">"
-                , " "
-                ]
-        , Html.a
-            [ class "is-underlined"
-            , Local.href <|
-                Local.Collect <|
-                    Collector.MaybeExistingCollection
-                        collection.meta.handle
-                        collection.meta.index
-            ]
-            [ Html.text <| String.fromInt collection.meta.index
-            ]
-        , Html.text <|
-            String.concat
-                [ " "
-                , ">"
-                , " "
-                , datum.metadata.title
                 ]
         ]

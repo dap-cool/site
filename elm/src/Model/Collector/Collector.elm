@@ -15,7 +15,6 @@ type
       -- select collection
     | SelectedCreator ( Intersection, Remainder ) WithCollections
     | SelectedCollection MaybeCollected Selected Uploaded
-    | UnlockedDatum Collected Unlocked Uploaded
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int

@@ -501,7 +501,7 @@ update msg model =
                             }
                     )
 
-                FromCollector.UnlockDatum collection datum uploaded ->
+                FromCollector.UnlockDatum datum ->
                     ( { model
                         | state =
                             { local = model.state.local
@@ -512,7 +512,7 @@ update msg model =
                     , sender <|
                         Sender.encode <|
                             { sender = Sender.Collect from
-                            , more = Datum.encode collection datum uploaded
+                            , more = Datum.encode datum
                             }
                     )
 
@@ -951,19 +951,28 @@ update msg model =
 
                                                         ToCollector.DatumUnlocked ->
                                                             let
-                                                                f wc =
+                                                                bump local =
                                                                     { model
                                                                         | state =
-                                                                            { local =
-                                                                                Local.Collect <|
-                                                                                    Collector.UnlockedDatum
-                                                                                        wc.collection
-                                                                                        wc.datum
-                                                                                        wc.uploaded
+                                                                            { local = local
                                                                             , global = model.state.global
                                                                             , exception = Exception.Closed
                                                                             }
                                                                     }
+
+                                                                f unlocked =
+                                                                    case model.state.local of
+                                                                        Local.Collect (Collector.SelectedCollection collected selected uploaded) ->
+                                                                            bump <|
+                                                                                Local.Collect <|
+                                                                                    Collector.SelectedCollection
+                                                                                        collected
+                                                                                        selected
+                                                                                        (Datum.insert unlocked uploaded)
+
+                                                                        _ ->
+                                                                            bump <|
+                                                                                model.state.local
                                                             in
                                                             Listener.decode model json Datum.decode f
 
@@ -989,13 +998,6 @@ update msg model =
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
                                                                             selected
-                                                                            uploaded
-
-                                                                Local.Collect (Collector.UnlockedDatum collected _ uploaded) ->
-                                                                    Local.Collect <|
-                                                                        Collector.SelectedCollection
-                                                                            Collector.NotLoggedInYet
-                                                                            collected
                                                                             uploaded
 
                                                                 _ ->
@@ -1115,26 +1117,6 @@ update msg model =
                                                                             }
                                                                     )
 
-                                                                -- go back to js for ata balance
-                                                                Local.Collect (Collector.UnlockedDatum collected _ _) ->
-                                                                    ( { model
-                                                                        | state = bumpedState hasWallet True
-                                                                      }
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Collect <|
-                                                                                    FromCollector.SelectCollection
-                                                                                        collected.meta.handle
-                                                                                        collected.meta.index
-                                                                            , more =
-                                                                                AlmostExistingCollection.encode
-                                                                                    { handle = collected.meta.handle
-                                                                                    , index = collected.meta.index
-                                                                                    }
-                                                                            }
-                                                                    )
-
                                                                 -- update global & move on
                                                                 _ ->
                                                                     ( { model | state = bumpedState hasWallet False }
@@ -1231,26 +1213,6 @@ update msg model =
                                                                                 AlmostExistingCollection.encode
                                                                                     { handle = selected.meta.handle
                                                                                     , index = selected.meta.index
-                                                                                    }
-                                                                            }
-                                                                    )
-
-                                                                -- go back to js for ata balance
-                                                                Local.Collect (Collector.UnlockedDatum collected _ _) ->
-                                                                    ( { model
-                                                                        | state = bumpedState hasWalletAndHandle True
-                                                                      }
-                                                                    , sender <|
-                                                                        Sender.encode <|
-                                                                            { sender =
-                                                                                Sender.Collect <|
-                                                                                    FromCollector.SelectCollection
-                                                                                        collected.meta.handle
-                                                                                        collected.meta.index
-                                                                            , more =
-                                                                                AlmostExistingCollection.encode
-                                                                                    { handle = collected.meta.handle
-                                                                                    , index = collected.meta.index
                                                                                     }
                                                                             }
                                                                     )
