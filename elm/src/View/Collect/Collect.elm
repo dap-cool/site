@@ -278,12 +278,12 @@ body collector =
                             let
                                 unlock : Datum -> Html Msg
                                 unlock datum =
-                                    case unlockable of
-                                        True ->
+                                    case ( unlockable, List.length datum.metadata.zip.files == 0 ) of
+                                        ( True, True ) ->
                                             Html.div
                                                 []
                                                 [ Html.button
-                                                    [ class "is-button-3 is-size-5"
+                                                    [ class "is-button-3"
                                                     , onClick <|
                                                         FromCollector <|
                                                             CollectorMsg.UnlockDatum
@@ -293,7 +293,16 @@ body collector =
                                                     ]
                                                 ]
 
-                                        False ->
+                                        ( True, False ) ->
+                                            Html.div
+                                                []
+                                                [ Html.button
+                                                    []
+                                                    [ Html.text "download"
+                                                    ]
+                                                ]
+
+                                        ( False, _ ) ->
                                             Html.div
                                                 []
                                                 [ Html.text
@@ -301,8 +310,47 @@ body collector =
                                                     """
                                                 ]
 
-                                row : Datum -> Html Msg
+                                row : Datum -> List (Html Msg)
                                 row datum =
+                                    let
+                                        file_ file =
+                                            Html.tr
+                                                []
+                                                [ Html.td
+                                                    []
+                                                    []
+                                                , Html.td
+                                                    []
+                                                    [ Html.div
+                                                        [ class "is-light-text-container-5 is-size-5"
+                                                        ]
+                                                        [ Html.text <|
+                                                            file.type_
+                                                        ]
+                                                    ]
+                                                , Html.td
+                                                    []
+                                                    []
+                                                , Html.td
+                                                    []
+                                                    [ Html.div
+                                                        []
+                                                        [ Html.button
+                                                            []
+                                                            [ Html.text
+                                                                """view
+                                                                """
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+
+                                        files : List (Html msg)
+                                        files =
+                                            List.map
+                                                file_
+                                                datum.metadata.zip.files
+                                    in
                                     Html.tr
                                         []
                                         [ Html.td
@@ -316,7 +364,7 @@ body collector =
                                         , Html.td
                                             []
                                             [ Html.div
-                                                [ class "is-text-container-5 is-size-5"
+                                                [ class "is-light-text-container-5 is-size-5"
                                                 ]
                                                 [ Html.text <|
                                                     String.fromInt datum.metadata.zip.count
@@ -325,7 +373,7 @@ body collector =
                                         , Html.td
                                             []
                                             [ Html.div
-                                                [ class "is-text-container-5 is-size-5"
+                                                [ class "is-light-text-container-5 is-size-5"
                                                 ]
                                                 [ Html.text <|
                                                     String.fromInt datum.metadata.timestamp
@@ -339,13 +387,14 @@ body collector =
                                                 ]
                                             ]
                                         ]
+                                        :: files
 
                                 rows : Html Msg
                                 rows =
                                     Html.tbody
                                         []
                                     <|
-                                        List.map
+                                        List.concatMap
                                             row
                                             uploaded
                             in
