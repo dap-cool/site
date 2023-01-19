@@ -1,6 +1,7 @@
 module Model.Collector.Collector exposing (AtaBalance(..), Collector(..), Found(..), MaybeCollected(..))
 
 import Model.Collection exposing (Collection, Intersection, Remainder)
+import Model.Collector.UnlockedModal exposing (UnlockedModal)
 import Model.Collector.WithCollections exposing (WithCollections)
 import Model.Datum exposing (Datum)
 
@@ -14,7 +15,7 @@ type
     | HandleDoesNotExist String
       -- select collection
     | SelectedCreator ( Intersection, Remainder ) WithCollections
-    | SelectedCollection MaybeCollected Selected Uploaded
+    | SelectedCollection MaybeCollected Selected Uploaded (Maybe UnlockedModal)
       -- search by url
     | MaybeExistingCreator String
     | MaybeExistingCollection String Int

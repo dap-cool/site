@@ -516,6 +516,59 @@ update msg model =
                             }
                     )
 
+                FromCollector.ViewFile file ->
+                    case model.state.local of
+                        Local.Collect (Collector.SelectedCollection collected selected uploaded _) ->
+                            ( { model
+                                | state =
+                                    { local =
+                                        Local.Collect <|
+                                            Collector.SelectedCollection
+                                                collected
+                                                selected
+                                                uploaded
+                                            <|
+                                                Just <|
+                                                    { current = file
+                                                    , next = []
+                                                    , previous = []
+                                                    }
+                                    , global = model.state.global
+                                    , exception = model.state.exception
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
+                        _ ->
+                            ( model
+                            , Cmd.none
+                            )
+
+                FromCollector.CloseFile ->
+                    case model.state.local of
+                        Local.Collect (Collector.SelectedCollection collected selected uploaded _) ->
+                            ( { model
+                                | state =
+                                    { local =
+                                        Local.Collect <|
+                                            Collector.SelectedCollection
+                                                collected
+                                                selected
+                                                uploaded
+                                                Nothing
+                                    , global = model.state.global
+                                    , exception = model.state.exception
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
+                        _ ->
+                            ( model
+                            , Cmd.none
+                            )
+
         FromJs fromJsMsg ->
             case fromJsMsg of
                 -- JS sending success for decoding
@@ -905,6 +958,7 @@ update msg model =
                                                                                         (maybeCollected wc.collection)
                                                                                         wc.collection
                                                                                         wc.datum
+                                                                                        Nothing
                                                                             , global = model.state.global
                                                                             , exception = Exception.Closed
                                                                             }
@@ -926,6 +980,7 @@ update msg model =
                                                                                         )
                                                                                         master
                                                                                         datum
+                                                                                        Nothing
                                                                             , global = global
                                                                             , exception = Exception.Closed
                                                                             }
@@ -962,13 +1017,14 @@ update msg model =
 
                                                                 f unlocked =
                                                                     case model.state.local of
-                                                                        Local.Collect (Collector.SelectedCollection collected selected uploaded) ->
+                                                                        Local.Collect (Collector.SelectedCollection collected selected uploaded _) ->
                                                                             bump <|
                                                                                 Local.Collect <|
                                                                                     Collector.SelectedCollection
                                                                                         collected
                                                                                         selected
                                                                                         (Datum.insert unlocked uploaded)
+                                                                                        Nothing
 
                                                                         _ ->
                                                                             bump <|
@@ -993,12 +1049,13 @@ update msg model =
                                                                             -- no intersection
                                                                             withCollections
 
-                                                                Local.Collect (Collector.SelectedCollection _ selected uploaded) ->
+                                                                Local.Collect (Collector.SelectedCollection _ selected uploaded _) ->
                                                                     Local.Collect <|
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
                                                                             selected
                                                                             uploaded
+                                                                            Nothing
 
                                                                 _ ->
                                                                     model.state.local
@@ -1098,7 +1155,7 @@ update msg model =
                                                                 -- but the selected not being collected by the wallet
                                                                 -- doesn't imply that the ata has a non-zero balance
                                                                 -- in fact, this is what happens when a wallet buys in 2nd markets
-                                                                Local.Collect (Collector.SelectedCollection _ selected _) ->
+                                                                Local.Collect (Collector.SelectedCollection _ selected _ _) ->
                                                                     ( { model
                                                                         | state = bumpedState hasWallet True
                                                                       }
@@ -1198,7 +1255,7 @@ update msg model =
                                                                 -- but the selected not being collected by the wallet
                                                                 -- doesn't imply that the ata has a non-zero balance
                                                                 -- in fact, this is what happens when a wallet buys in 2nd markets
-                                                                Local.Collect (Collector.SelectedCollection _ selected _) ->
+                                                                Local.Collect (Collector.SelectedCollection _ selected _ _) ->
                                                                     ( { model
                                                                         | state = bumpedState hasWalletAndHandle True
                                                                       }

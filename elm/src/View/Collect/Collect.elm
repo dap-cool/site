@@ -190,8 +190,37 @@ body collector =
                         , rx
                         ]
 
-                SelectedCollection maybeCollected selected uploaded ->
+                SelectedCollection maybeCollected selected uploaded maybeUnlockedModal ->
                     let
+                        unlockedModalView =
+                            case maybeUnlockedModal of
+                                Just unlockedModal ->
+                                    Html.div
+                                        [ class "modal is-active"
+                                        ]
+                                        [ Html.div
+                                            [ class "modal-background"
+                                            ]
+                                            []
+                                        , Html.div
+                                            [ class "modal-content"
+                                            ]
+                                            [ View.Generic.Datum.Datum.view unlockedModal.current
+                                            ]
+                                        , Html.button
+                                            [ class "modal-close is-large"
+                                            , onClick <|
+                                                FromCollector <|
+                                                    CollectorMsg.CloseFile
+                                            ]
+                                            []
+                                        ]
+
+                                Nothing ->
+                                    Html.div
+                                        []
+                                        []
+
                         purchase =
                             case Collection.isSoldOut selected of
                                 True ->
@@ -336,7 +365,11 @@ body collector =
                                                     [ Html.div
                                                         []
                                                         [ Html.button
-                                                            []
+                                                            [ onClick <|
+                                                                FromCollector <|
+                                                                    CollectorMsg.ViewFile
+                                                                        file
+                                                            ]
                                                             [ Html.text
                                                                 """view
                                                                 """
@@ -345,7 +378,7 @@ body collector =
                                                     ]
                                                 ]
 
-                                        files : List (Html msg)
+                                        files : List (Html Msg)
                                         files =
                                             List.map
                                                 file_
@@ -631,6 +664,7 @@ body collector =
                         []
                         [ breadcrumb2 selected
                         , header selected.meta.handle
+                        , unlockedModalView
                         , Html.div
                             [ class "mt-6"
                             ]
