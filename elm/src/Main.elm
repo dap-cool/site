@@ -616,7 +616,7 @@ update msg model =
                                                                                                 NewCreator.HandleInvalid
                                                                                                     handle
                                                                                     , global = model.state.global
-                                                                                    , exception = model.state.exception
+                                                                                    , exception = Exception.Closed
                                                                                     }
                                                                             }
                                                                     in
@@ -633,7 +633,7 @@ update msg model =
                                                                                                 NewCreator.HandleAlreadyExists
                                                                                                     handle
                                                                                     , global = model.state.global
-                                                                                    , exception = model.state.exception
+                                                                                    , exception = Exception.Closed
                                                                                     }
                                                                             }
                                                                     in
