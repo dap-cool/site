@@ -14,7 +14,7 @@ view =
             [ class "level-item"
             ]
             [ Html.a
-                [ href "https://github.com/bigtimetapin/somos-crowd"
+                [ href "https://github.com/dap-cool/site"
                 , target "_blank"
                 ]
                 [ Html.span
