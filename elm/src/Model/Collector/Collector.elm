@@ -6,11 +6,9 @@ import Model.Collector.WithCollections exposing (WithCollections)
 import Model.Datum exposing (Datum)
 
 
-type
-    Collector
-    -- searching
-    = TypingHandle String
-    | WaitingForHandleConfirmation
+type Collector
+    = Top (List Collection)
+      -- searching
     | HandleInvalid String
     | HandleDoesNotExist String
       -- select collection

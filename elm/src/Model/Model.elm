@@ -41,11 +41,40 @@ init _ url key =
             }
     in
     case local of
+        Local.Collect (Collector.Top _) ->
+            case model.state.global of
+                Global.HasWallet hasWallet ->
+                    ( { model
+                        | state =
+                            { local = Local.Collect <| Collector.Top hasWallet.collected
+                            , global = model.state.global
+                            , exception = Exception.Closed
+                            }
+                      }
+                    , Cmd.none
+                    )
+
+                Global.HasWalletAndHandle hasWalletAndHandle ->
+                    ( { model
+                        | state =
+                            { local = Local.Collect <| Collector.Top hasWalletAndHandle.collected
+                            , global = model.state.global
+                            , exception = Exception.Closed
+                            }
+                      }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( model
+                    , Cmd.none
+                    )
+
         Local.Collect (Collector.MaybeExistingCreator handle) ->
             ( model
             , sender <|
                 Sender.encode <|
-                    { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
+                    { sender = Sender.Collect <| FromCollector.SearchCreator handle
                     , more = Handle.encode handle
                     }
             )

@@ -30,7 +30,7 @@ urlParser =
 
         -- collector
         , UrlParser.map
-            (Collect (Collector.TypingHandle ""))
+            (Collect (Collector.Top []))
             UrlParser.top
         , UrlParser.map
             (\handle -> Collect (Collector.MaybeExistingCreator handle))
@@ -66,7 +66,7 @@ path local =
 
         Collect collector ->
             case collector of
-                Collector.TypingHandle "" ->
+                Collector.Top _ ->
                     -- top
                     "#/"
 

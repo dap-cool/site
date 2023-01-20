@@ -1,13 +1,13 @@
 module View.Collect.Collect exposing (body)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, href, placeholder, src, style, target, type_, width)
-import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (class, href, src, style, target, width)
+import Html.Events exposing (onClick)
 import Model.Collection as Collection exposing (Collection)
 import Model.Collector.Collector as Collector exposing (Collector(..))
 import Model.Collector.UnlockedModal exposing (Current, IndexedFile, Total)
-import Model.Datum as Datum exposing (Datum)
-import Model.Handle as Handle exposing (Handle)
+import Model.Datum exposing (Datum)
+import Model.Handle exposing (Handle)
 import Model.State.Local.Local as Local
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Global as FromGlobal
@@ -21,63 +21,34 @@ body collector =
     let
         html =
             case collector of
-                TypingHandle string ->
-                    let
-                        select =
-                            case string of
-                                "" ->
-                                    Html.div
-                                        []
-                                        []
-
-                                _ ->
-                                    Html.div
-                                        []
-                                        [ Html.button
-                                            [ class "is-button-1"
-                                            , onClick <|
-                                                FromCollector <|
-                                                    CollectorMsg.HandleForm <|
-                                                        Handle.Confirm string
-                                            ]
-                                            [ Html.text <|
-                                                String.concat
-                                                    [ "search for collections from handle:"
-                                                    , " "
-                                                    , string
-                                                    ]
-                                            ]
-                                        ]
-                    in
-                    Html.div
-                        []
-                        [ Html.div
-                            []
-                            [ Html.input
-                                [ class "input is-size-3"
-                                , type_ "text"
-                                , placeholder "🔍 Find Creators"
-                                , onInput <|
-                                    \s ->
-                                        FromCollector <|
-                                            CollectorMsg.HandleForm <|
-                                                Handle.Typing s
-                                ]
+                Top collected ->
+                    case collected of
+                        [] ->
+                            Html.div
                                 []
-                            ]
-                        , select
-                        , hiw
-                        ]
+                                [ hiw
+                                ]
 
-                WaitingForHandleConfirmation ->
-                    Html.div
-                        [ class "has-border-2 px-2 pt-2 pb-6"
-                        ]
-                        [ Html.div
-                            [ class "is-loading"
-                            ]
-                            []
-                        ]
+                        nel ->
+                            Html.div
+                                []
+                                [ Html.div
+                                    []
+                                    [ Html.h3
+                                        []
+                                        [ Html.text <|
+                                            "your collection ⬇️"
+                                        ]
+                                    ]
+                                , Html.div
+                                    []
+                                    [ View.Generic.Collection.Collector.Collector.viewMany nel
+                                    ]
+                                , Html.div
+                                    []
+                                    [ hiw
+                                    ]
+                                ]
 
                 HandleInvalid string ->
                     Html.div
@@ -92,21 +63,6 @@ body collector =
                                     , " "
                                     , string
                                     ]
-                            , Html.div
-                                [ class "pt-1"
-                                ]
-                                [ Html.button
-                                    [ class "is-button-1"
-                                    , onClick <|
-                                        FromCollector <|
-                                            CollectorMsg.HandleForm <|
-                                                Handle.Typing ""
-                                    ]
-                                    [ Html.text
-                                        """try again
-                                        """
-                                    ]
-                                ]
                             ]
                         ]
 
@@ -123,21 +79,6 @@ body collector =
                                     , " "
                                     , string
                                     ]
-                            , Html.div
-                                [ class "pt-1"
-                                ]
-                                [ Html.button
-                                    [ class "is-button-1"
-                                    , onClick <|
-                                        FromCollector <|
-                                            CollectorMsg.HandleForm <|
-                                                Handle.Typing ""
-                                    ]
-                                    [ Html.text
-                                        """try again
-                                        """
-                                    ]
-                                ]
                             ]
                         ]
 
@@ -924,12 +865,11 @@ breadcrumb handle =
             [ class "is-underlined"
             , Local.href <|
                 Local.Collect <|
-                    Collector.TypingHandle
-                        ""
+                    Collector.Top []
             ]
             [ Html.text <|
                 String.concat
-                    [ "Search creators"
+                    [ "my collection"
                     ]
             ]
         , Html.text <|
@@ -950,12 +890,11 @@ breadcrumb2 collection =
             [ class "is-underlined"
             , Local.href <|
                 Local.Collect <|
-                    Collector.TypingHandle
-                        ""
+                    Collector.Top []
             ]
             [ Html.text <|
                 String.concat
-                    [ "Search creators"
+                    [ "my collection"
                     ]
             ]
         , Html.text <|

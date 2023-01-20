@@ -112,12 +112,41 @@ update msg model =
                             , Cmd.none
                             )
 
+                Local.Collect (Collector.Top _) ->
+                    case model.state.global of
+                        Global.HasWallet hasWallet ->
+                            ( { model
+                                | state =
+                                    { local = Local.Collect <| Collector.Top hasWallet.collected
+                                    , global = model.state.global
+                                    , exception = Exception.Closed
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
+                        Global.HasWalletAndHandle hasWalletAndHandle ->
+                            ( { model
+                                | state =
+                                    { local = Local.Collect <| Collector.Top hasWalletAndHandle.collected
+                                    , global = model.state.global
+                                    , exception = Exception.Closed
+                                    }
+                              }
+                            , Cmd.none
+                            )
+
+                        _ ->
+                            ( model
+                            , Cmd.none
+                            )
+
                 Local.Collect (Collector.MaybeExistingCreator handle) ->
                     ( bump
                     , Cmd.batch
                         [ sender <|
                             Sender.encode <|
-                                { sender = Sender.Collect <| FromCollector.HandleForm <| Handle.Confirm handle
+                                { sender = Sender.Collect <| FromCollector.SearchCreator handle
                                 , more = Handle.encode handle
                                 }
                         , resetViewport
@@ -447,36 +476,20 @@ update msg model =
 
         FromCollector from ->
             case from of
-                FromCollector.HandleForm form ->
-                    case form of
-                        Handle.Typing string ->
-                            ( { model
-                                | state =
-                                    { local =
-                                        Local.Collect <|
-                                            Collector.TypingHandle <|
-                                                Handle.normalize string
-                                    , global = model.state.global
-                                    , exception = model.state.exception
-                                    }
-                              }
-                            , Cmd.none
-                            )
-
-                        Handle.Confirm string ->
-                            ( { model
-                                | state =
-                                    { local = Local.Collect <| Collector.WaitingForHandleConfirmation
-                                    , global = model.state.global
-                                    , exception = model.state.exception
-                                    }
-                              }
-                            , sender <|
-                                Sender.encode <|
-                                    { sender = Sender.Collect from
-                                    , more = Handle.encode string
-                                    }
-                            )
+                FromCollector.SearchCreator handle ->
+                    ( { model
+                        | state =
+                            { local = model.state.local
+                            , global = model.state.global
+                            , exception = Exception.Waiting
+                            }
+                      }
+                    , sender <|
+                        Sender.encode <|
+                            { sender = Sender.Collect from
+                            , more = Handle.encode handle
+                            }
+                    )
 
                 FromCollector.SelectCollection handle index ->
                     ( model
@@ -1042,6 +1055,9 @@ update msg model =
                                                                 Local.Create _ ->
                                                                     Local.Create <| Creator.New <| NewCreator.Top
 
+                                                                Local.Collect (Collector.Top _) ->
+                                                                    Local.Collect <| Collector.Top []
+
                                                                 Local.Collect (Collector.SelectedCreator _ withCollections) ->
                                                                     Local.Collect <|
                                                                         Collector.SelectedCreator
@@ -1131,6 +1147,20 @@ update msg model =
                                                                                 (Local.Create <|
                                                                                     Creator.New <|
                                                                                         NewCreator.Top
+                                                                                )
+                                                                                False
+                                                                      }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                                Local.Collect (Collector.Top _) ->
+                                                                    ( { model
+                                                                        | state =
+                                                                            bumpedLocal
+                                                                                hasWallet
+                                                                                (Local.Collect <|
+                                                                                    Collector.Top
+                                                                                        hasWallet.collected
                                                                                 )
                                                                                 False
                                                                       }
@@ -1231,6 +1261,20 @@ update msg model =
                                                                                 (Local.Create <|
                                                                                     Creator.Existing hasWalletAndHandle <|
                                                                                         ExistingCreator.Top
+                                                                                )
+                                                                                False
+                                                                      }
+                                                                    , Cmd.none
+                                                                    )
+
+                                                                Local.Collect (Collector.Top _) ->
+                                                                    ( { model
+                                                                        | state =
+                                                                            bumpedLocal
+                                                                                hasWalletAndHandle
+                                                                                (Local.Collect <|
+                                                                                    Collector.Top
+                                                                                        hasWalletAndHandle.collected
                                                                                 )
                                                                                 False
                                                                       }
