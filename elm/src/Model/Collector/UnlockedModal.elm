@@ -5,8 +5,8 @@ import Model.Datum exposing (File)
 
 type alias UnlockedModal =
     { current : IndexedFile
-    , next : List File
-    , previous : List File
+    , next : List IndexedFile
+    , previous : List IndexedFile
     }
 
 
@@ -60,12 +60,12 @@ apply_ file list modal =
                                     modal
 
                                 headOfNext :: next ->
-                                    apply_ file next { modal | next = headOfNext.file :: [] }
+                                    apply_ file next { modal | next = headOfNext :: [] }
 
                         False ->
                             -- keep adding to previous
-                            apply_ file tail { modal | previous = modal.previous ++ [ file.file ] }
+                            apply_ file tail { modal | previous = modal.previous ++ [ head ] }
 
                 -- already started adding to next
                 nel ->
-                    apply_ file tail { modal | next = nel ++ [ head.file ] }
+                    apply_ file tail { modal | next = nel ++ [ head ] }

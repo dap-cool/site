@@ -196,6 +196,59 @@ body collector =
                         unlockedModalView =
                             case maybeUnlockedModal of
                                 Just unlockedModal ->
+                                    let
+                                        total : Total
+                                        total =
+                                            unlockedModal.previous
+                                                ++ [ unlockedModal.current ]
+                                                ++ unlockedModal.next
+
+                                        previous =
+                                            case List.reverse unlockedModal.previous of
+                                                head :: _ ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.button
+                                                            [ onClick <|
+                                                                FromCollector <|
+                                                                    CollectorMsg.ViewFile
+                                                                        head
+                                                                        total
+                                                            ]
+                                                            [ Html.text
+                                                                """previous
+                                                                """
+                                                            ]
+                                                        ]
+
+                                                _ ->
+                                                    Html.div
+                                                        []
+                                                        []
+
+                                        next =
+                                            case unlockedModal.next of
+                                                head :: _ ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.button
+                                                            [ onClick <|
+                                                                FromCollector <|
+                                                                    CollectorMsg.ViewFile
+                                                                        head
+                                                                        total
+                                                            ]
+                                                            [ Html.text
+                                                                """next
+                                                                """
+                                                            ]
+                                                        ]
+
+                                                _ ->
+                                                    Html.div
+                                                        []
+                                                        []
+                                    in
                                     Html.div
                                         [ class "modal is-active"
                                         ]
@@ -206,7 +259,25 @@ body collector =
                                         , Html.div
                                             [ class "modal-content"
                                             ]
-                                            [ View.Generic.Datum.Datum.view unlockedModal.current.file
+                                            [ Html.div
+                                                [ class "columns is-mobile"
+                                                ]
+                                                [ Html.div
+                                                    [ class "column is-2"
+                                                    ]
+                                                    [ previous
+                                                    ]
+                                                , Html.div
+                                                    [ class "column is-8"
+                                                    ]
+                                                    [ View.Generic.Datum.Datum.view unlockedModal.current.file
+                                                    ]
+                                                , Html.div
+                                                    [ class "column is-2"
+                                                    ]
+                                                    [ next
+                                                    ]
+                                                ]
                                             ]
                                         , Html.button
                                             [ class "modal-close is-large"
