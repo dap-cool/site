@@ -263,7 +263,7 @@ body collector =
                                                 [ class "columns is-mobile"
                                                 ]
                                                 [ Html.div
-                                                    [ class "column is-2"
+                                                    [ class "is-modal-button column is-2"
                                                     ]
                                                     [ previous
                                                     ]
@@ -273,7 +273,7 @@ body collector =
                                                     [ View.Generic.Datum.Datum.view unlockedModal.current.file
                                                     ]
                                                 , Html.div
-                                                    [ class "column is-2"
+                                                    [ class "is-modal-button column is-2"
                                                     ]
                                                     [ next
                                                     ]
