@@ -1,4 +1,4 @@
-module Model.Datum exposing (Datum, File, Src(..), decode, decode2, decoder, encode, insert, toSrc)
+module Model.Datum exposing (Datum, File, Src(..), clear, decode, decode2, decoder, encode, insert, toSrc)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -233,3 +233,21 @@ insert datum list =
                     d
         )
         list
+
+
+clear : Datum -> Datum
+clear datum =
+    let
+        metadata =
+            datum.metadata
+
+        zip =
+            metadata.zip
+
+        bumpedZip =
+            { zip | files = [] }
+
+        bumpedMetadata =
+            { metadata | zip = bumpedZip }
+    in
+    { datum | metadata = bumpedMetadata }

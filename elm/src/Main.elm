@@ -1050,11 +1050,17 @@ update msg model =
                                                                             withCollections
 
                                                                 Local.Collect (Collector.SelectedCollection _ selected uploaded _) ->
+                                                                    let
+                                                                        cleared =
+                                                                            List.map
+                                                                                Datum.clear
+                                                                                uploaded
+                                                                    in
                                                                     Local.Collect <|
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
                                                                             selected
-                                                                            uploaded
+                                                                            cleared
                                                                             Nothing
 
                                                                 _ ->
