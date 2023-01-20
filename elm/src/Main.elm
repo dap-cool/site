@@ -113,33 +113,27 @@ update msg model =
                             )
 
                 Local.Collect (Collector.Top _) ->
-                    case model.state.global of
-                        Global.HasWallet hasWallet ->
-                            ( { model
-                                | state =
-                                    { local = Local.Collect <| Collector.Top hasWallet.collected
-                                    , global = model.state.global
-                                    , exception = Exception.Closed
-                                    }
-                              }
-                            , Cmd.none
-                            )
+                    let
+                        collected =
+                            case model.state.global of
+                                Global.HasWallet hasWallet ->
+                                    hasWallet.collected
 
-                        Global.HasWalletAndHandle hasWalletAndHandle ->
-                            ( { model
-                                | state =
-                                    { local = Local.Collect <| Collector.Top hasWalletAndHandle.collected
-                                    , global = model.state.global
-                                    , exception = Exception.Closed
-                                    }
-                              }
-                            , Cmd.none
-                            )
+                                Global.HasWalletAndHandle hasWalletAndHandle ->
+                                    hasWalletAndHandle.collected
 
-                        _ ->
-                            ( model
-                            , Cmd.none
-                            )
+                                _ ->
+                                    []
+                    in
+                    ( { model
+                        | state =
+                            { local = Local.Collect <| Collector.Top collected
+                            , global = model.state.global
+                            , exception = Exception.Closed
+                            }
+                      }
+                    , Cmd.none
+                    )
 
                 Local.Collect (Collector.MaybeExistingCreator handle) ->
                     ( bump
