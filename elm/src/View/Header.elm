@@ -43,7 +43,7 @@ view global =
             [ class "level-right mx-5 my-3"
             ]
             [ Html.div
-                [ class "level-item mx-3"
+                [ class "level-item mx-5"
                 ]
                 [ Html.span
                     [ class "icon-text"
@@ -100,7 +100,7 @@ viewWallet global =
                         ]
                     ]
                 , Html.div
-                    [ class "is-light-text-container-4 is-family-secondary is-size-5"
+                    [ class "is-light-text-container-5 is-family-secondary is-size-5 mt-2"
                     ]
                     [ Html.text <|
                         Wallet.slice hasWallet.wallet
@@ -120,7 +120,7 @@ viewWallet global =
                         ]
                     ]
                 , Html.div
-                    [ class "is-light-text-container-4 is-family-secondary is-size-5"
+                    [ class "is-light-text-container-5 is-family-secondary is-size-5 mt-2"
                     ]
                     [ Html.text <|
                         Wallet.slice hasWalletAndHandle.wallet
@@ -144,7 +144,8 @@ viewGlobal global =
 
         HasWallet _ ->
             Html.div
-                []
+                [ class "is-text-container-5 is-size-5 is-family-secondary"
+                ]
                 [ Html.a
                     [ Local.href <| Local.Create (Creator.New NewCreator.Top)
                     ]
@@ -154,7 +155,8 @@ viewGlobal global =
 
         HasWalletAndHandle hasWalletAndHandle ->
             Html.div
-                []
+                [ class "is-text-container-5 is-size-5 is-family-secondary"
+                ]
                 [ Html.a
                     [ Local.href <| Local.Create (Creator.New NewCreator.Top)
                     ]
