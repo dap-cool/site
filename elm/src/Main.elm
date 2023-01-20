@@ -7,6 +7,7 @@ import Browser.Navigation as Nav
 import Model.AlmostExistingCollection as AlmostExistingCollection
 import Model.Collection as Collection
 import Model.Collector.Collector as Collector
+import Model.Collector.UnlockedModal as UnlockedModal
 import Model.Collector.WithCollection as WithCollectionForCollector
 import Model.Collector.WithCollections as WithCollections
 import Model.Creator.Creator as Creator
@@ -516,7 +517,7 @@ update msg model =
                             }
                     )
 
-                FromCollector.ViewFile file ->
+                FromCollector.ViewFile current total ->
                     case model.state.local of
                         Local.Collect (Collector.SelectedCollection collected selected uploaded _) ->
                             ( { model
@@ -529,10 +530,9 @@ update msg model =
                                                 uploaded
                                             <|
                                                 Just <|
-                                                    { current = file
-                                                    , next = []
-                                                    , previous = []
-                                                    }
+                                                    UnlockedModal.apply
+                                                        current
+                                                        total
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }

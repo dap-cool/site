@@ -1,5 +1,6 @@
 module Msg.Collector.Collector exposing (FromCollector(..), toString)
 
+import Model.Collector.UnlockedModal exposing (Current, Total)
 import Model.Datum exposing (Datum, File)
 import Model.Handle as Handle exposing (Handle)
 
@@ -9,7 +10,7 @@ type FromCollector
     | SelectCollection Handle Int
     | PrintCopy Handle Int
     | UnlockDatum Datum
-    | ViewFile File
+    | ViewFile Current Total
     | CloseFile
 
 

@@ -5,6 +5,7 @@ import Html.Attributes exposing (class, href, placeholder, src, style, target, t
 import Html.Events exposing (onClick, onInput)
 import Model.Collection as Collection exposing (Collection)
 import Model.Collector.Collector as Collector exposing (Collector(..))
+import Model.Collector.UnlockedModal exposing (Current, IndexedFile, Total)
 import Model.Datum as Datum exposing (Datum)
 import Model.Handle as Handle exposing (Handle)
 import Model.State.Local.Local as Local
@@ -205,7 +206,7 @@ body collector =
                                         , Html.div
                                             [ class "modal-content"
                                             ]
-                                            [ View.Generic.Datum.Datum.view unlockedModal.current
+                                            [ View.Generic.Datum.Datum.view unlockedModal.current.file
                                             ]
                                         , Html.button
                                             [ class "modal-close is-large"
@@ -342,7 +343,16 @@ body collector =
                                 row : Datum -> List (Html Msg)
                                 row datum =
                                     let
-                                        file_ file =
+                                        total : Total
+                                        total =
+                                            List.indexedMap
+                                                (\index file ->
+                                                    { index = index, file = file }
+                                                )
+                                                datum.metadata.zip.files
+
+                                        file_ : Current -> Html Msg
+                                        file_ current =
                                             Html.tr
                                                 []
                                                 [ Html.td
@@ -354,7 +364,7 @@ body collector =
                                                         [ class "is-light-text-container-5 is-size-5"
                                                         ]
                                                         [ Html.text <|
-                                                            file.type_
+                                                            current.file.type_
                                                         ]
                                                     ]
                                                 , Html.td
@@ -368,7 +378,8 @@ body collector =
                                                             [ onClick <|
                                                                 FromCollector <|
                                                                     CollectorMsg.ViewFile
-                                                                        file
+                                                                        current
+                                                                        total
                                                             ]
                                                             [ Html.text
                                                                 """view
@@ -382,7 +393,7 @@ body collector =
                                         files =
                                             List.map
                                                 file_
-                                                datum.metadata.zip.files
+                                                total
                                     in
                                     Html.tr
                                         []
