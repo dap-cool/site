@@ -27,7 +27,7 @@ viewMany collections f =
         List.map
             (\c ->
                 Html.div
-                    [ class "column is-half-mobile is-one-third-tablet"
+                    [ class "column is-half"
                     ]
                     [ view_ c <| f c
                     ]
@@ -77,7 +77,7 @@ view_ collection select =
                 []
             ]
         , Html.div
-            [ class "my-3 mt-1-mobile is-text-container-3 is-size-3 is-text-container-5-mobile is-size-5-mobile has-text-centered"
+            [ class "my-3 mt-1-mobile is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile has-text-centered"
             ]
             [ Html.text collection.meta.name
             ]
