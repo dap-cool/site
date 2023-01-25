@@ -684,7 +684,7 @@ update msg model =
                                                                 ToExistingCreator.CreatingNewNft ->
                                                                     let
                                                                         f decoded =
-                                                                            case decoded.form.retries <= 3 of
+                                                                            case decoded.form.retries <= 2 of
                                                                                 True ->
                                                                                     ( { model
                                                                                         | state =
@@ -728,7 +728,13 @@ update msg model =
                                                                                                                     , fee = Just decoded.form.meta.fee
                                                                                                                     }
                                                                                             , global = model.state.global
-                                                                                            , exception = model.state.exception
+                                                                                            , exception =
+                                                                                                Exception.Open
+                                                                                                    """There was an issue minting your new collection🥺
+                                                                                                but we preserved your input form so double check it makes sense
+                                                                                                & try submitting again
+                                                                                                """
+                                                                                                    Nothing
                                                                                             }
                                                                                       }
                                                                                     , Cmd.none

@@ -599,7 +599,8 @@ body creator =
 
                                                         gto ->
                                                             Html.div
-                                                                []
+                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                ]
                                                                 [ Html.text <|
                                                                     String.concat
                                                                         [ "caught exception; retry:"
@@ -617,81 +618,61 @@ body creator =
                                             case submitted of
                                                 NewCollection.Yes form ->
                                                     let
-                                                        step : Html Msg -> Bool -> Html Msg
-                                                        step body_ done =
+                                                        step : String -> Bool -> Html Msg
+                                                        step caption done =
                                                             case done of
                                                                 True ->
                                                                     Html.div
-                                                                        []
-                                                                        [ Html.text "☑️"
-                                                                        , body_
+                                                                        [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile is-family-secondary"
+                                                                        ]
+                                                                        [ Html.text <|
+                                                                            String.concat
+                                                                                [ "☑️"
+                                                                                , " "
+                                                                                , caption
+                                                                                ]
                                                                         ]
 
                                                                 False ->
                                                                     Html.div
-                                                                        []
-                                                                        [ Html.div
-                                                                            [ class "is-loading-tiny"
+                                                                        [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile is-family-secondary"
+                                                                        ]
+                                                                        [ Html.text caption
+                                                                        , Html.div
+                                                                            [ class "is-loading-tiny mr-1"
+                                                                            , style "float" "left"
                                                                             ]
                                                                             []
-                                                                        , body_
                                                                         ]
 
                                                         stepOne : Bool -> Html Msg
                                                         stepOne =
-                                                            let
-                                                                body_ =
-                                                                    Html.div
-                                                                        []
-                                                                        [ Html.text
-                                                                            """provisioning storage
-                                                                            """
-                                                                        ]
-                                                            in
-                                                            step body_
+                                                            step "provisioning storage"
 
                                                         stepTwo : Bool -> Html Msg
                                                         stepTwo =
-                                                            let
-                                                                body_ =
-                                                                    Html.div
-                                                                        []
-                                                                        [ Html.text
-                                                                            """uploading metadata
-                                                                            """
-                                                                        ]
-                                                            in
-                                                            step body_
+                                                            step "uploading metadata"
 
                                                         stepThree : Bool -> Html Msg
                                                         stepThree =
-                                                            let
-                                                                body_ =
-                                                                    Html.div
-                                                                        []
-                                                                        [ Html.text
-                                                                            """minting your new collection
-                                                                            """
-                                                                        ]
-                                                            in
-                                                            step body_
+                                                            step "minting your new collection"
                                                     in
                                                     case form.step of
                                                         1 ->
                                                             Html.div
                                                                 []
                                                                 [ Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepOne False
                                                                     ]
                                                                 , Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepTwo False
                                                                     ]
                                                                 , Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepThree False
                                                                     ]
@@ -701,17 +682,17 @@ body creator =
                                                             Html.div
                                                                 []
                                                                 [ Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepOne True
                                                                     ]
                                                                 , Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepTwo False
                                                                     ]
                                                                 , Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepThree False
                                                                     ]
@@ -721,17 +702,17 @@ body creator =
                                                             Html.div
                                                                 []
                                                                 [ Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepOne True
                                                                     ]
                                                                 , Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepTwo True
                                                                     ]
                                                                 , Html.div
-                                                                    [ class "mb-2"
+                                                                    [ class "mb-6"
                                                                     ]
                                                                     [ stepThree False
                                                                     ]
@@ -769,7 +750,11 @@ body creator =
                                                 , feeForm
                                                 , create
                                                 , retries
-                                                , waiting
+                                                , Html.div
+                                                    [ class "mt-5"
+                                                    ]
+                                                    [ waiting
+                                                    ]
                                                 ]
                                             ]
                                         ]
