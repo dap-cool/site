@@ -615,11 +615,132 @@ body creator =
 
                                         waiting =
                                             case submitted of
-                                                NewCollection.Yes _ ->
-                                                    Html.div
-                                                        [ class "is-loading"
-                                                        ]
-                                                        []
+                                                NewCollection.Yes form ->
+                                                    let
+                                                        step : Html Msg -> Bool -> Html Msg
+                                                        step body_ done =
+                                                            case done of
+                                                                True ->
+                                                                    Html.div
+                                                                        []
+                                                                        [ Html.text "☑️"
+                                                                        , body_
+                                                                        ]
+
+                                                                False ->
+                                                                    Html.div
+                                                                        []
+                                                                        [ Html.div
+                                                                            [ class "is-loading-tiny"
+                                                                            ]
+                                                                            []
+                                                                        , body_
+                                                                        ]
+
+                                                        stepOne : Bool -> Html Msg
+                                                        stepOne =
+                                                            let
+                                                                body_ =
+                                                                    Html.div
+                                                                        []
+                                                                        [ Html.text
+                                                                            """provisioning storage
+                                                                            """
+                                                                        ]
+                                                            in
+                                                            step body_
+
+                                                        stepTwo : Bool -> Html Msg
+                                                        stepTwo =
+                                                            let
+                                                                body_ =
+                                                                    Html.div
+                                                                        []
+                                                                        [ Html.text
+                                                                            """uploading metadata
+                                                                            """
+                                                                        ]
+                                                            in
+                                                            step body_
+
+                                                        stepThree : Bool -> Html Msg
+                                                        stepThree =
+                                                            let
+                                                                body_ =
+                                                                    Html.div
+                                                                        []
+                                                                        [ Html.text
+                                                                            """minting your new collection
+                                                                            """
+                                                                        ]
+                                                            in
+                                                            step body_
+                                                    in
+                                                    case form.step of
+                                                        1 ->
+                                                            Html.div
+                                                                []
+                                                                [ Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepOne False
+                                                                    ]
+                                                                , Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepTwo False
+                                                                    ]
+                                                                , Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepThree False
+                                                                    ]
+                                                                ]
+
+                                                        2 ->
+                                                            Html.div
+                                                                []
+                                                                [ Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepOne True
+                                                                    ]
+                                                                , Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepTwo False
+                                                                    ]
+                                                                , Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepThree False
+                                                                    ]
+                                                                ]
+
+                                                        3 ->
+                                                            Html.div
+                                                                []
+                                                                [ Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepOne True
+                                                                    ]
+                                                                , Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepTwo True
+                                                                    ]
+                                                                , Html.div
+                                                                    [ class "mb-2"
+                                                                    ]
+                                                                    [ stepThree False
+                                                                    ]
+                                                                ]
+
+                                                        _ ->
+                                                            Html.div
+                                                                []
+                                                                []
 
                                                 NewCollection.No _ ->
                                                     Html.div

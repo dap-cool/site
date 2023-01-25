@@ -684,29 +684,55 @@ update msg model =
                                                                 ToExistingCreator.CreatingNewNft ->
                                                                     let
                                                                         f decoded =
-                                                                            ( { model
-                                                                                | state =
-                                                                                    { local =
-                                                                                        Local.Create <|
-                                                                                            Creator.Existing decoded.global <|
-                                                                                                ExistingCreator.CreatingNewCollection <|
-                                                                                                    NewCollection.Input <|
-                                                                                                        NewCollection.Yes
-                                                                                                            decoded.form
-                                                                                    , global = model.state.global
-                                                                                    , exception = model.state.exception
-                                                                                    }
-                                                                              }
-                                                                            , sender <|
-                                                                                Sender.encode <|
-                                                                                    { sender =
-                                                                                        Sender.Create <|
-                                                                                            FromCreator.Existing
-                                                                                                decoded.global
-                                                                                                (FromExistingCreator.CreateNewNft decoded.form.meta)
-                                                                                    , more = NewCollection.encode decoded.form
-                                                                                    }
-                                                                            )
+                                                                            case decoded.form.retries <= 3 of
+                                                                                True ->
+                                                                                    ( { model
+                                                                                        | state =
+                                                                                            { local =
+                                                                                                Local.Create <|
+                                                                                                    Creator.Existing decoded.global <|
+                                                                                                        ExistingCreator.CreatingNewCollection <|
+                                                                                                            NewCollection.Input <|
+                                                                                                                NewCollection.Yes
+                                                                                                                    decoded.form
+                                                                                            , global = model.state.global
+                                                                                            , exception = model.state.exception
+                                                                                            }
+                                                                                      }
+                                                                                    , sender <|
+                                                                                        Sender.encode <|
+                                                                                            { sender =
+                                                                                                Sender.Create <|
+                                                                                                    FromCreator.Existing
+                                                                                                        decoded.global
+                                                                                                        (FromExistingCreator.CreateNewNft decoded.form.meta)
+                                                                                            , more = NewCollection.encode decoded.form
+                                                                                            }
+                                                                                    )
+
+                                                                                False ->
+                                                                                    ( { model
+                                                                                        | state =
+                                                                                            { local =
+                                                                                                Local.Create <|
+                                                                                                    Creator.Existing decoded.global <|
+                                                                                                        ExistingCreator.CreatingNewCollection <|
+                                                                                                            NewCollection.Input <|
+                                                                                                                NewCollection.No
+                                                                                                                    { logo = Just decoded.form.meta.logo
+                                                                                                                    , name = Just decoded.form.meta.name
+                                                                                                                    , symbol = Just decoded.form.meta.symbol
+                                                                                                                    , totalSupply = Just decoded.form.meta.totalSupply
+                                                                                                                    , creatorDistribution = Just decoded.form.meta.creatorDistribution
+                                                                                                                    , price = Just decoded.form.meta.price
+                                                                                                                    , fee = Just decoded.form.meta.fee
+                                                                                                                    }
+                                                                                            , global = model.state.global
+                                                                                            , exception = model.state.exception
+                                                                                            }
+                                                                                      }
+                                                                                    , Cmd.none
+                                                                                    )
                                                                     in
                                                                     Listener.decode2 model json NewCollection.decode f
 
