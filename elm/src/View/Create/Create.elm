@@ -290,7 +290,11 @@ body creator =
                                                     in
                                                     Html.div
                                                         []
-                                                        [ selector logoName
+                                                        [ Html.div
+                                                            [ class "mb-3"
+                                                            ]
+                                                            [ selector logoName
+                                                            ]
                                                         , logoImg
                                                         ]
 
