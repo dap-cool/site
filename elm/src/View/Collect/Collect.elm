@@ -33,11 +33,13 @@ body collector =
                             Html.div
                                 []
                                 [ Html.div
-                                    []
+                                    [ class "mb-3 ml-3"
+                                    ]
                                     [ Html.h3
-                                        []
+                                        [ class "is-text-container-3 is-size-3 is-family-secondary"
+                                        ]
                                         [ Html.text <|
-                                            "your collection ⬇️"
+                                            "your collection"
                                         ]
                                     ]
                                 , Html.div
