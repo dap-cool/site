@@ -1,5 +1,7 @@
 module View.Create.Create exposing (body)
 
+import FormatNumber
+import FormatNumber.Locales exposing (usLocale)
 import Html exposing (Html)
 import Html.Attributes exposing (accept, class, default, href, id, multiple, placeholder, src, step, style, target, type_, value, width)
 import Html.Events exposing (onClick, onInput)
@@ -298,6 +300,22 @@ body creator =
                                                         , logoImg
                                                         ]
 
+                                        inputted : Maybe a -> (a -> String) -> Html Msg
+                                        inputted maybeA toString =
+                                            case maybeA of
+                                                Just a ->
+                                                    Html.div
+                                                        [ class "mt-1 mb-3 is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                        ]
+                                                        [ Html.text <|
+                                                            toString a
+                                                        ]
+
+                                                Nothing ->
+                                                    Html.div
+                                                        []
+                                                        []
+
                                         nameForm =
                                             case submitted of
                                                 NewCollection.Yes _ ->
@@ -336,6 +354,7 @@ body creator =
                                                                     ]
                                                                 ]
                                                             ]
+                                                        , inputted form.name identity
                                                         ]
 
                                         symbolFrom =
@@ -378,6 +397,7 @@ body creator =
                                                                     ]
                                                                 ]
                                                             ]
+                                                        , inputted form.symbol identity
                                                         ]
 
                                         tsForm =
@@ -420,6 +440,9 @@ body creator =
                                                                     ]
                                                                 ]
                                                             ]
+                                                        , inputted
+                                                            form.totalSupply
+                                                            (\int -> FormatNumber.format usLocale (Basics.toFloat int))
                                                         ]
 
                                         cdForm =
@@ -462,6 +485,9 @@ body creator =
                                                                     ]
                                                                 ]
                                                             ]
+                                                        , inputted
+                                                            form.creatorDistribution
+                                                            (\int -> FormatNumber.format usLocale (Basics.toFloat int))
                                                         ]
 
                                         priceForm =
@@ -505,6 +531,14 @@ body creator =
                                                                     ]
                                                                 ]
                                                             ]
+                                                        , inputted
+                                                            form.price
+                                                            (\f ->
+                                                                String.concat
+                                                                    [ "$"
+                                                                    , FormatNumber.format usLocale f
+                                                                    ]
+                                                            )
                                                         ]
 
                                         feeForm =
@@ -548,6 +582,14 @@ body creator =
                                                                     ]
                                                                 ]
                                                             ]
+                                                        , inputted
+                                                            form.fee
+                                                            (\f ->
+                                                                String.concat
+                                                                    [ FormatNumber.format usLocale f
+                                                                    , "%"
+                                                                    ]
+                                                            )
                                                         ]
 
                                         create =
