@@ -9,7 +9,6 @@ import Model.Datum exposing (Datum)
 type Existing
     = Top
     | CreatingNewCollection NewCollection
-    | WaitingForUploaded
     | SelectedCollection Collection Uploaded
     | Uploading Collection UploadForm
     | UploadSuccessful Collection

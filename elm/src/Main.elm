@@ -391,12 +391,9 @@ update msg model =
                         FromExistingCreator.SelectCollection collection ->
                             ( { model
                                 | state =
-                                    { local =
-                                        Local.Create <|
-                                            Creator.Existing hasWalletAndHandle <|
-                                                ExistingCreator.WaitingForUploaded
+                                    { local = model.state.local
                                     , global = model.state.global
-                                    , exception = model.state.exception
+                                    , exception = Exception.Waiting
                                     }
                               }
                             , sender <|
@@ -747,7 +744,7 @@ update msg model =
                                                                                                             uploads.collection
                                                                                                             uploads.datum
                                                                                             , global = model.state.global
-                                                                                            , exception = model.state.exception
+                                                                                            , exception = Exception.Closed
                                                                                             }
                                                                                     }
 

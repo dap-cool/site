@@ -695,16 +695,6 @@ body creator =
                                             ]
                                         ]
 
-                        Existing.WaitingForUploaded ->
-                            Html.div
-                                []
-                                [ header3 fromGlobal.handle
-                                , Html.div
-                                    [ class "is-loading"
-                                    ]
-                                    []
-                                ]
-
                         Existing.SelectedCollection collection uploaded ->
                             Html.div
                                 []
