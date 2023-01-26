@@ -6,6 +6,7 @@ pub const SIZE: usize = 8 // discriminator
     + HANDLE_SIZE
     + AUTHORITY_SIZE
     + NUM_COLLECTIONS_SIZE
+    + METADATA_SIZE
     + PINNED_SIZE;
 
 pub const MAX_HANDLE_LENGTH: usize = 16;
@@ -16,6 +17,8 @@ const AUTHORITY_SIZE: usize = 32;
 
 const NUM_COLLECTIONS_SIZE: usize = 1;
 
+const METADATA_SIZE: usize = 32;
+
 const PINNED_SIZE: usize = 4 + 10;
 
 
@@ -25,6 +28,7 @@ pub struct Handle {
     // TODO; [as NFT, assert]
     pub authority: Pubkey,
     pub num_collections: u8,
+    pub metadata: Pubkey,
     pub pinned: Pinned,
 }
 

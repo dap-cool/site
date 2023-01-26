@@ -2,6 +2,7 @@ module Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle, decod
 
 import Json.Decode as Decode
 import Model.Collection as Collection exposing (Collection)
+import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.Handle exposing (Handle)
 import Model.Wallet exposing (Wallet)
 import Util.Decode as Util
@@ -12,6 +13,7 @@ type alias HasWalletAndHandle =
     , handle : Handle
     , collections : List Collection
     , collected : List Collection
+    , metadata : CreatorMetadata
     }
 
 
@@ -22,8 +24,9 @@ decode string =
 
 decoder : Decode.Decoder HasWalletAndHandle
 decoder =
-    Decode.map4 HasWalletAndHandle
+    Decode.map5 HasWalletAndHandle
         (Decode.field "wallet" Decode.string)
         (Decode.field "handle" Decode.string)
         (Decode.field "collections" <| Decode.list Collection.decoder)
         (Decode.field "collected" <| Decode.list Collection.decoder)
+        (Decode.field "metadata" CreatorMetadata.decoder)

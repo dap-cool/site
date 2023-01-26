@@ -24,8 +24,9 @@ pub mod dap_cool {
     pub fn init_new_creator(
         ctx: Context<InitNewCreator>,
         handle: String,
+        metadata: Pubkey,
     ) -> Result<()> {
-        init_new_creator::ix(ctx, handle)
+        init_new_creator::ix(ctx, handle, metadata)
     }
 
     pub fn create_nft(
