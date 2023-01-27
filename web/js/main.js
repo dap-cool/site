@@ -193,7 +193,8 @@ export async function main(app, json) {
                                 more: JSON.stringify(
                                     {
                                         handle: validated,
-                                        collections: collections
+                                        collections: collections,
+                                        metadata: null // TODO
                                     }
                                 )
                             }
