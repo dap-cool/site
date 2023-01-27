@@ -113,6 +113,7 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
+                                    metadata: handle.metadata
                                 },
                                 form: form
                             }
@@ -136,6 +137,7 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
+                                    metadata: handle.metadata
                                 },
                                 form: form
                             }
@@ -199,6 +201,7 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
+                                    metadata: handle.metadata
                                 },
                                 form: form
                             }
@@ -223,6 +226,7 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
+                                    metadata: handle.metadata
                                 },
                                 form: form
                             }
@@ -385,6 +389,7 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
+                                    metadata: handle.metadata
                                 },
                                 collection: justCreated
                             }
@@ -408,6 +413,7 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
+                                    metadata: handle.metadata
                                 },
                                 form: form
                             }

@@ -248,7 +248,8 @@ export async function mintNewCopy(
                 handle: fetchedHandle.handle,
                 wallet: provider.wallet.publicKey.toString(),
                 collections: collections,
-                collected: collectorArray
+                collected: collectorArray,
+                metadata: fetchedHandle.metadata
             };
         } catch (error) {
             console.log("could not find creator on-chain");

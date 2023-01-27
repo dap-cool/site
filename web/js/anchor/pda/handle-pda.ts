@@ -11,6 +11,19 @@ export interface Handle {
     handle: string
     authority: PublicKey
     numCollections: number
+    metadata: {
+        description: string | null
+        logo: string | null
+        banner: string | null
+    } | null
+    pinned: Pinned
+}
+
+interface RawHandle {
+    handle: string
+    authority: PublicKey
+    numCollections: number
+    metadata: PublicKey | null
     pinned: Pinned
 }
 
@@ -36,11 +49,14 @@ export async function deriveHandlePda(program: Program<DapCool>, handle: string)
 const SEED = "handle";
 
 export async function getHandlePda(program: Program<DapCool>, pda: PublicKey): Promise<Handle> {
-    const fetched = await program.account.handle.fetch(pda);
+    const fetched = await program.account.handle.fetch(
+        pda
+    ) as RawHandle;
     return {
         handle: fetched.handle,
         authority: fetched.authority,
         numCollections: fetched.numCollections,
+        metadata: null,
         pinned: fetched.pinned
     } as Handle
 }

@@ -70,7 +70,8 @@ export async function getGlobal(
                             handle: handle.handle.toString(),
                             wallet: provider.wallet.publicKey.toString(),
                             collections: collections,
-                            collected: collected
+                            collected: collected,
+                            metadata: handle.metadata
                         }
                     )
                 }

@@ -54,7 +54,8 @@ export async function initNewHandle(
                         handle: handle,
                         wallet: provider.wallet.publicKey.toString(),
                         collections: [],
-                        collected: collected
+                        collected: collected,
+                        metadata: null
                     }
                 )
             }
