@@ -12,7 +12,7 @@ export interface Handle {
     authority: PublicKey
     numCollections: number
     metadata: {
-        description: string | null
+        bio: string | null
         logo: string | null
         banner: string | null
     } | null

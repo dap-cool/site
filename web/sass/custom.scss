@@ -137,6 +137,14 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
   border-radius: 12px;
 }
 
+.is-image-container-2 {
+  width: 164px;
+  height: 164px;
+  box-sizing: border-box;
+  border: 1px solid #FFFFFF;
+  border-radius: 100px;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // text containers /////////////////////////////////////////////////////////////////////////////////////////////////////
 .is-text-container-1, .is-text-container-1-mobile, .is-text-container-2, .is-text-container-2-mobile,

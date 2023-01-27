@@ -9,7 +9,7 @@ type CreatorMetadata
 
 
 type alias Metadata =
-    { description : Maybe String
+    { bio : Maybe String
     , logo : Maybe Url
     , banner : Maybe Url
     }
@@ -30,6 +30,6 @@ decoder =
 decoder_ : Decode.Decoder Metadata
 decoder_ =
     Decode.map3 Metadata
-        (Decode.nullable (Decode.field "description" Decode.string))
+        (Decode.nullable (Decode.field "bio" Decode.string))
         (Decode.nullable (Decode.field "logo" Decode.string))
         (Decode.nullable (Decode.field "banner" Decode.string))
