@@ -130,7 +130,11 @@ body collector =
                     Html.div
                         []
                         [ breadcrumb total.handle
-                        , header total.handle
+                        , Html.div
+                            [ class "mt-3"
+                            ]
+                            [ header total.handle
+                            ]
                         , ix
                         , rx
                         ]
@@ -689,7 +693,11 @@ body collector =
                     Html.div
                         []
                         [ breadcrumb2 selected
-                        , header selected.meta.handle
+                        , Html.div
+                            [ class "mt-3"
+                            ]
+                            [ header selected.meta.handle
+                            ]
                         , unlockedModalView
                         , Html.div
                             [ class "mt-6"
