@@ -212,6 +212,7 @@ body collector =
                                                 ]
                                                 [ Html.div
                                                     [ class "is-modal-button column is-2"
+                                                    , style "display" "flex"
                                                     ]
                                                     [ previous
                                                     ]
@@ -222,6 +223,7 @@ body collector =
                                                     ]
                                                 , Html.div
                                                     [ class "is-modal-button column is-2"
+                                                    , style "display" "flex"
                                                     ]
                                                     [ next
                                                     ]
