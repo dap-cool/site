@@ -19,7 +19,7 @@ import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
 import Msg.Creator.New.New as NewMsg
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Creator.Creator
-import View.Generic.Collection.Header
+import View.Generic.Collection.Header as Header
 
 
 body : Creator -> Html Msg
@@ -1184,9 +1184,9 @@ header =
 
 header2 : String -> CreatorMetadata -> Html Msg
 header2 handle metadata =
-    View.Generic.Collection.Header.view "Admin" handle metadata
+    Header.view Header.Admin handle metadata
 
 
 header3 : String -> Html Msg
 header3 handle =
-    View.Generic.Collection.Header.header0 "Admin" handle
+    Header.header0 Header.Admin handle

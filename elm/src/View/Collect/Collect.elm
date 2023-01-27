@@ -13,6 +13,7 @@ import Msg.Collector.Collector as CollectorMsg
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
 import View.Generic.Collection.Collector.Collector
+import View.Generic.Collection.Header as Header
 import View.Generic.Datum.Datum
 
 
@@ -726,42 +727,7 @@ body collector =
 
 header : String -> Html Msg
 header handle =
-    Html.div
-        []
-        [ Html.div
-            [ class "mt-4"
-            ]
-            [ Html.div
-                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
-                ]
-                [ Html.text "Creator"
-                ]
-            , Html.div
-                [ class "is-text-container-2 is-size-2 is-text-container-3-mobile is-size-3-mobile"
-                ]
-                [ Html.text handle
-                ]
-            ]
-        , Html.div
-            [ class "mt-5"
-            ]
-            [ Html.div
-                [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
-                ]
-                [ Html.text "bio"
-                ]
-            , Html.div
-                [ class "mt-1 container is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
-                ]
-                [ Html.text
-                    """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Aliquet enim tortor at auctor urna nunc id cursus.
-                    Pulvinar etiam non quam lacus.
-                    """
-                ]
-            ]
-        ]
+    Header.header0 Header.Collector handle
 
 
 hiw : Html Msg

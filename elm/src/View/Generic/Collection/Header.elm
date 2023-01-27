@@ -1,4 +1,4 @@
-module View.Generic.Collection.Header exposing (header0, view)
+module View.Generic.Collection.Header exposing (Role(..), header0, view)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class, src)
@@ -36,16 +36,27 @@ view role handle metadata =
                                         ]
 
                                 Nothing ->
+                                    let
+                                        button =
+                                            case role of
+                                                Admin ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.button
+                                                            []
+                                                            [ Html.text "✏️✏️✏️"
+                                                            ]
+                                                        ]
+
+                                                Collector ->
+                                                    Html.div
+                                                        []
+                                                        []
+                                    in
                                     Html.div
                                         []
                                         [ header_
-                                        , Html.div
-                                            []
-                                            [ Html.button
-                                                []
-                                                [ Html.text "✏️✏️✏️"
-                                                ]
-                                            ]
+                                        , button
                                         ]
 
                         logo_ =
@@ -65,16 +76,27 @@ view role handle metadata =
                                     f url
 
                                 Nothing ->
+                                    let
+                                        button =
+                                            case role of
+                                                Admin ->
+                                                    Html.div
+                                                        []
+                                                        [ Html.button
+                                                            []
+                                                            [ Html.text "✏️✏️✏️"
+                                                            ]
+                                                        ]
+
+                                                Collector ->
+                                                    Html.div
+                                                        []
+                                                        []
+                                    in
                                     Html.div
                                         []
                                         [ f "./images/upload/default-pfp.jpg"
-                                        , Html.div
-                                            []
-                                            [ Html.button
-                                                []
-                                                [ Html.text "✏️✏️✏️"
-                                                ]
-                                            ]
+                                        , button
                                         ]
 
                         banner_ =
@@ -134,7 +156,7 @@ header0 role handle =
         [ Html.div
             [ class "is-family-secondary is-light-text-container-6 is-size-6 is-light-text-container-6-mobile is-size-6-mobile is-italic"
             ]
-            [ Html.text role
+            [ Html.text <| toString role
             ]
         , Html.div
             [ class "is-text-container-2 is-size-2 is-text-container-3-mobile is-size-3-mobile"
@@ -144,5 +166,17 @@ header0 role handle =
         ]
 
 
-type alias Role =
-    String
+type Role
+    = Admin
+    | Collector
+
+
+toString : Role -> String
+toString role =
+    case role of
+        Admin ->
+            "Admin"
+
+        Collector ->
+            -- collectors see this as viewing a creator page
+            "Creator"
