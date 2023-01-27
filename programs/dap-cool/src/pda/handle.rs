@@ -17,7 +17,7 @@ const AUTHORITY_SIZE: usize = 32;
 
 const NUM_COLLECTIONS_SIZE: usize = 1;
 
-const METADATA_SIZE: usize = 32;
+const METADATA_SIZE: usize = 1 + 32;
 
 const PINNED_SIZE: usize = 4 + 10;
 
@@ -28,7 +28,7 @@ pub struct Handle {
     // TODO; [as NFT, assert]
     pub authority: Pubkey,
     pub num_collections: u8,
-    pub metadata: Pubkey,
+    pub metadata: Option<Pubkey>,
     pub pinned: Pinned,
 }
 

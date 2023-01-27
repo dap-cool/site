@@ -4,8 +4,11 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 use mpl_token_metadata::state::{PREFIX};
 use crate::pda::{authority::Authority, handle::Handle};
 use crate::ix::{
-    init_new_creator, create_nft, mint_new_copy, init_boss,
-    create_nft::CreateNftBumps, mint_new_copy::MintNewCopyBumps,
+    init_boss,
+    init_new_creator,
+    init_creator_metadata,
+    create_nft, create_nft::CreateNftBumps,
+    mint_new_copy, mint_new_copy::MintNewCopyBumps,
 };
 use crate::pda::boss::Boss;
 use crate::pda::collector::{Collected, Collection, Collector};
@@ -24,9 +27,15 @@ pub mod dap_cool {
     pub fn init_new_creator(
         ctx: Context<InitNewCreator>,
         handle: String,
+    ) -> Result<()> {
+        init_new_creator::ix(ctx, handle)
+    }
+
+    pub fn init_creator_metadata(
+        ctx: Context<InitCreatorMetadata>,
         metadata: Pubkey,
     ) -> Result<()> {
-        init_new_creator::ix(ctx, handle, metadata)
+        init_creator_metadata::ix(ctx, metadata)
     }
 
     pub fn create_nft(
@@ -81,6 +90,20 @@ pub struct InitNewCreator<'info> {
     pub payer: Signer<'info>,
     // system program
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(metadata: Pubkey)]
+pub struct InitCreatorMetadata<'info> {
+    #[account(mut,
+    seeds = [
+    pda::handle::SEED.as_bytes(),
+    handle.handle.as_bytes()
+    ], bump,
+    )]
+    pub handle: Account<'info, Handle>,
+    #[account()]
+    pub payer: Signer<'info>,
 }
 
 #[derive(Accounts)]

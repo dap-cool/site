@@ -1,5 +1,5 @@
 use anchor_lang::Key;
-use anchor_lang::prelude::{Context, Result, Pubkey};
+use anchor_lang::prelude::{Context, Result};
 use crate::{InitNewCreator, pda};
 use crate::error::CustomErrors;
 use crate::pda::handle::Pinned;
@@ -7,7 +7,6 @@ use crate::pda::handle::Pinned;
 pub fn ix(
     ctx: Context<InitNewCreator>,
     handle: String,
-    metadata: Pubkey,
 ) -> Result<()> {
     let handle_pda = &mut ctx.accounts.handle_pda;
     let creator = &mut ctx.accounts.creator;
@@ -20,7 +19,7 @@ pub fn ix(
     handle_pda.num_collections = 0;
     handle_pda.pinned = Pinned { collections: Vec::new() };
     // metadata
-    handle_pda.metadata = metadata;
+    handle_pda.metadata = None;
     // creator
     creator.authority = ctx.accounts.payer.key();
     creator.handle = handle_pda.key();
