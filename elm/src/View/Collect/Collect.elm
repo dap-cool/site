@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import Model.Collection as Collection exposing (Collection)
 import Model.Collector.Collector as Collector exposing (Collector(..))
 import Model.Collector.UnlockedModal exposing (Current, IndexedFile, Total)
+import Model.CreatorMetadata exposing (CreatorMetadata)
 import Model.Datum exposing (Datum)
 import Model.Handle exposing (Handle)
 import Model.State.Local.Local as Local
@@ -133,7 +134,7 @@ body collector =
                         , Html.div
                             [ class "mt-3"
                             ]
-                            [ header total.handle
+                            [ header total.handle total.metadata
                             ]
                         , ix
                         , rx
@@ -698,7 +699,7 @@ body collector =
                         , Html.div
                             [ class "mt-3"
                             ]
-                            [ header selected.meta.handle
+                            [ header0 selected.meta.handle
                             ]
                         , unlockedModalView
                         , Html.div
@@ -735,8 +736,13 @@ body collector =
         ]
 
 
-header : String -> Html Msg
-header handle =
+header : Handle -> CreatorMetadata -> Html Msg
+header handle metadata =
+    Header.view Header.Collector handle metadata
+
+
+header0 : Handle -> Html Msg
+header0 handle =
     Header.header0 Header.Collector handle
 
 
