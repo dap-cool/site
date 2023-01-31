@@ -109,7 +109,8 @@ view role handle metadata =
                 CreatorMetadata.UnInitialized ->
                     ( Html.div
                         []
-                        []
+                        [ Html.text "found un-init"
+                        ]
                     , Html.div
                         []
                         [ Html.img

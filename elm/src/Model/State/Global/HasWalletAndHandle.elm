@@ -29,4 +29,4 @@ decoder =
         (Decode.field "handle" Decode.string)
         (Decode.field "collections" <| Decode.list Collection.decoder)
         (Decode.field "collected" <| Decode.list Collection.decoder)
-        (Decode.field "metadata" CreatorMetadata.decoder)
+        CreatorMetadata.decoder

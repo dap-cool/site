@@ -22,6 +22,6 @@ decode string =
             Decode.map3 WithCollections
                 (Decode.field "handle" Decode.string)
                 (Decode.field "collections" <| Decode.list Collection.decoder)
-                (Decode.field "metadata" CreatorMetadata.decoder)
+                CreatorMetadata.decoder
     in
     Util.decode string decoder identity
