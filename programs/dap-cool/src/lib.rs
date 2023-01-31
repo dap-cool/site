@@ -102,7 +102,9 @@ pub struct InitCreatorMetadata<'info> {
     ], bump,
     )]
     pub handle: Account<'info, Handle>,
-    #[account()]
+    #[account(
+    address = handle.authority
+    )]
     pub payer: Signer<'info>,
 }
 
