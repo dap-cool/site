@@ -40,48 +40,69 @@ view exception global body =
                         exception_ =
                             case maybeHref of
                                 Just href_ ->
-                                    Html.div
-                                        []
-                                        [ Html.div
-                                            []
-                                            [ Html.text message
-                                            ]
-                                        , Html.div
-                                            []
-                                            [ Html.div
+                                    case href_.internal of
+                                        True ->
+                                            Html.div
                                                 []
-                                                [ Html.text
-                                                    """If you're on a mobile device & have the phantom app installed ⬇️
-                                                    """
-                                                ]
-                                            , Html.a
-                                                [ class "has-sky-blue-text is-underlined"
-                                                , href href_
-                                                , target "_blank"
-                                                ]
-                                                [ Html.text "click here"
-                                                ]
-                                            ]
-                                        , Html.div
-                                            []
-                                            [ Html.div
-                                                []
-                                                [ Html.text
-                                                    """Otherwise, join the party ⬇️
-                                                    """
-                                                ]
-                                            , Html.div
-                                                []
-                                                [ Html.a
-                                                    [ class "has-sky-blue-text is-underlined"
-                                                    , href "https://phantom.app/"
-                                                    , target "_blank"
+                                                [ Html.div
+                                                    []
+                                                    [ Html.text message
                                                     ]
-                                                    [ Html.text "create new solana wallet 😎"
+                                                , Html.div
+                                                    []
+                                                    [ Html.div
+                                                        []
+                                                        [ Html.text
+                                                            """If you're on a mobile device & have the phantom app installed ⬇️
+                                                            """
+                                                        ]
+                                                    , Html.a
+                                                        [ class "has-sky-blue-text is-underlined"
+                                                        , href href_.url
+                                                        , target "_blank"
+                                                        ]
+                                                        [ Html.text "click here"
+                                                        ]
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.div
+                                                        []
+                                                        [ Html.text
+                                                            """Otherwise, join the party ⬇️
+                                                            """
+                                                        ]
+                                                    , Html.div
+                                                        []
+                                                        [ Html.a
+                                                            [ class "has-sky-blue-text is-underlined"
+                                                            , href "https://phantom.app/"
+                                                            , target "_blank"
+                                                            ]
+                                                            [ Html.text "create new solana wallet 😎"
+                                                            ]
+                                                        ]
                                                     ]
                                                 ]
-                                            ]
-                                        ]
+
+                                        False ->
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    []
+                                                    [ Html.text message
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.a
+                                                        [ class "has-sky-blue-text"
+                                                        , href href_.url
+                                                        , target "_blank"
+                                                        ]
+                                                        [ Html.text href_.url
+                                                        ]
+                                                    ]
+                                                ]
 
                                 Nothing ->
                                     Html.div
@@ -91,7 +112,7 @@ view exception global body =
                     in
                     modal <|
                         Html.div
-                            [ class "mx-6"
+                            [ class "mx-6 has-text-white"
                             ]
                             [ exception_
                             ]

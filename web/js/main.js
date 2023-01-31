@@ -19,6 +19,7 @@ import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 import {blobToDataUrl, compressImage, dataUrlToBlob} from "./util/blob-util";
 import {getUploads, unlockUpload, upload} from "./anchor/pda/datum-pda";
+import {initCreatorMetadata} from "./anchor/methods/init-creator-metadata";
 
 // init phantom
 let phantom = null;
@@ -96,13 +97,26 @@ export async function main(app, json) {
                             JSON.stringify(
                                 {
                                     message: "It looks like there's no wallet installed!",
-                                    href: href
+                                    href: {
+                                        url: href,
+                                        internal: true
+                                    }
                                 }
                             )
                         );
                     }
                 }
             }
+            // or creator provision storage for metadata
+        } else if (sender === "creator-provision-metadata") {
+            // get provider & program
+            const pp = getPP(phantom);
+            // invoke rpc
+            await initCreatorMetadata(
+                app,
+                pp.provider,
+                pp.programs
+            );
             // or creator prepare image form
         } else if (sender === "creator-prepare-image-form") {
             const imgSelector = document.getElementById(
@@ -395,7 +409,10 @@ export async function main(app, json) {
                     JSON.stringify(
                         {
                             message: "It looks like there's no wallet installed!",
-                            href: href
+                            href: {
+                                url: href,
+                                internal: true
+                            }
                         }
                     )
                 );

@@ -224,6 +224,19 @@ update msg model =
 
                 FromCreator.Existing hasWalletAndHandle existing ->
                     case existing of
+                        FromExistingCreator.ProvisionMetadata ->
+                            ( { model
+                                | state =
+                                    { local = model.state.local
+                                    , global = model.state.global
+                                    , exception = Exception.Waiting
+                                    }
+                              }
+                            , sender <|
+                                Sender.encode0 <|
+                                    Sender.Create from
+                            )
+
                         FromExistingCreator.StartCreatingNewCollection ->
                             ( { model
                                 | state =

@@ -242,7 +242,7 @@ export async function upload(
             form.shadow = await DapSdk.provision(
                 provider.connection,
                 provider.wallet,
-                form.encrypted.file
+                form.encrypted.file.size
             );
             // bump shadow
             formFromElm.shadow = form.shadow.account.toString();

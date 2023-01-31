@@ -12,6 +12,7 @@ import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.Handle as Handle
+import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
 import Model.State.Local.Local as Local
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
@@ -171,7 +172,7 @@ body creator =
                         Existing.Top ->
                             Html.div
                                 []
-                                [ header2 fromGlobal.handle fromGlobal.metadata
+                                [ header2 fromGlobal
                                 , Html.div
                                     []
                                     [ Html.button
@@ -774,7 +775,7 @@ body creator =
                                     in
                                     Html.div
                                         []
-                                        [ header3 fromGlobal.handle
+                                        [ header3 fromGlobal
                                         , Html.div
                                             [ class "columns"
                                             ]
@@ -806,7 +807,7 @@ body creator =
                                 NewCollection.Done collection ->
                                     Html.div
                                         []
-                                        [ header3 fromGlobal.handle
+                                        [ header3 fromGlobal
                                         , Html.div
                                             [ class "columns is-mobile"
                                             ]
@@ -848,7 +849,7 @@ body creator =
                         Existing.SelectedCollection collection uploaded ->
                             Html.div
                                 []
-                                [ header3 fromGlobal.handle
+                                [ header3 fromGlobal
                                 , Html.div
                                     [ class "mt-3"
                                     ]
@@ -1071,7 +1072,7 @@ body creator =
                             in
                             Html.div
                                 []
-                                [ header3 fromGlobal.handle
+                                [ header3 fromGlobal
                                 , Html.div
                                     [ class "columns is-mobile"
                                     ]
@@ -1091,7 +1092,7 @@ body creator =
                         Existing.UploadSuccessful collection ->
                             Html.div
                                 []
-                                [ header3 fromGlobal.handle
+                                [ header3 fromGlobal
                                 , Html.div
                                     [ class "columns is-mobile"
                                     ]
@@ -1182,11 +1183,11 @@ header =
         ]
 
 
-header2 : String -> CreatorMetadata -> Html Msg
-header2 handle metadata =
-    Header.view Header.Admin handle metadata
+header2 : HasWalletAndHandle -> Html Msg
+header2 global =
+    Header.view (Header.Admin global) global.handle global.metadata
 
 
-header3 : String -> Html Msg
-header3 handle =
-    Header.header0 Header.Admin handle
+header3 : HasWalletAndHandle -> Html Msg
+header3 global =
+    Header.header0 (Header.Admin global) global.handle

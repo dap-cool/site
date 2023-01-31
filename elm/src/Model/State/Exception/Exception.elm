@@ -11,7 +11,9 @@ type Exception
 
 
 type alias Href =
-    String
+    { url : String
+    , internal : Bool
+    }
 
 
 decode : String -> Result String { message : String, href : Maybe Href }
@@ -27,5 +29,8 @@ decoder =
         )
         (Decode.field "message" Decode.string)
         (Decode.maybe <|
-            Decode.field "href" Decode.string
+            Decode.field "href" <|
+                Decode.map2 Href
+                    (Decode.field "url" Decode.string)
+                    (Decode.field "internal" Decode.bool)
         )

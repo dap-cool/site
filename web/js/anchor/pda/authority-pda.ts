@@ -2,11 +2,8 @@ import {PublicKey} from "@solana/web3.js";
 import {Program, SplToken, AnchorProvider} from "@project-serum/anchor";
 import {DapCool} from "../idl/dap";
 import {Collection} from "./collector-pda";
-import {
-    SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
-    SPL_TOKEN_PROGRAM_ID
-} from "../util/constants";
 import {Handle} from "./handle-pda";
+import {deriveAtaPda, RawSplTokenAccount} from "./get-token-account";
 
 export interface AuthorityPda {
     address: PublicKey
@@ -50,11 +47,6 @@ interface RawCollectionAuthority {
     totalSupply: any // encoded as BN
     price: any // encoded as BN
     fee: number
-}
-
-interface RawSplToken {
-    mint: PublicKey
-    amount: any // encoded as BN
 }
 
 export async function getManyAuthorityPdaForCollector(
@@ -166,8 +158,8 @@ async function joinAtaWithAuthority(
     ataPdaArray: PublicKey[]
 ): Promise<CollectionAuthority[]> {
     // fetch associated-token-account array
-    const ataArray: RawSplToken[] = (await program.account.token.fetchMultiple(ataPdaArray)).map(obj =>
-        obj as RawSplToken
+    const ataArray: RawSplTokenAccount[] = (await program.account.token.fetchMultiple(ataPdaArray)).map(obj =>
+        obj as RawSplTokenAccount
     ).filter(Boolean);
     // join
     return authorityArray.map((authority: CollectionAuthority) => {
@@ -207,7 +199,7 @@ export async function getAuthorityPda(
     try {
         const ata = await programs.token.account.token.fetch(
             ataPda
-        ) as RawSplToken;
+        ) as RawSplTokenAccount;
         balance = ata.amount.toNumber();
     } catch (error) {
         console.log("provider does not have existing token balance.")
@@ -262,19 +254,6 @@ function decodeFileType(encoded: number): string {
         }
     }
     return decoded
-}
-
-function deriveAtaPda(provider: AnchorProvider, mint: PublicKey): PublicKey {
-    let ataPda: PublicKey, _;
-    [ataPda, _] = PublicKey.findProgramAddressSync(
-        [
-            provider.publicKey.toBuffer(),
-            SPL_TOKEN_PROGRAM_ID.toBuffer(),
-            mint.toBuffer()
-        ],
-        SPL_ASSOCIATED_TOKEN_PROGRAM_ID
-    )
-    return ataPda
 }
 
 export async function deriveAuthorityPda(

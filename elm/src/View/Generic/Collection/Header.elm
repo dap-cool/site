@@ -2,9 +2,13 @@ module View.Generic.Collection.Header exposing (Role(..), header0, view)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class, src)
+import Html.Events exposing (onClick)
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.Handle exposing (Handle)
-import Msg.Msg exposing (Msg)
+import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
+import Msg.Creator.Creator as CreatorMsg
+import Msg.Creator.Existing.Existing as ExistingMsg
+import Msg.Msg exposing (Msg(..))
 
 
 view : Role -> Handle -> CreatorMetadata -> Html Msg
@@ -39,7 +43,7 @@ view role handle metadata =
                                     let
                                         button =
                                             case role of
-                                                Admin ->
+                                                Admin _ ->
                                                     Html.div
                                                         []
                                                         [ Html.button
@@ -79,7 +83,7 @@ view role handle metadata =
                                     let
                                         button =
                                             case role of
-                                                Admin ->
+                                                Admin hasWalletAndHandle ->
                                                     Html.div
                                                         []
                                                         [ Html.button
@@ -107,10 +111,27 @@ view role handle metadata =
                     ( bio_, logo_, banner_ )
 
                 CreatorMetadata.UnInitialized ->
-                    ( Html.div
-                        []
-                        [ Html.text "found un-init"
-                        ]
+                    ( case role of
+                        Admin hasWalletAndHandle ->
+                            Html.div
+                                []
+                                [ Html.button
+                                    [ onClick <|
+                                        FromCreator <|
+                                            CreatorMsg.Existing
+                                                hasWalletAndHandle
+                                                ExistingMsg.ProvisionMetadata
+                                    ]
+                                    [ Html.text
+                                        """start uploading profile-picture & bio
+                                        """
+                                    ]
+                                ]
+
+                        Collector ->
+                            Html.div
+                                []
+                                []
                     , Html.div
                         []
                         [ Html.img
@@ -168,14 +189,14 @@ header0 role handle =
 
 
 type Role
-    = Admin
+    = Admin HasWalletAndHandle
     | Collector
 
 
 toString : Role -> String
 toString role =
     case role of
-        Admin ->
+        Admin _ ->
             "Admin"
 
         Collector ->

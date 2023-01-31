@@ -8,8 +8,10 @@ import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (New
 
 type
     Existing
-    -- new collection form
-    = StartCreatingNewCollection
+    -- creator metadata
+    = ProvisionMetadata
+      -- new collection form
+    | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
       -- create new nft rpc transactions
     | CreateNewNft NewCollection.MetaForm
@@ -24,6 +26,9 @@ type
 toString : Existing -> String
 toString existing =
     case existing of
+        ProvisionMetadata ->
+            "creator-provision-metadata"
+
         NewCollectionForm form ->
             case form of
                 NewCollectionForm.Image ->
