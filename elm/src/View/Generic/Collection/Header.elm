@@ -126,15 +126,15 @@ view role handle metadata =
     Html.div
         []
         [ Html.div
-            [ class "columns is-mobile"
+            [ class "columns"
             ]
             [ Html.div
-                [ class "column is-one-quarter"
+                [ class "column is-2 has-text-centered"
                 ]
                 [ logo
                 ]
             , Html.div
-                [ class "column is-three-quarters"
+                [ class "column is-10"
                 ]
                 [ Html.div
                     []
