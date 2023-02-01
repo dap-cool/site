@@ -53,3 +53,9 @@ resource "aws_s3_bucket" "sub-domain-www" {
     redirect_all_requests_to = var.domain_name
   }
 }
+
+#######################################################
+## DEPLOYMENT #########################################
+resource "aws_s3_bucket" "deployment" {
+  bucket = "deployment.${var.domain_name}"
+}
