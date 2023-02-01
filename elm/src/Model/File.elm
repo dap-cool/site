@@ -1,7 +1,8 @@
-module Model.File exposing (File, Files, decoder, encoder, manyDecoder, manyEncoder)
+module Model.File exposing (File, Files, decode, decoder, encoder, manyDecoder, manyEncoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Util.Decode as Util
 
 
 type alias Files =
@@ -45,3 +46,8 @@ decoder =
     Decode.map2 File
         (Decode.field "name" Decode.string)
         (Decode.field "dataUrl" Decode.string)
+
+
+decode : String -> Result String File
+decode string =
+    Util.decode string decoder identity

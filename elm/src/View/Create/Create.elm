@@ -8,6 +8,7 @@ import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.Existing as Existing
+import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
@@ -169,10 +170,10 @@ body creator =
 
                 Existing fromGlobal existingCreator ->
                     case existingCreator of
-                        Existing.Top ->
+                        Existing.Top logoForm ->
                             Html.div
                                 []
-                                [ header2 fromGlobal
+                                [ header2 logoForm fromGlobal
                                 , Html.div
                                     []
                                     [ Html.button
@@ -1183,11 +1184,11 @@ header =
         ]
 
 
-header2 : HasWalletAndHandle -> Html Msg
-header2 global =
-    Header.view (Header.Admin global) global.handle global.metadata
+header2 : LogoForm -> HasWalletAndHandle -> Html Msg
+header2 logoForm global =
+    Header.view (Header.Admin global logoForm) global.handle global.metadata
 
 
 header3 : HasWalletAndHandle -> Html Msg
 header3 global =
-    Header.header0 (Header.Admin global) global.handle
+    Header.header0 (Header.Admin global LogoForm.Top) global.handle

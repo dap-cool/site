@@ -1,9 +1,11 @@
 module View.Generic.Collection.Header exposing (Role(..), header0, view)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, src)
+import Html.Attributes exposing (class, id, src, type_)
 import Html.Events exposing (onClick)
+import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
+import Model.File exposing (File)
 import Model.Handle exposing (Handle)
 import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
 import Msg.Creator.Creator as CreatorMsg
@@ -43,7 +45,7 @@ view role handle metadata =
                                     let
                                         button =
                                             case role of
-                                                Admin _ ->
+                                                Admin _ _ ->
                                                     Html.div
                                                         []
                                                         [ Html.button
@@ -65,7 +67,7 @@ view role handle metadata =
 
                         logo_ =
                             let
-                                f url_ =
+                                render url_ =
                                     Html.div
                                         []
                                         [ Html.img
@@ -74,34 +76,87 @@ view role handle metadata =
                                             ]
                                             []
                                         ]
+
+                                button global =
+                                    Html.div
+                                        [ class "file"
+                                        ]
+                                        [ Html.label
+                                            [ class "file-label"
+                                            ]
+                                            [ Html.input
+                                                [ id "dap-cool-creator-logo-selector"
+                                                , class "file-input"
+                                                , type_ "file"
+                                                , onClick <|
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing
+                                                            global
+                                                            ExistingMsg.SelectLogo
+                                                ]
+                                                []
+                                            , Html.span
+                                                [ class "file-cta"
+                                                ]
+                                                [ Html.span
+                                                    [ class "file-icon"
+                                                    ]
+                                                    [ Html.i
+                                                        [ class "fas fa-upload"
+                                                        ]
+                                                        []
+                                                    ]
+                                                , Html.span
+                                                    [ class "file-label"
+                                                    ]
+                                                    [ Html.text "select logo"
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
                             in
                             case initialized.logo of
                                 Just url ->
-                                    f url
-
-                                Nothing ->
-                                    let
-                                        button =
-                                            case role of
-                                                Admin hasWalletAndHandle ->
+                                    case role of
+                                        Admin global logoForm ->
+                                            case logoForm of
+                                                LogoForm.Top ->
                                                     Html.div
                                                         []
-                                                        [ Html.button
-                                                            []
-                                                            [ Html.text "✏️✏️✏️"
-                                                            ]
+                                                        [ render url
+                                                        , button global
                                                         ]
 
-                                                Collector ->
+                                                LogoForm.Selected file ->
                                                     Html.div
                                                         []
+                                                        [ render file.dataUrl
+                                                        , button global
+                                                        ]
+
+                                        Collector ->
+                                            render url
+
+                                Nothing ->
+                                    case role of
+                                        Admin global logoForm ->
+                                            case logoForm of
+                                                LogoForm.Top ->
+                                                    Html.div
                                                         []
-                                    in
-                                    Html.div
-                                        []
-                                        [ f "./images/upload/default-pfp.jpg"
-                                        , button
-                                        ]
+                                                        [ render "./images/upload/default-pfp.jpg"
+                                                        , button global
+                                                        ]
+
+                                                LogoForm.Selected file ->
+                                                    Html.div
+                                                        []
+                                                        [ render file.dataUrl
+                                                        , button global
+                                                        ]
+
+                                        Collector ->
+                                            render "./images/upload/default-pfp.jpg"
 
                         banner_ =
                             Html.div
@@ -112,7 +167,7 @@ view role handle metadata =
 
                 CreatorMetadata.UnInitialized ->
                     ( case role of
-                        Admin hasWalletAndHandle ->
+                        Admin hasWalletAndHandle _ ->
                             Html.div
                                 []
                                 [ Html.button
@@ -189,14 +244,14 @@ header0 role handle =
 
 
 type Role
-    = Admin HasWalletAndHandle
+    = Admin HasWalletAndHandle LogoForm
     | Collector
 
 
 toString : Role -> String
 toString role =
     case role of
-        Admin _ ->
+        Admin _ _ ->
             "Admin"
 
         Collector ->

@@ -3,8 +3,10 @@ module Sub.Listener.Local.Creator.Existing exposing (Existing(..), fromString)
 
 type
     Existing
-    -- creating collection
-    = SelectedNewNftLogo
+    -- editing metadata
+    = SelectedNewCreatorLogo
+      -- creating collection
+    | SelectedNewNftLogo
     | CreatingNewNft -- processing multi-part step-one
     | CreatedNewNft
       -- uploading
@@ -17,6 +19,9 @@ type
 fromString : String -> Maybe Existing
 fromString string =
     case string of
+        "creator-selected-new-creator-logo" ->
+            Just <| SelectedNewCreatorLogo
+
         "creator-selected-new-nft-logo" ->
             Just <| SelectedNewNftLogo
 

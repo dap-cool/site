@@ -117,6 +117,38 @@ export async function main(app, json) {
                 pp.provider,
                 pp.programs
             );
+            // or creator select logo
+        } else if (sender === "creator-select-logo") {
+            // select logo
+            const imgSelector = document.getElementById(
+                "dap-cool-creator-logo-selector"
+            );
+            if (!imgSelector.hasAttribute("listenerOnClick")) {
+                imgSelector.addEventListener("change", async (selectEvent) => {
+                    // capture file list
+                    const fileList = selectEvent.target.files;
+                    if (fileList.length > 0) {
+                        const file = fileList[0];
+                        const dataUrl = await blobToDataUrl(
+                            file
+                        );
+                        app.ports.success.send(
+                            JSON.stringify(
+                                {
+                                    listener: "creator-selected-new-creator-logo",
+                                    more: JSON.stringify(
+                                        {
+                                            name: file.name,
+                                            dataUrl: dataUrl
+                                        }
+                                    )
+                                }
+                            )
+                        );
+                    }
+                });
+            }
+            imgSelector.setAttribute("listenerOnClick", "true");
             // or creator prepare image form
         } else if (sender === "creator-prepare-image-form") {
             const imgSelector = document.getElementById(

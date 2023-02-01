@@ -12,11 +12,13 @@ import Model.Collector.WithCollection as WithCollectionForCollector
 import Model.Collector.WithCollections as WithCollections
 import Model.Creator.Creator as Creator
 import Model.Creator.Existing.Existing as ExistingCreator
+import Model.Creator.Existing.LogoForm as LogoForm
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.Existing.UploadForm as UploadForm
 import Model.Creator.Existing.WithCollection as WithCollectionForCreator
 import Model.Creator.New.New as NewCreator
 import Model.Datum as Datum
+import Model.File as File
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State.Exception.Exception as Exception
@@ -93,7 +95,11 @@ update msg model =
                         Global.HasWalletAndHandle hasWalletAndHandle ->
                             ( { model
                                 | state =
-                                    { local = Local.Create <| Creator.Existing hasWalletAndHandle <| ExistingCreator.Top
+                                    { local =
+                                        Local.Create <|
+                                            Creator.Existing hasWalletAndHandle <|
+                                                ExistingCreator.Top
+                                                    LogoForm.Top
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }
@@ -225,6 +231,19 @@ update msg model =
                 FromCreator.Existing hasWalletAndHandle existing ->
                     case existing of
                         FromExistingCreator.ProvisionMetadata ->
+                            ( { model
+                                | state =
+                                    { local = model.state.local
+                                    , global = model.state.global
+                                    , exception = Exception.Waiting
+                                    }
+                              }
+                            , sender <|
+                                Sender.encode0 <|
+                                    Sender.Create from
+                            )
+
+                        FromExistingCreator.SelectLogo ->
                             ( { model
                                 | state =
                                     { local = model.state.local
@@ -652,6 +671,7 @@ update msg model =
                                                                                         Local.Create <|
                                                                                             Creator.Existing hasWalletAndHandle <|
                                                                                                 ExistingCreator.Top
+                                                                                                    LogoForm.Top
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             hasWalletAndHandle
@@ -663,6 +683,29 @@ update msg model =
 
                                                         ToCreator.Existing existing ->
                                                             case existing of
+                                                                ToExistingCreator.SelectedNewCreatorLogo ->
+                                                                    let
+                                                                        f file =
+                                                                            case model.state.local of
+                                                                                Local.Create (Creator.Existing hasWalletAndHandle (ExistingCreator.Top _)) ->
+                                                                                    { model
+                                                                                        | state =
+                                                                                            { local =
+                                                                                                Local.Create <|
+                                                                                                    Creator.Existing hasWalletAndHandle
+                                                                                                        (ExistingCreator.Top
+                                                                                                            (LogoForm.Selected file)
+                                                                                                        )
+                                                                                            , global = model.state.global
+                                                                                            , exception = Exception.Closed
+                                                                                            }
+                                                                                    }
+
+                                                                                _ ->
+                                                                                    model
+                                                                    in
+                                                                    Listener.decode model json File.decode f
+
                                                                 ToExistingCreator.SelectedNewNftLogo ->
                                                                     let
                                                                         f logo =
@@ -1297,6 +1340,7 @@ update msg model =
                                                                                 (Local.Create <|
                                                                                     Creator.Existing hasWalletAndHandle <|
                                                                                         ExistingCreator.Top
+                                                                                            LogoForm.Top
                                                                                 )
                                                                                 False
                                                                       }

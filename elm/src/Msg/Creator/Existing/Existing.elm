@@ -3,6 +3,7 @@ module Msg.Creator.Existing.Existing exposing (Existing(..), toString)
 import Model.Collection exposing (Collection)
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.Existing.UploadForm exposing (UploadForm)
+import Model.File exposing (File)
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm exposing (NewCollectionForm)
 
 
@@ -10,6 +11,7 @@ type
     Existing
     -- creator metadata
     = ProvisionMetadata
+    | SelectLogo
       -- new collection form
     | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
@@ -28,6 +30,9 @@ toString existing =
     case existing of
         ProvisionMetadata ->
             "creator-provision-metadata"
+
+        SelectLogo ->
+            "creator-select-logo"
 
         NewCollectionForm form ->
             case form of
