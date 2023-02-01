@@ -3,6 +3,7 @@ module Model.Creator.Existing.UploadForm exposing (UploadForm, decode, decodeFil
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Model.Collection as Collection exposing (Collection)
+import Model.File as File exposing (Files)
 import Model.Mint exposing (Mint)
 import Util.Decode as Util
 
@@ -25,18 +26,6 @@ type alias LitArgs =
         , comparator : String
         , value : String
         }
-    }
-
-
-type alias Files =
-    { count : Int
-    , files : List File
-    }
-
-
-type alias File =
-    { name : String
-    , dataUrl : String
     }
 
 
@@ -103,16 +92,7 @@ encode collection form =
                     , ( "files"
                       , Encode.object
                             [ ( "count", Encode.int form.files.count )
-                            , ( "files"
-                              , Encode.list
-                                    (\file ->
-                                        Encode.object
-                                            [ ( "name", Encode.string file.name )
-                                            , ( "dataUrl", Encode.string file.dataUrl )
-                                            ]
-                                    )
-                                    form.files.files
-                              )
+                            , ( "files", File.manyEncoder form.files.files )
                             ]
                       )
                     , ( "title", Encode.string form.title )
@@ -135,7 +115,7 @@ decoder =
             Decode.map6 UploadForm
                 (Decode.field "step" Decode.int)
                 (Decode.field "retries" Decode.int)
-                (Decode.field "files" filesDecoder)
+                (Decode.field "files" File.manyDecoder)
                 (Decode.field "title" Decode.string)
                 (Decode.maybe <| Decode.field "shadow" Decode.string)
                 (Decode.maybe <|
@@ -156,16 +136,4 @@ decoder =
 
 decodeFiles : String -> Result String Files
 decodeFiles string =
-    Util.decode string filesDecoder identity
-
-
-filesDecoder : Decode.Decoder Files
-filesDecoder =
-    Decode.map2 Files
-        (Decode.field "count" Decode.int)
-        (Decode.field "files" <|
-            Decode.list <|
-                Decode.map2 File
-                    (Decode.field "name" Decode.string)
-                    (Decode.field "dataUrl" Decode.string)
-        )
+    Util.decode string File.manyDecoder identity

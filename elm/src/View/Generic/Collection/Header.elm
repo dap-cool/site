@@ -123,7 +123,7 @@ view role handle metadata =
                                                 ExistingMsg.ProvisionMetadata
                                     ]
                                     [ Html.text
-                                        """start uploading profile-picture & bio
+                                        """create storage for profile-picture & bio
                                         """
                                     ]
                                 ]
