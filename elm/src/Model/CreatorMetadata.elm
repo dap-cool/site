@@ -30,6 +30,6 @@ decoder =
 decoder_ : Decode.Decoder Metadata
 decoder_ =
     Decode.map3 Metadata
-        (Decode.nullable (Decode.field "bio" Decode.string))
+        (Decode.maybe (Decode.field "bio" Decode.string))
         (Decode.maybe (Decode.field "logo" Decode.string))
         (Decode.maybe (Decode.field "banner" Decode.string))

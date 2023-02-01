@@ -1,5 +1,7 @@
 import {PublicKey} from "@solana/web3.js";
 import {Program} from "@project-serum/anchor";
+import * as DapSdk from "@dap-cool/sdk";
+import * as CreatorMetadata from "../methods/creator-metadata/metadata";
 import {DapCool} from "../idl/dap";
 
 export interface HandlePda {
@@ -11,11 +13,8 @@ export interface Handle {
     handle: string
     authority: PublicKey
     numCollections: number
-    metadata: {
-        bio: string | null
-        logo: string | null
-        banner: string | null
-    } | null
+    metadata: CreatorMetadata
+        .Metadata | null
     pinned: Pinned
 }
 
@@ -52,11 +51,17 @@ export async function getHandlePda(program: Program<DapCool>, pda: PublicKey): P
     const fetched = await program.account.handle.fetch(
         pda
     ) as RawHandle;
+    let metadata;
+    if (fetched.metadata) {
+        metadata = await CreatorMetadata.getMetadata(
+            fetched.metadata
+        );
+    }
     return {
         handle: fetched.handle,
         authority: fetched.authority,
         numCollections: fetched.numCollections,
-        metadata: null,
+        metadata: metadata,
         pinned: fetched.pinned
     } as Handle
 }

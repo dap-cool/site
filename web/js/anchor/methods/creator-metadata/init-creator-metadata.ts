@@ -1,10 +1,11 @@
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import * as DapSdk from "@dap-cool/sdk";
-import {DapCool} from "../idl/dap";
-import {deriveAtaPda, RawSplTokenAccount} from "../pda/get-token-account";
-import {SHDW, SHDW_DECIMALS} from "../util/constants";
-import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
-import {getGlobal} from "../pda/get-global";
+import * as CreatorMetadata from "./metadata";
+import {DapCool} from "../../idl/dap";
+import {deriveAtaPda, RawSplTokenAccount} from "../../pda/get-token-account";
+import {SHDW, SHDW_DECIMALS} from "../../util/constants";
+import {deriveCreatorPda, getCreatorPda} from "../../pda/creator-pda";
+import {getGlobal} from "../../pda/get-global";
 
 export async function initCreatorMetadata(
     app,
@@ -28,6 +29,18 @@ export async function initCreatorMetadata(
                     provider.connection,
                     provider.wallet,
                     3 * 1_000_000 // 3 + 2
+                );
+                const metadata = CreatorMetadata.encode(
+                    {
+                        logo: null,
+                        bio: null,
+                        banner: null,
+                    }
+                );
+                await DapSdk.uploadFile(
+                    metadata,
+                    provisioned.drive,
+                    provisioned.account
                 );
                 const creatorPda = await deriveCreatorPda(
                     provider,

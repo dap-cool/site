@@ -19,7 +19,7 @@ import {getGlobal} from "./anchor/pda/get-global";
 import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 import {blobToDataUrl, compressImage, dataUrlToBlob} from "./util/blob-util";
 import {getUploads, unlockUpload, upload} from "./anchor/pda/datum-pda";
-import {initCreatorMetadata} from "./anchor/methods/init-creator-metadata";
+import {initCreatorMetadata} from "./anchor/methods/creator-metadata/init-creator-metadata";
 
 // init phantom
 let phantom = null;
