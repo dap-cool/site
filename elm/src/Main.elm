@@ -244,13 +244,7 @@ update msg model =
                             )
 
                         FromExistingCreator.SelectLogo ->
-                            ( { model
-                                | state =
-                                    { local = model.state.local
-                                    , global = model.state.global
-                                    , exception = Exception.Waiting
-                                    }
-                              }
+                            ( model
                             , sender <|
                                 Sender.encode0 <|
                                     Sender.Create from
@@ -697,7 +691,7 @@ update msg model =
                                                                                                             (LogoForm.Selected file)
                                                                                                         )
                                                                                             , global = model.state.global
-                                                                                            , exception = Exception.Closed
+                                                                                            , exception = model.state.exception
                                                                                             }
                                                                                     }
 
