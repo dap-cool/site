@@ -77,7 +77,7 @@ view role handle metadata =
                                             []
                                         ]
 
-                                button global =
+                                select global =
                                     Html.div
                                         [ class "file"
                                         ]
@@ -114,6 +114,31 @@ view role handle metadata =
                                                 ]
                                             ]
                                         ]
+
+                                upload =
+                                    Html.button
+                                        [ class "button"
+                                        ]
+                                        [ Html.text
+                                            """upload
+                                            """
+                                        ]
+
+                                buttons global =
+                                    Html.div
+                                        [ class "field has-addons is-centered"
+                                        ]
+                                        [ Html.p
+                                            [ class "control"
+                                            ]
+                                            [ select global
+                                            ]
+                                        , Html.p
+                                            [ class "control"
+                                            ]
+                                            [ upload
+                                            ]
+                                        ]
                             in
                             case initialized.logo of
                                 Just url ->
@@ -124,14 +149,14 @@ view role handle metadata =
                                                     Html.div
                                                         []
                                                         [ render url
-                                                        , button global
+                                                        , buttons global
                                                         ]
 
                                                 LogoForm.Selected file ->
                                                     Html.div
                                                         []
                                                         [ render file.dataUrl
-                                                        , button global
+                                                        , buttons global
                                                         ]
 
                                         Collector ->
@@ -145,14 +170,14 @@ view role handle metadata =
                                                     Html.div
                                                         []
                                                         [ render "./images/upload/default-pfp.jpg"
-                                                        , button global
+                                                        , buttons global
                                                         ]
 
                                                 LogoForm.Selected file ->
                                                     Html.div
                                                         []
                                                         [ render file.dataUrl
-                                                        , button global
+                                                        , buttons global
                                                         ]
 
                                         Collector ->
@@ -206,12 +231,12 @@ view role handle metadata =
             [ class "columns"
             ]
             [ Html.div
-                [ class "column is-2 has-text-centered"
+                [ class "column is-2-desktop is-3-tablet has-text-centered-tablet"
                 ]
                 [ logo
                 ]
             , Html.div
-                [ class "column is-10"
+                [ class "column is-10-desktop is-9-tablet"
                 ]
                 [ Html.div
                     []
