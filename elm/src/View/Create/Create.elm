@@ -7,7 +7,7 @@ import Html.Attributes exposing (accept, class, default, href, id, multiple, pla
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Creator.Creator exposing (Creator(..))
-import Model.Creator.Existing.BioForm exposing (BioForm)
+import Model.Creator.Existing.BioForm as BioForm exposing (BioForm)
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.Creator.Existing.NewCollection as NewCollection
@@ -1196,4 +1196,4 @@ header2 logoForm bioForm global =
 
 header3 : HasWalletAndHandle -> Html Msg
 header3 global =
-    Header.header0 (Header.Admin global LogoForm.Top Nothing) global.handle
+    Header.header0 (Header.Admin global LogoForm.Top BioForm.Empty) global.handle

@@ -1,5 +1,7 @@
-module Model.Creator.Existing.BioForm exposing (BioForm)
+module Model.Creator.Existing.BioForm exposing (BioForm(..))
 
 
-type alias BioForm =
-    Maybe String
+type BioForm
+    = Empty
+    | Valid String
+    | Invalid String

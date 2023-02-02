@@ -11,6 +11,7 @@ import Model.Collector.UnlockedModal as UnlockedModal
 import Model.Collector.WithCollection as WithCollectionForCollector
 import Model.Collector.WithCollections as WithCollections
 import Model.Creator.Creator as Creator
+import Model.Creator.Existing.BioForm as BioForm
 import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.LogoForm as LogoForm
 import Model.Creator.Existing.NewCollection as NewCollection
@@ -100,7 +101,7 @@ update msg model =
                                             Creator.Existing hasWalletAndHandle <|
                                                 ExistingCreator.Top
                                                     LogoForm.Top
-                                                    Nothing
+                                                    BioForm.Empty
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }
@@ -292,28 +293,43 @@ update msg model =
                                     case string of
                                         "" ->
                                             bump
-                                                Nothing
-                                                model.state.exception
+                                                BioForm.Empty
+                                                Exception.Closed
 
                                         nes ->
                                             bump
-                                                (Just nes)
-                                                model.state.exception
+                                                (BioForm.Valid nes)
+                                                Exception.Closed
 
                                 False ->
-                                    bump
-                                        form
-                                        (Exception.Open
-                                            (String.concat
-                                                [ "Max characters of"
-                                                , " "
-                                                , String.fromInt max
-                                                , " "
-                                                , "exceeded"
-                                                ]
-                                            )
-                                            Nothing
-                                        )
+                                    let
+                                        exception =
+                                            Exception.Open
+                                                (String.concat
+                                                    [ "Max characters of"
+                                                    , " "
+                                                    , String.fromInt max
+                                                    , " "
+                                                    , "exceeded"
+                                                    ]
+                                                )
+                                                Nothing
+                                    in
+                                    case form of
+                                        BioForm.Empty ->
+                                            bump
+                                                BioForm.Empty
+                                                exception
+
+                                        BioForm.Valid valid ->
+                                            bump
+                                                (BioForm.Invalid valid)
+                                                exception
+
+                                        BioForm.Invalid _ ->
+                                            bump
+                                                form
+                                                exception
 
                         FromExistingCreator.StartCreatingNewCollection ->
                             ( { model
@@ -731,7 +747,7 @@ update msg model =
                                                                                             Creator.Existing hasWalletAndHandle <|
                                                                                                 ExistingCreator.Top
                                                                                                     LogoForm.Top
-                                                                                                    Nothing
+                                                                                                    BioForm.Empty
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             hasWalletAndHandle
@@ -755,7 +771,7 @@ update msg model =
                                                                                                     Creator.Existing hasWalletAndHandle
                                                                                                         (ExistingCreator.Top
                                                                                                             (LogoForm.Selected file)
-                                                                                                            Nothing
+                                                                                                            BioForm.Empty
                                                                                                         )
                                                                                             , global = model.state.global
                                                                                             , exception = model.state.exception
@@ -1402,7 +1418,7 @@ update msg model =
                                                                                     Creator.Existing hasWalletAndHandle <|
                                                                                         ExistingCreator.Top
                                                                                             LogoForm.Top
-                                                                                            Nothing
+                                                                                            BioForm.Empty
                                                                                 )
                                                                                 False
                                                                       }

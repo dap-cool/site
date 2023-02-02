@@ -3,7 +3,7 @@ module View.Generic.Collection.Header exposing (Role(..), header0, view)
 import Html exposing (Html)
 import Html.Attributes exposing (class, id, placeholder, src, type_)
 import Html.Events exposing (onClick, onInput)
-import Model.Creator.Existing.BioForm exposing (BioForm)
+import Model.Creator.Existing.BioForm as BioForm exposing (BioForm)
 import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.File exposing (File)
@@ -30,21 +30,47 @@ view role handle metadata =
                                         [ Html.text "bio"
                                         ]
 
+                                upload form global =
+                                    case form of
+                                        BioForm.Empty ->
+                                            Html.div
+                                                []
+                                                []
+
+                                        BioForm.Valid valid ->
+                                            Html.button
+                                                [ class "button is-fullwidth"
+                                                ]
+                                                [ Html.text "upload"
+                                                ]
+
+                                        BioForm.Invalid _ ->
+                                            Html.div
+                                                []
+                                                []
+
                                 textarea form global =
-                                    Html.textarea
-                                        [ class "textarea"
-                                        , placeholder "write new bio"
-                                        , onInput <|
-                                            \s ->
-                                                FromCreator <|
-                                                    CreatorMsg.Existing
-                                                        global
-                                                        (ExistingMsg.TypingBio
-                                                            form
-                                                            s
-                                                        )
-                                        ]
+                                    Html.div
                                         []
+                                        [ Html.textarea
+                                            [ class "textarea"
+                                            , placeholder "write new bio"
+                                            , onInput <|
+                                                \s ->
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing
+                                                            global
+                                                            (ExistingMsg.TypingBio
+                                                                form
+                                                                s
+                                                            )
+                                            ]
+                                            []
+                                        , Html.div
+                                            []
+                                            [ upload form global
+                                            ]
+                                        ]
                             in
                             case initialized.bio of
                                 Just string ->
@@ -73,25 +99,19 @@ view role handle metadata =
                                                 ]
 
                                 Nothing ->
-                                    let
-                                        button =
-                                            case role of
-                                                Admin global _ bioForm ->
-                                                    Html.div
-                                                        []
-                                                        [ textarea bioForm global
-                                                        ]
+                                    case role of
+                                        Admin global _ bioForm ->
+                                            Html.div
+                                                []
+                                                [ header_
+                                                , textarea bioForm global
+                                                ]
 
-                                                Collector ->
-                                                    Html.div
-                                                        []
-                                                        []
-                                    in
-                                    Html.div
-                                        []
-                                        [ header_
-                                        , button
-                                        ]
+                                        Collector ->
+                                            Html.div
+                                                []
+                                                [ header_
+                                                ]
 
                         logo_ =
                             let
