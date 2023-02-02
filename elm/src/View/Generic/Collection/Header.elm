@@ -117,7 +117,7 @@ view role handle metadata =
 
                                 upload =
                                     Html.button
-                                        [ class "button"
+                                        [ class "button is-dark"
                                         ]
                                         [ Html.text
                                             """upload
