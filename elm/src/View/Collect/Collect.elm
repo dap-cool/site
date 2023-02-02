@@ -758,8 +758,7 @@ hiw =
             [ Html.text "How It Works"
             ]
         , Html.div
-            [ class "columns is-mobile mb-6"
-            , style "height" "203px"
+            [ class "columns mb-6 mx-3"
             ]
             [ Html.div
                 [ class "column is-2"
@@ -798,8 +797,7 @@ hiw =
                 ]
             ]
         , Html.div
-            [ class "columns is-mobile mt-6"
-            , style "height" "203px"
+            [ class "columns mt-6 mb-3 mx-3"
             ]
             [ Html.div
                 [ class "column is-2"
