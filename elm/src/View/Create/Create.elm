@@ -7,6 +7,7 @@ import Html.Attributes exposing (accept, class, default, href, id, multiple, pla
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Creator.Creator exposing (Creator(..))
+import Model.Creator.Existing.BioForm exposing (BioForm)
 import Model.Creator.Existing.Existing as Existing
 import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.Creator.Existing.NewCollection as NewCollection
@@ -170,13 +171,13 @@ body creator =
 
                 Existing fromGlobal existingCreator ->
                     case existingCreator of
-                        Existing.Top logoForm ->
+                        Existing.Top logoForm bioForm ->
                             Html.div
                                 []
                                 [ Html.div
                                     [ class "mb-6"
                                     ]
-                                    [ header2 logoForm fromGlobal
+                                    [ header2 logoForm bioForm fromGlobal
                                     ]
                                 , Html.div
                                     []
@@ -1188,11 +1189,11 @@ header =
         ]
 
 
-header2 : LogoForm -> HasWalletAndHandle -> Html Msg
-header2 logoForm global =
-    Header.view (Header.Admin global logoForm) global.handle global.metadata
+header2 : LogoForm -> BioForm -> HasWalletAndHandle -> Html Msg
+header2 logoForm bioForm global =
+    Header.view (Header.Admin global logoForm bioForm) global.handle global.metadata
 
 
 header3 : HasWalletAndHandle -> Html Msg
 header3 global =
-    Header.header0 (Header.Admin global LogoForm.Top) global.handle
+    Header.header0 (Header.Admin global LogoForm.Top Nothing) global.handle

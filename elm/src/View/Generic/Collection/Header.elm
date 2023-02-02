@@ -1,8 +1,9 @@
 module View.Generic.Collection.Header exposing (Role(..), header0, view)
 
 import Html exposing (Html)
-import Html.Attributes exposing (class, id, src, type_)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (class, id, placeholder, src, type_)
+import Html.Events exposing (onClick, onInput)
+import Model.Creator.Existing.BioForm exposing (BioForm)
 import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.File exposing (File)
@@ -28,30 +29,57 @@ view role handle metadata =
                                         ]
                                         [ Html.text "bio"
                                         ]
+
+                                textarea form global =
+                                    Html.textarea
+                                        [ class "textarea"
+                                        , placeholder "write new bio"
+                                        , onInput <|
+                                            \s ->
+                                                FromCreator <|
+                                                    CreatorMsg.Existing
+                                                        global
+                                                        (ExistingMsg.TypingBio
+                                                            form
+                                                            s
+                                                        )
+                                        ]
+                                        []
                             in
                             case initialized.bio of
                                 Just string ->
-                                    Html.div
-                                        []
-                                        [ header_
-                                        , Html.div
-                                            [ class "mt-1 container is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
-                                            ]
-                                            [ Html.text string
-                                            ]
-                                        ]
+                                    case role of
+                                        Admin global _ bioForm ->
+                                            Html.div
+                                                []
+                                                [ header_
+                                                , Html.div
+                                                    [ class "mt-1 container is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
+                                                    ]
+                                                    [ Html.text string
+                                                    ]
+                                                , textarea bioForm global
+                                                ]
+
+                                        Collector ->
+                                            Html.div
+                                                []
+                                                [ header_
+                                                , Html.div
+                                                    [ class "mt-1 container is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
+                                                    ]
+                                                    [ Html.text string
+                                                    ]
+                                                ]
 
                                 Nothing ->
                                     let
                                         button =
                                             case role of
-                                                Admin _ _ ->
+                                                Admin global _ bioForm ->
                                                     Html.div
                                                         []
-                                                        [ Html.button
-                                                            []
-                                                            [ Html.text "✏️✏️✏️"
-                                                            ]
+                                                        [ textarea bioForm global
                                                         ]
 
                                                 Collector ->
@@ -150,7 +178,7 @@ view role handle metadata =
                             case initialized.logo of
                                 Just url ->
                                     case role of
-                                        Admin global logoForm ->
+                                        Admin global logoForm _ ->
                                             case logoForm of
                                                 LogoForm.Top ->
                                                     Html.div
@@ -171,7 +199,7 @@ view role handle metadata =
 
                                 Nothing ->
                                     case role of
-                                        Admin global logoForm ->
+                                        Admin global logoForm _ ->
                                             case logoForm of
                                                 LogoForm.Top ->
                                                     Html.div
@@ -199,7 +227,7 @@ view role handle metadata =
 
                 CreatorMetadata.UnInitialized ->
                     ( case role of
-                        Admin hasWalletAndHandle _ ->
+                        Admin hasWalletAndHandle _ _ ->
                             Html.div
                                 []
                                 [ Html.button
@@ -276,14 +304,14 @@ header0 role handle =
 
 
 type Role
-    = Admin HasWalletAndHandle LogoForm
+    = Admin HasWalletAndHandle LogoForm BioForm
     | Collector
 
 
 toString : Role -> String
 toString role =
     case role of
-        Admin _ _ ->
+        Admin _ _ _ ->
             "Admin"
 
         Collector ->

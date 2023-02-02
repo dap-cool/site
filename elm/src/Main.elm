@@ -100,6 +100,7 @@ update msg model =
                                             Creator.Existing hasWalletAndHandle <|
                                                 ExistingCreator.Top
                                                     LogoForm.Top
+                                                    Nothing
                                     , global = model.state.global
                                     , exception = model.state.exception
                                     }
@@ -264,6 +265,55 @@ update msg model =
                                     , more = File.encode file
                                     }
                             )
+
+                        FromExistingCreator.TypingBio form string ->
+                            let
+                                max =
+                                    100
+
+                                bump form_ exception =
+                                    ( { model
+                                        | state =
+                                            { local =
+                                                Local.Create <|
+                                                    Creator.Existing hasWalletAndHandle <|
+                                                        ExistingCreator.Top
+                                                            LogoForm.Top
+                                                            form_
+                                            , global = model.state.global
+                                            , exception = exception
+                                            }
+                                      }
+                                    , Cmd.none
+                                    )
+                            in
+                            case String.length string <= max of
+                                True ->
+                                    case string of
+                                        "" ->
+                                            bump
+                                                Nothing
+                                                model.state.exception
+
+                                        nes ->
+                                            bump
+                                                (Just nes)
+                                                model.state.exception
+
+                                False ->
+                                    bump
+                                        form
+                                        (Exception.Open
+                                            (String.concat
+                                                [ "Max characters of"
+                                                , " "
+                                                , String.fromInt max
+                                                , " "
+                                                , "exceeded"
+                                                ]
+                                            )
+                                            Nothing
+                                        )
 
                         FromExistingCreator.StartCreatingNewCollection ->
                             ( { model
@@ -681,6 +731,7 @@ update msg model =
                                                                                             Creator.Existing hasWalletAndHandle <|
                                                                                                 ExistingCreator.Top
                                                                                                     LogoForm.Top
+                                                                                                    Nothing
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             hasWalletAndHandle
@@ -696,7 +747,7 @@ update msg model =
                                                                     let
                                                                         f file =
                                                                             case model.state.local of
-                                                                                Local.Create (Creator.Existing hasWalletAndHandle (ExistingCreator.Top _)) ->
+                                                                                Local.Create (Creator.Existing hasWalletAndHandle (ExistingCreator.Top _ _)) ->
                                                                                     { model
                                                                                         | state =
                                                                                             { local =
@@ -704,6 +755,7 @@ update msg model =
                                                                                                     Creator.Existing hasWalletAndHandle
                                                                                                         (ExistingCreator.Top
                                                                                                             (LogoForm.Selected file)
+                                                                                                            Nothing
                                                                                                         )
                                                                                             , global = model.state.global
                                                                                             , exception = model.state.exception
@@ -1350,6 +1402,7 @@ update msg model =
                                                                                     Creator.Existing hasWalletAndHandle <|
                                                                                         ExistingCreator.Top
                                                                                             LogoForm.Top
+                                                                                            Nothing
                                                                                 )
                                                                                 False
                                                                       }

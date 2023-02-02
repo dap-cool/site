@@ -1,6 +1,7 @@
 module Msg.Creator.Existing.Existing exposing (Existing(..), toString)
 
 import Model.Collection exposing (Collection)
+import Model.Creator.Existing.BioForm exposing (BioForm)
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.Existing.UploadForm exposing (UploadForm)
 import Model.File exposing (File)
@@ -13,6 +14,7 @@ type
     = ProvisionMetadata
     | SelectLogo
     | UploadLogo File
+    | TypingBio BioForm String
       -- new collection form
     | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
