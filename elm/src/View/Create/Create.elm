@@ -173,7 +173,11 @@ body creator =
                         Existing.Top logoForm ->
                             Html.div
                                 []
-                                [ header2 logoForm fromGlobal
+                                [ Html.div
+                                    [ class "mb-6"
+                                    ]
+                                    [ header2 logoForm fromGlobal
+                                    ]
                                 , Html.div
                                     []
                                     [ Html.button
