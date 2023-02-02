@@ -1,4 +1,4 @@
-module Model.File exposing (File, Files, decode, decoder, encoder, manyDecoder, manyEncoder)
+module Model.File exposing (File, Files, decode, decoder, encode, encoder, manyDecoder, manyEncoder)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -30,6 +30,12 @@ encoder file =
         [ ( "name", Encode.string file.name )
         , ( "dataUrl", Encode.string file.dataUrl )
         ]
+
+
+encode : File -> String
+encode file =
+    Encode.encode 0 <|
+        encoder file
 
 
 manyDecoder : Decode.Decoder Files

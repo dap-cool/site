@@ -95,7 +95,7 @@ export async function creatNft(
             form.shdw = await provision(
                 provider.connection,
                 provider.wallet,
-                logo as any
+                logo.size
             );
             // bump form
             form.step = 2;

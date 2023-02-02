@@ -20,6 +20,7 @@ import {deriveCreatorPda, getCreatorPda} from "./anchor/pda/creator-pda";
 import {blobToDataUrl, compressImage, dataUrlToBlob} from "./util/blob-util";
 import {getUploads, unlockUpload, upload} from "./anchor/pda/datum-pda";
 import {initCreatorMetadata} from "./anchor/methods/creator-metadata/init-creator-metadata";
+import {uploadLogo} from "./anchor/methods/creator-metadata/upload-logo";
 
 // init phantom
 let phantom = null;
@@ -149,6 +150,19 @@ export async function main(app, json) {
                 });
             }
             imgSelector.setAttribute("listenerOnClick", "true");
+            // or creator upload logo
+        } else if (sender === "creator-upload-logo") {
+            // get provider & program
+            const pp = getPP(phantom);
+            // parse more json
+            const logo = JSON.parse(parsed.more);
+            // invoke method
+            await uploadLogo(
+                app,
+                pp.provider,
+                pp.programs,
+                logo
+            );
             // or creator prepare image form
         } else if (sender === "creator-prepare-image-form") {
             const imgSelector = document.getElementById(

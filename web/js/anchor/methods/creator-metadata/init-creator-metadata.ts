@@ -32,6 +32,7 @@ export async function initCreatorMetadata(
                 );
                 const metadata = CreatorMetadata.encode(
                     {
+                        url: provisioned.account,
                         logo: null,
                         bio: null,
                         banner: null,

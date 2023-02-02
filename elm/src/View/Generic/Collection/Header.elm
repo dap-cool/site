@@ -109,22 +109,29 @@ view role handle metadata =
                                                 , Html.span
                                                     [ class "file-label"
                                                     ]
-                                                    [ Html.text "select logo"
+                                                    [ Html.text "new logo"
                                                     ]
                                                 ]
                                             ]
                                         ]
 
-                                upload =
+                                upload global file =
                                     Html.button
                                         [ class "button is-dark"
+                                        , onClick <|
+                                            FromCreator <|
+                                                CreatorMsg.Existing
+                                                    global
+                                                    (ExistingMsg.UploadLogo
+                                                        file
+                                                    )
                                         ]
                                         [ Html.text
                                             """upload
                                             """
                                         ]
 
-                                buttons global =
+                                buttons global file =
                                     Html.div
                                         [ class "field has-addons is-centered"
                                         ]
@@ -136,7 +143,7 @@ view role handle metadata =
                                         , Html.p
                                             [ class "control"
                                             ]
-                                            [ upload
+                                            [ upload global file
                                             ]
                                         ]
                             in
@@ -149,14 +156,14 @@ view role handle metadata =
                                                     Html.div
                                                         []
                                                         [ render url
-                                                        , buttons global
+                                                        , select global
                                                         ]
 
                                                 LogoForm.Selected file ->
                                                     Html.div
                                                         []
                                                         [ render file.dataUrl
-                                                        , buttons global
+                                                        , buttons global file
                                                         ]
 
                                         Collector ->
@@ -170,14 +177,14 @@ view role handle metadata =
                                                     Html.div
                                                         []
                                                         [ render "./images/upload/default-pfp.jpg"
-                                                        , buttons global
+                                                        , select global
                                                         ]
 
                                                 LogoForm.Selected file ->
                                                     Html.div
                                                         []
                                                         [ render file.dataUrl
-                                                        , buttons global
+                                                        , buttons global file
                                                         ]
 
                                         Collector ->

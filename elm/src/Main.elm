@@ -250,6 +250,21 @@ update msg model =
                                     Sender.Create from
                             )
 
+                        FromExistingCreator.UploadLogo file ->
+                            ( { model
+                                | state =
+                                    { local = model.state.local
+                                    , global = model.state.global
+                                    , exception = Exception.Waiting
+                                    }
+                              }
+                            , sender <|
+                                Sender.encode <|
+                                    { sender = Sender.Create from
+                                    , more = File.encode file
+                                    }
+                            )
+
                         FromExistingCreator.StartCreatingNewCollection ->
                             ( { model
                                 | state =

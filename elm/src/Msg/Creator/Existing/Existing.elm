@@ -12,6 +12,7 @@ type
     -- creator metadata
     = ProvisionMetadata
     | SelectLogo
+    | UploadLogo File
       -- new collection form
     | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
@@ -33,6 +34,9 @@ toString existing =
 
         SelectLogo ->
             "creator-select-logo"
+
+        UploadLogo _ ->
+            "creator-upload-logo"
 
         NewCollectionForm form ->
             case form of
