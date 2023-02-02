@@ -270,7 +270,7 @@ update msg model =
                         FromExistingCreator.TypingBio form string ->
                             let
                                 max =
-                                    100
+                                    250
 
                                 bump form_ exception =
                                     ( { model
@@ -330,6 +330,21 @@ update msg model =
                                             bump
                                                 form
                                                 exception
+
+                        FromExistingCreator.UploadBio valid ->
+                            ( { model
+                                | state =
+                                    { local = model.state.local
+                                    , global = model.state.global
+                                    , exception = Exception.Waiting
+                                    }
+                              }
+                            , sender <|
+                                Sender.encode <|
+                                    { sender = Sender.Create from
+                                    , more = BioForm.encode valid
+                                    }
+                            )
 
                         FromExistingCreator.StartCreatingNewCollection ->
                             ( { model

@@ -40,6 +40,11 @@ view role handle metadata =
                                         BioForm.Valid valid ->
                                             Html.button
                                                 [ class "button is-fullwidth"
+                                                , onClick <|
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing
+                                                            global
+                                                            (ExistingMsg.UploadBio valid)
                                                 ]
                                                 [ Html.text "upload"
                                                 ]

@@ -1,20 +1,23 @@
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
-import * as DapSdk from "@dap-cool/sdk";
 import {DapCool} from "../../idl/dap";
-import {Logo, encode} from "./metadata";
 import {deriveCreatorPda, getCreatorPda} from "../../pda/creator-pda";
 import {getHandlePda} from "../../pda/handle-pda";
-import {compressImage, dataUrlToBlob} from "../../../util/blob-util";
+import * as DapSdk from "@dap-cool/sdk";
+import {encode} from "./metadata";
 import {getGlobal} from "../../pda/get-global";
 
-export async function uploadLogo(
+interface Bio {
+    bio: string
+}
+
+export async function uploadBio(
     app,
     provider: AnchorProvider,
     programs: {
         dap: Program<DapCool>,
         token: Program<SplToken>
     },
-    logo: Logo
+    bio: Bio
 ): Promise<void> {
     const creatorPda = await deriveCreatorPda(
         provider,
@@ -32,32 +35,16 @@ export async function uploadLogo(
         provider.connection,
         provider.wallet
     );
-    const blob = await dataUrlToBlob(
-        logo.dataUrl
-    );
-    const compressed = await compressImage(
-        blob
-    );
-    const file = new File(
-        [compressed],
-        logo.name,
-        {
-            type: blob.type
-        }
-    );
     const metadata = encode(
         {
             url: handle.metadata.url,
-            bio: handle.metadata.bio,
-            logo: file.name,
+            bio: bio.bio,
+            logo: handle.metadata.logo,
             banner: handle.metadata.banner
         }
     )
-    await DapSdk.uploadMultipleFiles(
-        [
-            file,
-            metadata
-        ],
+    await DapSdk.uploadFile(
+        metadata,
         client,
         handle.metadata.url
     );

@@ -15,6 +15,7 @@ type
     | SelectLogo
     | UploadLogo File
     | TypingBio BioForm String
+    | UploadBio String
       -- new collection form
     | StartCreatingNewCollection
     | NewCollectionForm NewCollectionForm
@@ -39,6 +40,9 @@ toString existing =
 
         UploadLogo _ ->
             "creator-upload-logo"
+
+        UploadBio _ ->
+            "creator-upload-bio"
 
         NewCollectionForm form ->
             case form of

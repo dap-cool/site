@@ -21,6 +21,7 @@ import {blobToDataUrl, compressImage, dataUrlToBlob} from "./util/blob-util";
 import {getUploads, unlockUpload, upload} from "./anchor/pda/datum-pda";
 import {initCreatorMetadata} from "./anchor/methods/creator-metadata/init-creator-metadata";
 import {uploadLogo} from "./anchor/methods/creator-metadata/upload-logo";
+import {uploadBio} from "./anchor/methods/creator-metadata/upload-bio";
 
 // init phantom
 let phantom = null;
@@ -162,6 +163,19 @@ export async function main(app, json) {
                 pp.provider,
                 pp.programs,
                 logo
+            );
+            // or creator upload bio
+        } else if (sender === "creator-upload-bio") {
+            // get provider & program
+            const pp = getPP(phantom);
+            // parse more json
+            const bio = JSON.parse(parsed.more);
+            // invoke method
+            await uploadBio(
+                app,
+                pp.provider,
+                pp.programs,
+                bio
             );
             // or creator prepare image form
         } else if (sender === "creator-prepare-image-form") {
