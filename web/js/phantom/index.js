@@ -1,4 +1,6 @@
 /*! https://docs.phantom.app/ */
+import * as FeaturedCreators from "./../shdw/creator/featured-creators";
+import {getEphemeralPP} from "../anchor/util/context";
 
 export async function getPhantom(app) {
     let phantom;
@@ -21,11 +23,17 @@ export async function getPhantom(app) {
             );
         }
     } else {
+        // get featured creators
+        const pp = getEphemeralPP();
+        const featuredCreators = await FeaturedCreators.fetch(
+            pp.programs.dap
+        );
         // send global to elm
         app.ports.success.send(
             JSON.stringify(
                 {
-                    listener: "global-found-missing-wallet-plugin"
+                    listener: "global-found-missing-wallet-plugin",
+                    featuredCreators
                 }
             )
         );

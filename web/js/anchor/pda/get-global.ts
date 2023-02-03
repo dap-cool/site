@@ -4,6 +4,7 @@ import {getHandlePda} from "./handle-pda";
 import {deriveCreatorPda, getCreatorPda} from "./creator-pda";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "./collector-pda";
 import {CollectionAuthority, getManyAuthorityPdaForCollector, getManyAuthorityPdaForCreator} from "./authority-pda";
+import * as FeaturedCreators from "./../../shdw/creator/featured-creators";
 
 export async function getGlobal(
     app,
@@ -23,6 +24,11 @@ export async function getGlobal(
         provider,
         programs.dap
     );
+    // get featured creators
+    const featuredCreators = await FeaturedCreators.fetch(
+        programs.dap
+    );
+    console.log(featuredCreators);
     // get all collections collected by collector
     let collected: CollectionAuthority[];
     try {
@@ -71,7 +77,8 @@ export async function getGlobal(
                             wallet: provider.wallet.publicKey.toString(),
                             collections: collections,
                             collected: collected,
-                            metadata: handle.metadata
+                            metadata: handle.metadata,
+                            featuredCreators
                         }
                     )
                 }
@@ -87,7 +94,8 @@ export async function getGlobal(
                     listener: "global-found-wallet",
                     more: JSON.stringify({
                             wallet: provider.wallet.publicKey.toString(),
-                            collected: collected
+                            collected: collected,
+                            featuredCreators
                         }
                     )
                 }

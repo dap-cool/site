@@ -9,14 +9,9 @@ export interface FeaturedCreator {
     metadata: CreatorMetadata
 }
 
-export async function fetch(app, program: Program<DapCool>): Promise<void> {
-    const fetched = await Promise.all(
-        FEATURED_CREATORS.map( async (handle) =>
-            await _fetch(
-                program,
-                handle
-            )
-        )
+export async function init(app, program: Program<DapCool>): Promise<void> {
+    const fetched = await fetch(
+        program
     );
     app.ports.success.send(
         JSON.stringify(
@@ -26,6 +21,17 @@ export async function fetch(app, program: Program<DapCool>): Promise<void> {
                     fetched
                 )
             }
+        )
+    );
+}
+
+export async function fetch(program: Program<DapCool>): Promise<FeaturedCreator[]> {
+    return await Promise.all(
+        FEATURED_CREATORS.map(async (handle) =>
+            await _fetch(
+                program,
+                handle
+            )
         )
     );
 }

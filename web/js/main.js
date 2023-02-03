@@ -64,7 +64,7 @@ export async function main(app, json) {
             // get provider & program
             const pp = getEphemeralPP();
             // invoke method
-            await FeaturedCreators.fetch(
+            await FeaturedCreators.init(
                 app,
                 pp.programs.dap
             );
