@@ -4,6 +4,7 @@ import {DapCool} from "../idl/dap";
 import {deriveCreatorPda} from "../pda/creator-pda";
 import {deriveCollectorPda, getAllCollectionPda, getCollectorPda} from "../pda/collector-pda";
 import {getManyAuthorityPdaForCollector} from "../pda/authority-pda";
+import * as FeaturedCreators from "./../../shdw/creator/featured-creators";
 
 export async function initNewHandle(
     app,
@@ -44,6 +45,10 @@ export async function initNewHandle(
         console.log("could not find collector on-chain");
         collected = [];
     }
+    // fetch featured creators
+    const featuredCreators = await FeaturedCreators.fetch(
+        programs.dap
+    );
     // send success
     app.ports.success.send(
         JSON.stringify(
@@ -55,7 +60,8 @@ export async function initNewHandle(
                         wallet: provider.wallet.publicKey.toString(),
                         collections: [],
                         collected: collected,
-                        metadata: null
+                        metadata: null,
+                        featuredCreators
                     }
                 )
             }
