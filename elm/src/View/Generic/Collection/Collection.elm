@@ -1,5 +1,7 @@
 module View.Generic.Collection.Collection exposing (view, viewMany)
 
+import FormatNumber
+import FormatNumber.Locales exposing (usLocale)
 import Html exposing (Html)
 import Html.Attributes exposing (class, id, src, style)
 import Model.Collection as Collection exposing (Collection)
@@ -9,13 +11,23 @@ import Msg.Msg exposing (Msg(..))
 view : Collection -> Html Msg
 view collection =
     let
-        nop : Html msg
-        nop =
+        body : Html msg
+        body =
             Html.div
                 []
-                []
+                [ Html.div
+                    [ class "is-light-text-container-5 is-size-5 is-light-text-container-7-mobile is-size-7-mobile has-text-centered"
+                    ]
+                    [ Html.text <|
+                        String.concat
+                            [ "$USDC"
+                            , " "
+                            , FormatNumber.format usLocale ((Basics.toFloat collection.math.price / 1000000))
+                            ]
+                    ]
+                ]
     in
-    view_ collection nop
+    view_ collection body
 
 
 viewMany : List Collection -> (Collection -> Html Msg) -> Html Msg

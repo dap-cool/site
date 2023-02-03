@@ -1,5 +1,7 @@
 module View.Generic.Collection.Collector.Collector exposing (view, viewMany)
 
+import FormatNumber
+import FormatNumber.Locales exposing (usLocale)
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -46,8 +48,7 @@ select collection =
                     []
                     [ Html.text <|
                         String.concat
-                            [ String.fromFloat <|
-                                (Basics.toFloat collection.math.price / 1000000)
+                            [ FormatNumber.format usLocale ((Basics.toFloat collection.math.price / 1000000))
                             , " "
                             , "USDC"
                             ]
