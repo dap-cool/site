@@ -1,5 +1,7 @@
 import {PublicKey} from "@solana/web3.js";
 import * as DapSdk from "@dap-cool/sdk";
+import {ShdwDrive} from "@shadow-drive/sdk";
+import {version} from "../config";
 
 export interface CreatorMetadata {
     url: PublicKey
@@ -28,6 +30,7 @@ export async function getMetadata(url: PublicKey): Promise<CreatorMetadata> {
     const url_ = DapSdk.buildUrl(
         url
     );
+    console.log(url_);
     const fetched = await fetch(url_ + "meta.json")
         .then(response => response.json());
     let logo;
@@ -40,4 +43,19 @@ export async function getMetadata(url: PublicKey): Promise<CreatorMetadata> {
         logo: logo,
         banner: fetched.banner
     }
+}
+
+export async function editMetadata(metadata: CreatorMetadata, drive: ShdwDrive): Promise<void> {
+    const url = DapSdk.buildUrl(
+        metadata.url
+    ) + "meta.json";
+    const encoded = encode(
+        metadata
+    );
+    await drive.editFile(
+        metadata.url,
+        url,
+        encoded,
+        version
+    );
 }

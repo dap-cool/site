@@ -3,7 +3,7 @@ import {DapCool} from "../../idl/dap";
 import {deriveCreatorPda, getCreatorPda} from "../../pda/creator-pda";
 import {getHandlePda} from "../../pda/handle-pda";
 import * as DapSdk from "@dap-cool/sdk";
-import {encode} from "../../../shdw/creator/creator-metadata";
+import {CreatorMetadata, editMetadata} from "../../../shdw/creator/creator-metadata";
 import {getGlobal} from "../../pda/get-global";
 
 interface Bio {
@@ -35,18 +35,15 @@ export async function uploadBio(
         provider.connection,
         provider.wallet
     );
-    const metadata = encode(
-        {
-            url: handle.metadata.url,
-            bio: bio.bio,
-            logo: handle.metadata.logo,
-            banner: handle.metadata.banner
-        }
-    )
-    await DapSdk.uploadFile(
+    const metadata = {
+        url: handle.metadata.url,
+        bio: bio.bio,
+        logo: handle.metadata.logo,
+        banner: handle.metadata.banner
+    } as CreatorMetadata;
+    await editMetadata(
         metadata,
-        client,
-        handle.metadata.url
+        client
     );
     await getGlobal(
         app,
