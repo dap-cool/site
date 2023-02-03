@@ -525,20 +525,9 @@ body collector =
                                                 ]
                                                 [ View.Generic.Collection.Collector.Collector.view selected
                                                 , Html.div
-                                                    []
-                                                    [ purchase
+                                                    [ class "mt-2"
                                                     ]
-                                                , Html.div
-                                                    []
-                                                    [ Html.button
-                                                        [ class "is-light-text-container-4 mr-2"
-                                                        , onClick <| Msg.Global FromGlobal.Connect
-                                                        ]
-                                                        [ Html.text "Connect Wallet"
-                                                        ]
-                                                    , Html.text
-                                                        """ to unlock if you've already purchased.
-                                                        """
+                                                    [ purchase
                                                     ]
                                                 ]
                                             , Html.div
@@ -564,19 +553,28 @@ body collector =
                                                         [ class "column is-half"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
-                                                        , Html.text
-                                                            """It looks like you already have a positive token balance
-                                                            for this collection 👀
-                                                            """
                                                         , Html.div
-                                                            []
-                                                            [ Html.button
-                                                                []
-                                                                [ Html.text "Declare"
-                                                                ]
-                                                            , Html.text
-                                                                """ as an official collector to start unlocking stuff 😎
-                                                                """
+                                                            [ class "notification is-info is-light mt-3 is-family-secondary"
+                                                            ]
+                                                            [ Html.div
+                                                                    [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
+                                                                    ]
+                                                                    [ Html.text
+                                                                        """It looks like you already have a positive token balance
+                                                                        for this collection 👀
+                                                                        """
+                                                                    ]
+                                                                , Html.div
+                                                                    [ class "mt-2 is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
+                                                                    ]
+                                                                    [ Html.button
+                                                                        []
+                                                                        [ Html.text "Declare"
+                                                                        ]
+                                                                    , Html.text
+                                                                        """ as an official collector to start unlocking stuff 😎
+                                                                        """
+                                                                    ]
                                                             ]
                                                         ]
                                                     , Html.div
@@ -601,7 +599,8 @@ body collector =
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
                                                         , Html.div
-                                                            []
+                                                            [ class "mt-2"
+                                                            ]
                                                             [ purchase
                                                             ]
                                                         ]
