@@ -36,7 +36,7 @@ export async function fetch(program: Program<DapCool>): Promise<FeaturedCreator[
     );
 }
 
-export async function _fetch(program: Program<DapCool>, handle: string): Promise<FeaturedCreator> {
+async function _fetch(program: Program<DapCool>, handle: string): Promise<FeaturedCreator> {
     const handlePda = await deriveHandlePda(
         program,
         handle
