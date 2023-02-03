@@ -554,10 +554,10 @@ body collector =
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
                                                         , Html.div
-                                                            [ class "notification is-info is-light mt-3 is-family-secondary"
+                                                            [ class "px-3 py-3 is-collection-footer mt-3 is-family-secondary"
                                                             ]
                                                             [ Html.div
-                                                                    [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
+                                                                    [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
                                                                     ]
                                                                     [ Html.text
                                                                         """It looks like you already have a positive token balance
@@ -565,7 +565,7 @@ body collector =
                                                                         """
                                                                     ]
                                                                 , Html.div
-                                                                    [ class "mt-2 is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
+                                                                    [ class "mt-2 is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
                                                                     ]
                                                                     [ Html.button
                                                                         []
