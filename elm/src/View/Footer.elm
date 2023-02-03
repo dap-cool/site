@@ -32,6 +32,20 @@ view =
             ]
             [ Html.a
                 [ class "icon is-medium"
+                , href "https://twitter.com/bigtimetapin"
+                , target "_blank"
+                ]
+                [ Html.i
+                    [ class "fab fa-sm fa-twitter"
+                    ]
+                    []
+                ]
+            ]
+        , Html.div
+            [ class "level-item"
+            ]
+            [ Html.a
+                [ class "icon is-medium"
                 , href "mailto:bigtimetapin@gmail.com"
                 , target "_blank"
                 ]
