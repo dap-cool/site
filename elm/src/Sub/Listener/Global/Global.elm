@@ -1,11 +1,15 @@
 module Sub.Listener.Global.Global exposing (ToGlobal(..), fromString)
 
 
-type ToGlobal
+type
+    ToGlobal
+    -- wallet
     = DisconnectWallet
     | FoundMissingWalletPlugin -- no browser plugin installed
     | FoundWallet
     | FoundWalletAndHandle
+      -- featured creators
+    | FetchedFeaturesCreators
 
 
 fromString : String -> Maybe ToGlobal
@@ -22,6 +26,9 @@ fromString string =
 
         "global-found-wallet-and-handle" ->
             Just FoundWalletAndHandle
+
+        "global-fetched-featured-creators" ->
+            Just FetchedFeaturesCreators
 
         _ ->
             Nothing

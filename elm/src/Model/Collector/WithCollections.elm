@@ -1,4 +1,4 @@
-module Model.Collector.WithCollections exposing (WithCollections, decode)
+module Model.Collector.WithCollections exposing (WithCollections, decode, decoder)
 
 import Json.Decode as Decode
 import Model.Collection as Collection exposing (Collection)
@@ -16,12 +16,12 @@ type alias WithCollections =
 
 decode : String -> Result String WithCollections
 decode string =
-    let
-        decoder : Decode.Decoder WithCollections
-        decoder =
-            Decode.map3 WithCollections
-                (Decode.field "handle" Decode.string)
-                (Decode.field "collections" <| Decode.list Collection.decoder)
-                CreatorMetadata.decoder
-    in
     Util.decode string decoder identity
+
+
+decoder : Decode.Decoder WithCollections
+decoder =
+    Decode.map3 WithCollections
+        (Decode.field "handle" Decode.string)
+        (Decode.field "collections" <| Decode.list Collection.decoder)
+        CreatorMetadata.decoder

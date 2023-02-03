@@ -6,6 +6,8 @@ type
     -- wallet
     = Connect
     | Disconnect
+      -- featured creators
+    | FetchFeaturedCreators
 
 
 toString : Global -> String
@@ -16,3 +18,6 @@ toString global =
 
         Disconnect ->
             "disconnect"
+
+        FetchFeaturedCreators ->
+            "fetch-featured-creators"

@@ -22,6 +22,7 @@ import {getUploads, unlockUpload, upload} from "./anchor/pda/datum-pda";
 import {initCreatorMetadata} from "./anchor/methods/creator-metadata/init-creator-metadata";
 import {uploadLogo} from "./anchor/methods/creator-metadata/upload-logo";
 import {uploadBio} from "./anchor/methods/creator-metadata/upload-bio";
+import * as FeaturedCreators from "./shdw/creator/featured-creators";
 
 // init phantom
 let phantom = null;
@@ -57,6 +58,15 @@ export async function main(app, json) {
                         listener: "global-disconnect-wallet"
                     }
                 )
+            );
+            // or fetch featured creators
+        } else if (sender === "fetch-featured-creators") {
+            // get provider & program
+            const pp = getEphemeralPP();
+            // invoke method
+            await FeaturedCreators.fetch(
+                app,
+                pp.programs.dap
             );
             // or new creator confirm handle
         } else if (sender === "new-creator-confirm-handle") {
@@ -268,7 +278,7 @@ export async function main(app, json) {
                                     {
                                         handle: validated,
                                         collections: collections,
-                                        metadata: null // TODO
+                                        metadata: handle.metadata
                                     }
                                 )
                             }

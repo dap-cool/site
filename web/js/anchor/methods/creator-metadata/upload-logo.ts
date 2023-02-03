@@ -1,7 +1,7 @@
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import * as DapSdk from "@dap-cool/sdk";
 import {DapCool} from "../../idl/dap";
-import {Logo, encode} from "./metadata";
+import {Logo, encode} from "../../../shdw/creator/creator-metadata";
 import {deriveCreatorPda, getCreatorPda} from "../../pda/creator-pda";
 import {getHandlePda} from "../../pda/handle-pda";
 import {compressImage, dataUrlToBlob} from "../../../util/blob-util";

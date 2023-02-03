@@ -16,7 +16,7 @@ import {
     MPL_TOKEN_METADATA_PROGRAM_ID, SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
     SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
-import {buildMetaData, encodeFileType} from "../../shdw/shdw";
+import {buildMetaData, encodeFileType} from "../../shdw/collection/collection-metadata";
 import {DapCool} from "../idl/dap";
 import {dataUrlToBlob, getFileTypeFromBlob} from "../../util/blob-util";
 

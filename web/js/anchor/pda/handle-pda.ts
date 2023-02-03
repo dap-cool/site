@@ -1,7 +1,6 @@
 import {PublicKey} from "@solana/web3.js";
 import {Program} from "@project-serum/anchor";
-import * as DapSdk from "@dap-cool/sdk";
-import * as CreatorMetadata from "../methods/creator-metadata/metadata";
+import * as CreatorMetadata from "../../shdw/creator/creator-metadata";
 import {DapCool} from "../idl/dap";
 
 export interface HandlePda {
@@ -13,8 +12,7 @@ export interface Handle {
     handle: string
     authority: PublicKey
     numCollections: number
-    metadata: CreatorMetadata
-        .Metadata | null
+    metadata: CreatorMetadata.CreatorMetadata | null
     pinned: Pinned
 }
 

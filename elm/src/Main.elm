@@ -23,6 +23,7 @@ import Model.File as File
 import Model.Handle as Handle
 import Model.Model as Model exposing (Model)
 import Model.State.Exception.Exception as Exception
+import Model.State.Global.FeaturedCreators as FeaturedCreators
 import Model.State.Global.Global as Global
 import Model.State.Global.HasWallet as HasWallet
 import Model.State.Global.HasWalletAndHandle as HasWalletAndHandle
@@ -1256,7 +1257,8 @@ update msg model =
                                                     ( { model
                                                         | state =
                                                             { local = local
-                                                            , global = Global.NoWalletYet
+                                                            , global = Global.NoWalletYet <|
+                                                                Global.getFeaturedCreators model.state.global
                                                             , exception = Exception.Closed
                                                             }
                                                       }
@@ -1268,7 +1270,8 @@ update msg model =
                                                     ( { model
                                                         | state =
                                                             { local = model.state.local
-                                                            , global = Global.WalletMissing
+                                                            , global = Global.WalletMissing <|
+                                                                Global.getFeaturedCreators model.state.global
                                                             , exception = Exception.Closed
                                                             }
                                                       }
@@ -1506,6 +1509,40 @@ update msg model =
                                                                     )
                                                     in
                                                     Listener.decode2 model json HasWalletAndHandle.decode f
+
+                                                ToGlobal.FetchedFeaturesCreators ->
+                                                    let
+                                                        global featuredCreators =
+                                                            case model.state.global of
+                                                                Global.NoWalletYet _ ->
+                                                                    Global.NoWalletYet featuredCreators
+
+
+                                                                Global.WalletMissing _ ->
+                                                                    Global.WalletMissing featuredCreators
+
+
+                                                                Global.HasWallet hasWallet ->
+                                                                    Global.HasWallet
+                                                                        { hasWallet | featuredCreators = featuredCreators }
+
+
+                                                                Global.HasWalletAndHandle hasWalletAndHandle ->
+                                                                    Global.HasWalletAndHandle
+                                                                        { hasWalletAndHandle | featuredCreators = featuredCreators }
+
+                                                        f featuredCreators =
+                                                            { model
+                                                                | state =
+                                                                    { local = model.state.local
+                                                                    , global = global featuredCreators
+                                                                    , exception = Exception.Closed
+                                                                    }
+                                                            }
+
+                                                    in
+                                                    Listener.decode model json FeaturedCreators.decode f
+
 
                                 -- undefined role
                                 Nothing ->

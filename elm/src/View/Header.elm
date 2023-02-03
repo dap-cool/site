@@ -74,7 +74,7 @@ view global =
 viewWallet : Global -> Html Msg
 viewWallet global =
     case global of
-        NoWalletYet ->
+        NoWalletYet _ ->
             Html.button
                 [ class "is-button-2 is-light-text-container-4"
                 , onClick <| Msg.Global FromGlobal.Connect
@@ -82,7 +82,7 @@ viewWallet global =
                 [ Html.text "Connect Wallet"
                 ]
 
-        WalletMissing ->
+        WalletMissing _ ->
             Html.div
                 []
                 []
@@ -131,12 +131,12 @@ viewWallet global =
 viewGlobal : Global -> Html Msg
 viewGlobal global =
     case global of
-        NoWalletYet ->
+        NoWalletYet _ ->
             Html.div
                 []
                 []
 
-        WalletMissing ->
+        WalletMissing _ ->
             Html.div
                 []
                 [ Html.text "no-wallet-installed"

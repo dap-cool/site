@@ -3,7 +3,7 @@ import {DapCool} from "../../idl/dap";
 import {deriveCreatorPda, getCreatorPda} from "../../pda/creator-pda";
 import {getHandlePda} from "../../pda/handle-pda";
 import * as DapSdk from "@dap-cool/sdk";
-import {encode} from "./metadata";
+import {encode} from "../../../shdw/creator/creator-metadata";
 import {getGlobal} from "../../pda/get-global";
 
 interface Bio {

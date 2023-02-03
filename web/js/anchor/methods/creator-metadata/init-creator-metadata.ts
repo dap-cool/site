@@ -1,6 +1,6 @@
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import * as DapSdk from "@dap-cool/sdk";
-import * as CreatorMetadata from "./metadata";
+import * as CreatorMetadata from "../../../shdw/creator/creator-metadata";
 import {DapCool} from "../../idl/dap";
 import {deriveAtaPda, RawSplTokenAccount} from "../../pda/get-token-account";
 import {SHDW, SHDW_DECIMALS} from "../../util/constants";

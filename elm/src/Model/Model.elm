@@ -9,6 +9,7 @@ import Model.State.Global.Global as Global
 import Model.State.Local.Local as Local exposing (Local)
 import Model.State.State exposing (State)
 import Msg.Collector.Collector as FromCollector
+import Msg.Global as FromGlobal
 import Msg.Msg exposing (Msg(..))
 import Sub.Sender.Ports exposing (sender)
 import Sub.Sender.Sender as Sender
@@ -33,33 +34,46 @@ init _ url key =
         model =
             { state =
                 { local = local
-                , global = Global.default
-                , exception = Exception.Closed
+                , global = Global.NoWalletYet []
+                , exception = Exception.Waiting
                 }
             , url = url
             , key = key
             }
+
+        fetchFeaturedCreators : Cmd msg
+        fetchFeaturedCreators =
+            sender <|
+                Sender.encode0 <|
+                    Sender.Global <|
+                        FromGlobal.FetchFeaturedCreators
     in
     case local of
         Local.Collect (Collector.MaybeExistingCreator handle) ->
             ( model
-            , sender <|
-                Sender.encode <|
-                    { sender = Sender.Collect <| FromCollector.SearchCreator handle
-                    , more = Handle.encode handle
-                    }
+            , Cmd.batch
+                [ fetchFeaturedCreators
+                , sender <|
+                    Sender.encode <|
+                        { sender = Sender.Collect <| FromCollector.SearchCreator handle
+                        , more = Handle.encode handle
+                        }
+                ]
             )
 
         Local.Collect (Collector.MaybeExistingCollection handle index) ->
             ( model
-            , sender <|
-                Sender.encode <|
-                    { sender = Sender.Collect <| FromCollector.SelectCollection handle index
-                    , more = AlmostExistingCollection.encode { handle = handle, index = index }
-                    }
+            , Cmd.batch
+                [ fetchFeaturedCreators
+                , sender <|
+                    Sender.encode <|
+                        { sender = Sender.Collect <| FromCollector.SelectCollection handle index
+                        , more = AlmostExistingCollection.encode { handle = handle, index = index }
+                        }
+                ]
             )
 
         _ ->
             ( model
-            , Cmd.none
+            , fetchFeaturedCreators
             )

@@ -1,7 +1,7 @@
 import {PublicKey} from "@solana/web3.js";
 import * as DapSdk from "@dap-cool/sdk";
 
-export interface Metadata {
+export interface CreatorMetadata {
     url: PublicKey
     bio: string | null
     logo: string | null
@@ -13,7 +13,7 @@ export interface Logo {
     dataUrl: string
 }
 
-export function encode(metadata: Metadata): File {
+export function encode(metadata: CreatorMetadata): File {
     const json = JSON.stringify(metadata);
     const textEncoder = new TextEncoder();
     const bytes = textEncoder.encode(json);
@@ -23,7 +23,7 @@ export function encode(metadata: Metadata): File {
     return new File([blob], "meta.json");
 }
 
-export async function getMetadata(url: PublicKey): Promise<Metadata> {
+export async function getMetadata(url: PublicKey): Promise<CreatorMetadata> {
     console.log("fetching creator meta-data");
     const url_ = DapSdk.buildUrl(
         url
