@@ -1,7 +1,7 @@
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import * as DapSdk from "@dap-cool/sdk";
 import {DapCool} from "../../idl/dap";
-import {Logo, encode} from "../../../shdw/creator/creator-metadata";
+import {Logo, editMetadata} from "../../../shdw/creator/creator-metadata";
 import {deriveCreatorPda, getCreatorPda} from "../../pda/creator-pda";
 import {getHandlePda} from "../../pda/handle-pda";
 import {compressImage, dataUrlToBlob} from "../../../util/blob-util";
@@ -45,21 +45,20 @@ export async function uploadLogo(
             type: blob.type
         }
     );
-    const metadata = encode(
-        {
-            url: handle.metadata.url,
-            bio: handle.metadata.bio,
-            logo: file.name,
-            banner: handle.metadata.banner
-        }
-    )
-    await DapSdk.uploadMultipleFiles(
-        [
-            file,
-            metadata
-        ],
+    const metadata = {
+        url: handle.metadata.url,
+        bio: handle.metadata.bio,
+        logo: file.name,
+        banner: handle.metadata.banner
+    };
+    await DapSdk.uploadFile(
+        file,
         client,
         handle.metadata.url
+    );
+    await editMetadata(
+        metadata,
+        client
     );
     await getGlobal(
         app,
