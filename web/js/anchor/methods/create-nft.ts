@@ -17,6 +17,7 @@ import {
     SPL_TOKEN_PROGRAM_ID
 } from "../util/constants";
 import {buildMetaData, encodeFileType} from "../../shdw/collection/collection-metadata";
+import * as FeaturedCreators from "../../shdw/creator/featured-creators";
 import {DapCool} from "../idl/dap";
 import {dataUrlToBlob, getFileTypeFromBlob} from "../../util/blob-util";
 
@@ -84,6 +85,10 @@ export async function creatNft(
     }
     // increment authority index
     const authorityIndex: number = handle.numCollections + 1;
+    // fetch featured creators
+    const featuredCreators = await FeaturedCreators.fetch(
+      programs.dap
+    );
     // kick off upload steps
     if (form.step === 1) {
         try {
@@ -113,7 +118,8 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
-                                    metadata: handle.metadata
+                                    metadata: handle.metadata,
+                                    featuredCreators
                                 },
                                 form: form
                             }
@@ -137,7 +143,8 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
-                                    metadata: handle.metadata
+                                    metadata: handle.metadata,
+                                    featuredCreators
                                 },
                                 form: form
                             }
@@ -201,7 +208,8 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
-                                    metadata: handle.metadata
+                                    metadata: handle.metadata,
+                                    featuredCreators
                                 },
                                 form: form
                             }
@@ -226,7 +234,8 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
-                                    metadata: handle.metadata
+                                    metadata: handle.metadata,
+                                    featuredCreators
                                 },
                                 form: form
                             }
@@ -389,7 +398,8 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
-                                    metadata: handle.metadata
+                                    metadata: handle.metadata,
+                                    featuredCreators
                                 },
                                 collection: justCreated
                             }
@@ -413,7 +423,8 @@ export async function creatNft(
                                     wallet: provider.wallet.publicKey.toString(),
                                     collections: collections,
                                     collected: collected,
-                                    metadata: handle.metadata
+                                    metadata: handle.metadata,
+                                    featuredCreators
                                 },
                                 form: form
                             }

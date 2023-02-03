@@ -23,6 +23,7 @@ import {
 import {deriveCreatorPda, getCreatorPda} from "../pda/creator-pda";
 import {getUploads} from "../pda/datum-pda";
 import {deriveBossPda, getBossPda} from "../pda/boss-pda";
+import * as FeaturedCreators from "../../shdw/creator/featured-creators";
 
 export async function mintNewCopy(
     app,
@@ -224,6 +225,10 @@ export async function mintNewCopy(
                 collectorArray = collectorArray.concat([lastCollectedAuthority]);
             }
         }
+        // fetch featured creators
+        const featuredCreators = await FeaturedCreators.fetch(
+            programs.dap
+        );
         // fetch collections & set global
         let global;
         try {
@@ -249,13 +254,15 @@ export async function mintNewCopy(
                 wallet: provider.wallet.publicKey.toString(),
                 collections: collections,
                 collected: collectorArray,
-                metadata: fetchedHandle.metadata
+                metadata: fetchedHandle.metadata,
+                featuredCreators
             };
         } catch (error) {
             console.log("could not find creator on-chain");
             global = {
                 wallet: provider.wallet.publicKey.toString(),
-                collected: collectorArray
+                collected: collectorArray,
+                featuredCreators
             }
         }
         // send success to elm
