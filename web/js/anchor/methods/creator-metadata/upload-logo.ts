@@ -6,6 +6,7 @@ import {deriveCreatorPda, getCreatorPda} from "../../pda/creator-pda";
 import {getHandlePda} from "../../pda/handle-pda";
 import {compressImage, dataUrlToBlob} from "../../../util/blob-util";
 import {getGlobal} from "../../pda/get-global";
+import {version} from "../../../shdw/config";
 
 export async function uploadLogo(
     app,
@@ -55,6 +56,11 @@ export async function uploadLogo(
         file,
         client,
         handle.metadata.url
+    );
+    await client.deleteFile(
+        handle.metadata.url,
+        handle.metadata.logo,
+        version
     );
     await editMetadata(
         metadata,
