@@ -34,6 +34,27 @@ export type DapCool = {
       ]
     },
     {
+      "name": "initCreatorMetadata",
+      "accounts": [
+        {
+          "name": "handle",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "metadata",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
       "name": "createNft",
       "accounts": [
         {
@@ -428,6 +449,12 @@ export type DapCool = {
             "type": "u8"
           },
           {
+            "name": "metadata",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
             "name": "pinned",
             "type": {
               "defined": "Pinned"
@@ -503,11 +530,16 @@ export type DapCool = {
     },
     {
       "code": 6001,
+      "name": "CreatorMetadataAlreadyProvisioned",
+      "msg": "Creator metadata has already been provisioned. Edit, instead."
+    },
+    {
+      "code": 6002,
       "name": "CreatorDistributionTooLarge",
       "msg": "Creator distribution must be smaller than total supply."
     },
     {
-      "code": 6002,
+      "code": 6003,
       "name": "SoldOut",
       "msg": "Primary sale is sold out. Check secondary markets."
     }
@@ -550,6 +582,27 @@ export const IDL: DapCool = {
       ]
     },
     {
+      "name": "initCreatorMetadata",
+      "accounts": [
+        {
+          "name": "handle",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "metadata",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
       "name": "createNft",
       "accounts": [
         {
@@ -944,6 +997,12 @@ export const IDL: DapCool = {
             "type": "u8"
           },
           {
+            "name": "metadata",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
             "name": "pinned",
             "type": {
               "defined": "Pinned"
@@ -1019,11 +1078,16 @@ export const IDL: DapCool = {
     },
     {
       "code": 6001,
+      "name": "CreatorMetadataAlreadyProvisioned",
+      "msg": "Creator metadata has already been provisioned. Edit, instead."
+    },
+    {
+      "code": 6002,
       "name": "CreatorDistributionTooLarge",
       "msg": "Creator distribution must be smaller than total supply."
     },
     {
-      "code": 6002,
+      "code": 6003,
       "name": "SoldOut",
       "msg": "Primary sale is sold out. Check secondary markets."
     }
