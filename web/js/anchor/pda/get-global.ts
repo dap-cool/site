@@ -28,7 +28,6 @@ export async function getGlobal(
     const featuredCreators = await FeaturedCreators.fetch(
         programs.dap
     );
-    console.log(featuredCreators);
     // get all collections collected by collector
     let collected: CollectionAuthority[];
     try {
