@@ -31,8 +31,12 @@ export async function getMetadata(url: PublicKey): Promise<CreatorMetadata> {
         url
     );
     console.log(url_);
-    const fetched = await fetch(url_ + "meta.json")
-        .then(response => response.json());
+    const fetched = await fetch(
+        url_ + "meta.json",
+        {cache: "no-cache"}
+    ).then(
+        response => response.json()
+    );
     let logo;
     if (fetched.logo) {
         logo = url_ + fetched.logo;
