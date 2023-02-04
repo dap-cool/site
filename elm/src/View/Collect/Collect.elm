@@ -555,27 +555,109 @@ body collector =
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
                                                         , Html.div
-                                                            [ class "px-3 py-3 is-collection-footer mt-3 is-family-secondary"
+                                                            [ class "mt-2 px-3 py-3"
                                                             ]
                                                             [ Html.div
-                                                                    [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                [ class "table-container"
+                                                                ]
+                                                                [ Html.table
+                                                                    [ class "table is-fullwidth"
                                                                     ]
-                                                                    [ Html.text
-                                                                        """It looks like you already have a positive token balance
-                                                                        for this collection 👀
-                                                                        """
-                                                                    ]
-                                                                , Html.div
-                                                                    [ class "mt-2 is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
-                                                                    ]
-                                                                    [ Html.button
+                                                                    [ Html.thead
                                                                         []
-                                                                        [ Html.text "Declare"
+                                                                        [ Html.tr
+                                                                            []
+                                                                            [ Html.th
+                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                ]
+                                                                                [ Html.text
+                                                                                    """almost an official collector \u{1FAE1}
+                                                                                    """
+                                                                                ]
+                                                                            ]
                                                                         ]
-                                                                    , Html.text
-                                                                        """ as an official collector to start unlocking stuff 😎
-                                                                        """
+                                                                    , Html.tbody
+                                                                        []
+                                                                        [ Html.tr
+                                                                            []
+                                                                            [ Html.th
+                                                                                [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.text
+                                                                                    """🪙 token
+                                                                                    """
+                                                                                ]
+                                                                            , Html.td
+                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.a
+                                                                                    [ class "has-sky-blue-text"
+                                                                                    , href <|
+                                                                                        String.concat
+                                                                                            [ "https://solscan.io/token/"
+                                                                                            , selected.accounts.mint
+                                                                                            ]
+                                                                                    , target "_blank"
+                                                                                    ]
+                                                                                    [ Html.text <|
+                                                                                        Wallet.slice selected.accounts.mint
+                                                                                    ]
+                                                                                ]
+                                                                            ]
+                                                                        , Html.tr
+                                                                            []
+                                                                            [ Html.th
+                                                                                [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.text
+                                                                                    """💰 token balance
+                                                                                    """
+                                                                                ]
+                                                                            , Html.td
+                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.a
+                                                                                    [ class "has-sky-blue-text"
+                                                                                    , href <|
+                                                                                        String.concat
+                                                                                            [ "https://solscan.io/account/"
+                                                                                            , selected.accounts.ata.address
+                                                                                            ]
+                                                                                    , target "_blank"
+                                                                                    ]
+                                                                                    [ Html.text <|
+                                                                                        String.fromInt selected.accounts.ata.balance
+                                                                                    ]
+                                                                                ]
+                                                                            ]
+                                                                        , Html.tr
+                                                                            []
+                                                                            [ Html.th
+                                                                                [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.text
+                                                                                    """🛄 keys to unlock stuff
+                                                                                    """
+                                                                                ]
+                                                                            , Html.td
+                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.button
+                                                                                    [ class "is-button-2"
+                                                                                    ]
+                                                                                    [ Html.text "claim"
+                                                                                    ]
+                                                                                ]
+                                                                            ]
+                                                                        ]
                                                                     ]
+                                                                ]
                                                             ]
                                                         ]
                                                     , Html.div
