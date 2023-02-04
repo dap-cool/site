@@ -6,6 +6,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (accept, class, default, href, id, multiple, placeholder, src, step, style, target, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
+import Model.Collector.Collector as Collector
 import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.BioForm as BioForm exposing (BioForm)
 import Model.Creator.Existing.Existing as Existing
@@ -16,6 +17,7 @@ import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.Handle as Handle
 import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
 import Model.State.Local.Local as Local
+import Model.Wallet as Wallet
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
@@ -818,6 +820,118 @@ body creator =
                                     [ class "mt-3"
                                     ]
                                     [ View.Generic.Collection.Creator.Creator.view collection
+                                    ]
+                                , Html.div
+                                    [ class "mt-3"
+                                    ]
+                                    [ Html.div
+                                        [ class "table-container"
+                                        ]
+                                        [ Html.table
+                                            [ class "table is-fullwidth"
+                                            ]
+                                            [ Html.thead
+                                                []
+                                                [ Html.tr
+                                                    []
+                                                    [ Html.th
+                                                        []
+                                                        []
+                                                    ]
+                                                ]
+                                            , Html.tbody
+                                                []
+                                                [ Html.tr
+                                                    []
+                                                    [ Html.th
+                                                        [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.text
+                                                            """\u{1FA99} token
+                                                            """
+                                                        ]
+                                                    , Html.td
+                                                        [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.a
+                                                            [ class "has-sky-blue-text"
+                                                            , href <|
+                                                                String.concat
+                                                                    [ "https://solscan.io/token/"
+                                                                    , collection.accounts.mint
+                                                                    ]
+                                                            , target "_blank"
+                                                            ]
+                                                            [ Html.text <|
+                                                                Wallet.slice collection.accounts.mint
+                                                            ]
+                                                        ]
+                                                    ]
+                                                , Html.tr
+                                                    []
+                                                    [ Html.th
+                                                        [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.text
+                                                            """💰 token balance
+                                                            """
+                                                        ]
+                                                    , Html.td
+                                                        [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.a
+                                                            [ class "has-sky-blue-text"
+                                                            , href <|
+                                                                String.concat
+                                                                    [ "https://solscan.io/account/"
+                                                                    , collection.accounts.ata.address
+                                                                    ]
+                                                            , target "_blank"
+                                                            ]
+                                                            [ Html.text <|
+                                                                String.fromInt collection.accounts.ata.balance
+                                                            ]
+                                                        ]
+                                                    ]
+                                                , Html.tr
+                                                    []
+                                                    [ Html.th
+                                                        [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.text
+                                                            """🔎 view as collector
+                                                            """
+                                                        ]
+                                                    , Html.td
+                                                        [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.a
+                                                            [ class "has-sky-blue-text"
+                                                            , Local.href <|
+                                                                Local.Collect <|
+                                                                    Collector.MaybeExistingCollection
+                                                                        collection.meta.handle
+                                                                        collection.meta.index
+                                                            ]
+                                                            [ Html.text <|
+                                                                String.concat
+                                                                    [ "dap.cool/#/"
+                                                                    , collection.meta.handle
+                                                                    , "/"
+                                                                    , String.fromInt collection.meta.index
+                                                                    ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
                                     ]
                                 , Html.div
                                     [ class "mt-3"
