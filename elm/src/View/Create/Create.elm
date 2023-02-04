@@ -1271,7 +1271,6 @@ body creator =
                                         ]
                                     ]
                                 ]
-
     in
     Html.div
         [ class "container"
