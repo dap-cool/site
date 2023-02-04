@@ -1157,11 +1157,7 @@ body creator =
                                                 ]
                                                 [ Html.text <|
                                                     String.concat
-                                                        [ "title"
-                                                        , " "
-                                                        , "➡️"
-                                                        , " "
-                                                        , "untitled"
+                                                        [ "untitled"
                                                         ]
                                                 ]
 
@@ -1171,10 +1167,7 @@ body creator =
                                                 ]
                                                 [ Html.text <|
                                                     String.concat
-                                                        [ "title"
-                                                        , "➡️"
-                                                        , " "
-                                                        , nes
+                                                        [ nes
                                                         ]
                                                 ]
 
@@ -1214,7 +1207,8 @@ body creator =
                                                 []
                                                 [ selector
                                                 , Html.div
-                                                    []
+                                                    [ class "mt-3"
+                                                    ]
                                                     [ title
                                                     , Html.div
                                                         []
