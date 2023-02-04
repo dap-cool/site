@@ -17,7 +17,7 @@ view featuredCreators =
         List.map
             (\fc ->
                 Html.div
-                    [ class "column is-half"
+                    [ class "column is-half-mobile is-one-third-tablet"
                     ]
                     [ view_ fc
                     ]
