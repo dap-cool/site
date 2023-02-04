@@ -380,7 +380,8 @@ export async function creatNft(
                     pda: authorityPda.address,
                     mint: mint.publicKey,
                     ata: {
-                        balance: form.meta.creatorDistribution
+                        balance: form.meta.creatorDistribution,
+                        address: mintAta
                     }
                 }
             } as CollectionAuthority;
