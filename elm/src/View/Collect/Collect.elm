@@ -143,7 +143,7 @@ body collector =
                                         [ Html.div
                                             [ class "mb-3 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
                                             ]
-                                            [ Html.text "Already collected ⬇️"
+                                            [ Html.text "Already collected"
                                             ]
                                         , View.Generic.Collection.Collector.Collector.viewMany
                                             intersection
@@ -157,17 +157,26 @@ body collector =
                                         []
 
                                 _ ->
-                                    Html.div
-                                        [ class "mt-5"
-                                        ]
-                                        [ Html.div
-                                            [ class "mb-3 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
-                                            ]
-                                            [ Html.text "Not collected yet ⬇️"
-                                            ]
-                                        , View.Generic.Collection.Collector.Collector.viewMany
-                                            remainder
-                                        ]
+                                    let
+                                        f title =
+                                            Html.div
+                                                [ class "mt-5"
+                                                ]
+                                                [ Html.div
+                                                    [ class "mb-3 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
+                                                    ]
+                                                    [ Html.text title
+                                                    ]
+                                                , View.Generic.Collection.Collector.Collector.viewMany
+                                                    remainder
+                                                ]
+                                    in
+                                    case intersection of
+                                        [] ->
+                                            f "collections"
+
+                                        _ ->
+                                            f "Not collected yet"
                     in
                     Html.div
                         []
