@@ -89,10 +89,6 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
   border-radius: 16px;
 }
 
-.is-featured-creator {
-  height: 325px;
-}
-
 .is-upload {
   border: 2px solid #FDF9EF;
   border-radius: 16px;
@@ -138,10 +134,6 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 .is-image-container-1, .is-image-container-3 {
   overflow: hidden;
   border-radius: 12px;
-}
-
-.is-image-container-3 {
-  height: 227px;
 }
 
 .is-image-container-2 {
@@ -324,11 +316,29 @@ $size-7: 12px;
   }
 }
 
+.is-featured-creator {
+  @include until($tablet) {
+    height: 183px;
+  }
+  @include from($tablet) {
+    height: 325px;
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // images //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 .is-image-container-1 {
   @include until($tablet) {
     height: 87px;
+  }
+  @include from($tablet) {
+    height: 227px;
+  }
+}
+
+.is-image-container-3 {
+  @include until($tablet) {
+    height: 127px;
   }
   @include from($tablet) {
     height: 227px;
