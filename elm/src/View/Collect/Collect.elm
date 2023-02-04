@@ -12,8 +12,7 @@ import Model.Handle exposing (Handle)
 import Model.State.Local.Local as Local
 import Model.Wallet as Wallet
 import Msg.Collector.Collector as CollectorMsg
-import Msg.Global as FromGlobal
-import Msg.Msg as Msg exposing (Msg(..))
+import Msg.Msg exposing (Msg(..))
 import View.Collect.FeaturedCreator
 import View.Generic.Collection.Collector.Collector
 import View.Generic.Collection.Header as Header
