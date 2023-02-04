@@ -290,29 +290,7 @@ body collector =
                                 True ->
                                     Html.div
                                         []
-                                        [ Html.div
-                                            []
-                                            [ Html.text
-                                                """Check out
-                                                """
-                                            , Html.a
-                                                [ class "has-sky-blue-text"
-                                                , href <|
-                                                    String.concat
-                                                        [ "https://hyperspace.xyz/token/"
-                                                        , selected.accounts.mint
-                                                        ]
-                                                , target "_blank"
-                                                ]
-                                                [ Html.text
-                                                    """this collection on hyperspace
-                                                    """
-                                                ]
-                                            , Html.text
-                                                """ to place your bid on the secondary market. 🤝
-                                                """
-                                            ]
-                                        ]
+                                        []
 
                                 False ->
                                     Html.button
@@ -331,29 +309,7 @@ body collector =
                                 True ->
                                     Html.div
                                         []
-                                        [ Html.div
-                                            []
-                                            [ Html.text
-                                                """Check out
-                                                """
-                                            , Html.a
-                                                [ class "has-sky-blue-text"
-                                                , href <|
-                                                    String.concat
-                                                        [ "https://hyperspace.xyz/token/"
-                                                        , selected.accounts.mint
-                                                        ]
-                                                , target "_blank"
-                                                ]
-                                                [ Html.text
-                                                    """this collection on hyperspace
-                                                    """
-                                                ]
-                                            , Html.text
-                                                """ to list or place your bid for another on the secondary market. 🤝
-                                                """
-                                            ]
-                                        ]
+                                        []
 
                                 False ->
                                     Html.button
