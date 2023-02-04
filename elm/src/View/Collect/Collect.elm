@@ -895,7 +895,7 @@ body collector =
                                                     ]
                                                 ]
 
-                                        ( Collector.Yes collected, Collector.Positive ) ->
+                                        ( Collector.Yes collected, _ ) ->
                                             Html.div
                                                 []
                                                 [ Html.div
@@ -1024,45 +1024,6 @@ body collector =
                                                         [ Html.div
                                                             []
                                                             [ uploads True
-                                                            ]
-                                                        ]
-                                                    ]
-                                                ]
-
-                                        ( Collector.Yes collected, Collector.Zero ) ->
-                                            Html.div
-                                                []
-                                                [ Html.div
-                                                    [ class "columns"
-                                                    ]
-                                                    [ Html.div
-                                                        [ class "column is-half"
-                                                        ]
-                                                        [ View.Generic.Collection.Collector.Collector.view collected
-                                                        , Html.div
-                                                            []
-                                                            [ Html.text
-                                                                """Welcome back official collector \u{1FAE1}
-                                                                """
-                                                            ]
-                                                        , Html.div
-                                                            []
-                                                            [ Html.text
-                                                                """It looks like you've sold or transferred your tokens here
-                                                                which means you can no longer unlock stuff.
-                                                                """
-                                                            ]
-                                                        , Html.div
-                                                            []
-                                                            [ purchaseAgain
-                                                            ]
-                                                        ]
-                                                    , Html.div
-                                                        [ class "column is-half"
-                                                        ]
-                                                        [ Html.div
-                                                            []
-                                                            [ uploads False
                                                             ]
                                                         ]
                                                     ]
