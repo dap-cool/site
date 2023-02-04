@@ -39,7 +39,7 @@ viewMany collections f =
         List.map
             (\c ->
                 Html.div
-                    [ class "column is-half"
+                    [ class "column is-half-mobile is-one-third-tablet"
                     ]
                     [ view_ c <| f c
                     ]
