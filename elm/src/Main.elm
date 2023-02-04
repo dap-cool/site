@@ -1247,7 +1247,7 @@ update msg model =
                                                                     Local.Collect <|
                                                                         Collector.SelectedCollection
                                                                             Collector.NotLoggedInYet
-                                                                            selected
+                                                                            (Collection.clear selected)
                                                                             cleared
                                                                             Nothing
 

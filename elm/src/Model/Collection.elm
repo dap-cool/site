@@ -1,4 +1,4 @@
-module Model.Collection exposing (Collection, Intersection, Remainder, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut)
+module Model.Collection exposing (Collection, Intersection, Remainder, clear, decode, decodeList, decoder, encode, encoder, find, intersection, isEmpty, isSoldOut)
 
 import Dict
 import Json.Decode as Decode
@@ -192,3 +192,15 @@ find collection list =
         )
         list
         |> List.head
+
+
+clear : Collection -> Collection
+clear collection =
+    let
+        accounts =
+            collection.accounts
+
+        cleared =
+            { accounts | ata = { balance = 0, address = accounts.ata.address } }
+    in
+    { collection | accounts = cleared }
