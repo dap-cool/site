@@ -27,7 +27,7 @@ view global =
                 [ Html.h1
                     []
                     [ Html.a
-                        [ Local.href <| Local.Collect (Collector.Top [])
+                        [ Local.href <| Local.Collect (Collector.Top [] [])
                         ]
                         [ Html.div
                             [ class "is-text-container-4"

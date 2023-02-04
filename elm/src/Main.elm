@@ -121,7 +121,7 @@ update msg model =
                             , Cmd.none
                             )
 
-                Local.Collect (Collector.Top _) ->
+                Local.Collect (Collector.Top _ _) ->
                     let
                         collected =
                             case model.state.global of
@@ -136,7 +136,11 @@ update msg model =
                     in
                     ( { model
                         | state =
-                            { local = Local.Collect <| Collector.Top collected
+                            { local =
+                                Local.Collect <|
+                                    Collector.Top
+                                        collected
+                                        (Global.getFeaturedCreators model.state.global)
                             , global = model.state.global
                             , exception = Exception.Closed
                             }
@@ -1227,8 +1231,8 @@ update msg model =
                                                                 Local.Create _ ->
                                                                     Local.Create <| Creator.New <| NewCreator.Top
 
-                                                                Local.Collect (Collector.Top _) ->
-                                                                    Local.Collect <| Collector.Top []
+                                                                Local.Collect (Collector.Top _ featuredCreators) ->
+                                                                    Local.Collect <| Collector.Top [] featuredCreators
 
                                                                 Local.Collect (Collector.SelectedCreator _ withCollections) ->
                                                                     Local.Collect <|
@@ -1329,7 +1333,7 @@ update msg model =
                                                                     , Cmd.none
                                                                     )
 
-                                                                Local.Collect (Collector.Top _) ->
+                                                                Local.Collect (Collector.Top _ featuredCreators) ->
                                                                     ( { model
                                                                         | state =
                                                                             bumpedLocal
@@ -1337,6 +1341,7 @@ update msg model =
                                                                                 (Local.Collect <|
                                                                                     Collector.Top
                                                                                         hasWallet.collected
+                                                                                        featuredCreators
                                                                                 )
                                                                                 False
                                                                       }
@@ -1445,7 +1450,7 @@ update msg model =
                                                                     , Cmd.none
                                                                     )
 
-                                                                Local.Collect (Collector.Top _) ->
+                                                                Local.Collect (Collector.Top _ featuredCreators) ->
                                                                     ( { model
                                                                         | state =
                                                                             bumpedLocal
@@ -1453,6 +1458,7 @@ update msg model =
                                                                                 (Local.Collect <|
                                                                                     Collector.Top
                                                                                         hasWalletAndHandle.collected
+                                                                                        featuredCreators
                                                                                 )
                                                                                 False
                                                                       }
@@ -1530,10 +1536,18 @@ update msg model =
                                                                     Global.HasWalletAndHandle
                                                                         { hasWalletAndHandle | featuredCreators = featuredCreators }
 
+                                                        local featuredCreators =
+                                                            case model.state.local of
+                                                                Local.Collect (Collector.Top collected _) ->
+                                                                    Local.Collect (Collector.Top collected featuredCreators)
+
+                                                                _ ->
+                                                                    model.state.local
+
                                                         f featuredCreators =
                                                             { model
                                                                 | state =
-                                                                    { local = model.state.local
+                                                                    { local = local featuredCreators
                                                                     , global = global featuredCreators
                                                                     , exception = Exception.Closed
                                                                     }

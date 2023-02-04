@@ -14,6 +14,7 @@ import Model.Wallet as Wallet
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
+import View.Collect.FeaturedCreator
 import View.Generic.Collection.Collector.Collector
 import View.Generic.Collection.Header as Header
 import View.Generic.Datum.Datum
@@ -24,30 +25,70 @@ body collector =
     let
         html =
             case collector of
-                Top collected ->
+                Top collected featuredCreators ->
                     case collected of
                         [] ->
                             Html.div
                                 []
-                                [ hiw
+                                [ Html.div
+                                    [ class "mb-3"
+                                    ]
+                                    [ Html.div
+                                        [ class "ml-3"
+                                        ]
+                                        [ Html.h3
+                                            [ class "is-text-container-3 is-size-3 is-family-secondary"
+                                            ]
+                                            [ Html.text <|
+                                                "featured creators"
+                                            ]
+                                        ]
+                                    , Html.div
+                                        []
+                                        [ View.Collect.FeaturedCreator.view featuredCreators
+                                        ]
+                                    ]
+                                , hiw
                                 ]
 
                         nel ->
                             Html.div
                                 []
                                 [ Html.div
-                                    [ class "mb-3 ml-3"
+                                    [ class "mb-3"
                                     ]
-                                    [ Html.h3
-                                        [ class "is-text-container-3 is-size-3 is-family-secondary"
+                                    [ Html.div
+                                        [ class "ml-3"
                                         ]
-                                        [ Html.text <|
-                                            "your collection"
+                                        [ Html.h3
+                                            [ class "is-text-container-3 is-size-3 is-family-secondary"
+                                            ]
+                                            [ Html.text <|
+                                                "your collection"
+                                            ]
+                                        ]
+                                    , Html.div
+                                        []
+                                        [ View.Generic.Collection.Collector.Collector.viewMany nel
                                         ]
                                     ]
                                 , Html.div
-                                    []
-                                    [ View.Generic.Collection.Collector.Collector.viewMany nel
+                                    [ class "mb-3"
+                                    ]
+                                    [ Html.div
+                                        [ class "ml-3"
+                                        ]
+                                        [ Html.h3
+                                            [ class "is-text-container-3 is-size-3 is-family-secondary"
+                                            ]
+                                            [ Html.text <|
+                                                "featured creators"
+                                            ]
+                                        ]
+                                    , Html.div
+                                        []
+                                        [ View.Collect.FeaturedCreator.view featuredCreators
+                                        ]
                                     ]
                                 , Html.div
                                     []
@@ -1183,7 +1224,7 @@ breadcrumb handle =
             [ class "is-underlined"
             , Local.href <|
                 Local.Collect <|
-                    Collector.Top []
+                    Collector.Top [] []
             ]
             [ Html.text <|
                 String.concat
@@ -1208,7 +1249,7 @@ breadcrumb2 collection =
             [ class "is-underlined"
             , Local.href <|
                 Local.Collect <|
-                    Collector.Top []
+                    Collector.Top [] []
             ]
             [ Html.text <|
                 String.concat

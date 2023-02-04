@@ -1,4 +1,4 @@
-module Model.CreatorMetadata exposing (CreatorMetadata(..), Metadata, decoder)
+module Model.CreatorMetadata exposing (CreatorMetadata(..), Metadata, decoder, decoder_)
 
 import Json.Decode as Decode
 

@@ -4,10 +4,11 @@ import Model.Collection exposing (Collection, Intersection, Remainder)
 import Model.Collector.UnlockedModal exposing (UnlockedModal)
 import Model.Collector.WithCollections exposing (WithCollections)
 import Model.Datum exposing (Datum)
+import Model.State.Global.FeaturedCreators exposing (FeaturedCreators)
 
 
 type Collector
-    = Top (List Collection)
+    = Top (List Collection) FeaturedCreators
       -- searching
     | HandleInvalid String
     | HandleDoesNotExist String

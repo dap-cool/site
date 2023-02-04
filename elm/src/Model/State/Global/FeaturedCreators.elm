@@ -1,7 +1,7 @@
-module Model.State.Global.FeaturedCreators exposing (FeaturedCreators, decode, decoder)
+module Model.State.Global.FeaturedCreators exposing (FeaturedCreator, FeaturedCreators, decode, decoder)
 
 import Json.Decode as Decode
-import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
+import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata, Metadata)
 import Util.Decode as Util
 
 
@@ -11,7 +11,7 @@ type alias FeaturedCreators =
 
 type alias FeaturedCreator =
     { handle : String
-    , metadata : CreatorMetadata
+    , metadata : Metadata
     }
 
 
@@ -29,4 +29,4 @@ decoder_ : Decode.Decoder FeaturedCreator
 decoder_ =
     Decode.map2 FeaturedCreator
         (Decode.field "handle" Decode.string)
-        CreatorMetadata.decoder
+        (Decode.field "metadata" CreatorMetadata.decoder_)

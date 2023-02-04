@@ -83,10 +83,14 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
   border-radius: 16px;
 }
 
-.is-collection, .is-collection-footer {
+.is-collection, .is-collection-footer, .is-featured-creator {
   background-color: #FDF9EF;
   color: #2B2B2B;
   border-radius: 16px;
+}
+
+.is-featured-creator {
+  height: 300px;
 }
 
 .is-upload {
@@ -131,9 +135,13 @@ $family-secondary: "Roboto Serif", BlinkMacSystemFont, -apple-system, "Helvetica
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // images //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-.is-image-container-1 {
+.is-image-container-1, .is-image-container-3 {
   overflow: hidden;
   border-radius: 12px;
+}
+
+.is-image-container-3 {
+  height: 227px;
 }
 
 .is-image-container-2 {
