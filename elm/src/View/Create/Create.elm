@@ -1309,7 +1309,7 @@ header =
                 [ class "mt-1 container is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
                 ]
                 [ Html.div
-                    [ class "mb-1"
+                    [ class "mb-2"
                     ]
                     [ Html.text
                         """Register your wallet on-chain with a creator "handle" 🆒
@@ -1323,7 +1323,7 @@ header =
                         [ Html.text "dap.cool"
                         ]
                     , Html.text
-                        """ derives an unique URL from your handle so that collectors can find your page 😎
+                        """ derives a unique URL from your handle so that collectors can find your page 😎
                         """
                     ]
                 ]
