@@ -50,7 +50,7 @@ view_ featuredCreator =
 
         handle =
             Html.div
-                [ class "my-3 mt-1-mobile is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile has-text-centered"
+                [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile has-text-centered is-family-secondary"
                 ]
                 [ Html.text featuredCreator.handle
                 ]
@@ -77,6 +77,14 @@ view_ featuredCreator =
         [ class "is-featured-creator"
         ]
         [ img
-        , handle
-        , href
+        , Html.div
+            [ class "my-1-mobile"
+            ]
+            [ handle
+            ]
+        , Html.div
+            [ class "my-1-mobile"
+            ]
+            [ href
+            ]
         ]

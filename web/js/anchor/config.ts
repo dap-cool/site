@@ -7,5 +7,6 @@ export const NETWORK = RPC_URL;
 
 export const FEATURED_CREATORS =
     [
+        "felix",
         "quixote"
     ];

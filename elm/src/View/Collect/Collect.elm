@@ -31,10 +31,10 @@ body collector =
                             Html.div
                                 []
                                 [ Html.div
-                                    [ class "mb-3"
+                                    [ class "mb-6"
                                     ]
                                     [ Html.div
-                                        [ class "ml-3"
+                                        [ class "mb-3 ml-3"
                                         ]
                                         [ Html.h3
                                             [ class "is-text-container-3 is-size-3 is-family-secondary"
@@ -55,10 +55,10 @@ body collector =
                             Html.div
                                 []
                                 [ Html.div
-                                    [ class "mb-3"
+                                    [ class "mb-6"
                                     ]
                                     [ Html.div
-                                        [ class "ml-3"
+                                        [ class "mb-3 ml-3"
                                         ]
                                         [ Html.h3
                                             [ class "is-text-container-3 is-size-3 is-family-secondary"
@@ -73,10 +73,10 @@ body collector =
                                         ]
                                     ]
                                 , Html.div
-                                    [ class "mb-3"
+                                    [ class "mb-6"
                                     ]
                                     [ Html.div
-                                        [ class "ml-3"
+                                        [ class "mb-3 ml-3"
                                         ]
                                         [ Html.h3
                                             [ class "is-text-container-3 is-size-3 is-family-secondary"
