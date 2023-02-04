@@ -1272,40 +1272,6 @@ body creator =
                                     ]
                                 ]
 
-                        Existing.UploadSuccessful collection ->
-                            Html.div
-                                []
-                                [ header3 fromGlobal
-                                , Html.div
-                                    [ class "columns is-mobile"
-                                    ]
-                                    [ Html.div
-                                        [ class "column is-half-mobile is-one-third-tablet"
-                                        ]
-                                        [ View.Generic.Collection.Creator.Creator.view collection
-                                        ]
-                                    , Html.div
-                                        [ class "column is-half-mobile is-two-thirds-tablet"
-                                        ]
-                                        [ Html.div
-                                            []
-                                            [ Html.text <|
-                                                String.concat
-                                                    [ "Upload successful"
-                                                    ]
-                                            ]
-                                        , Html.div
-                                            []
-                                            [ Html.a
-                                                [ Local.href <| Local.Create (New New.Top)
-                                                , class "has-sky-blue-text"
-                                                ]
-                                                [ Html.text "back 2 collections 🔙"
-                                                ]
-                                            ]
-                                        ]
-                                    ]
-                                ]
     in
     Html.div
         [ class "container"

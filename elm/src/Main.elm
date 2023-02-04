@@ -1013,7 +1013,7 @@ update msg model =
 
                                                                 ToExistingCreator.UploadSuccessful ->
                                                                     let
-                                                                        f collection =
+                                                                        f decoded =
                                                                             case model.state.global of
                                                                                 Global.HasWalletAndHandle hasWalletAndHandle ->
                                                                                     { model
@@ -1021,8 +1021,9 @@ update msg model =
                                                                                             { local =
                                                                                                 Local.Create <|
                                                                                                     Creator.Existing hasWalletAndHandle <|
-                                                                                                        ExistingCreator.UploadSuccessful
-                                                                                                            collection
+                                                                                                        ExistingCreator.SelectedCollection
+                                                                                                            decoded.collection
+                                                                                                            decoded.datum
                                                                                             , global = model.state.global
                                                                                             , exception = model.state.exception
                                                                                             }
@@ -1031,7 +1032,7 @@ update msg model =
                                                                                 _ ->
                                                                                     model
                                                                     in
-                                                                    Listener.decode model json Collection.decode f
+                                                                    Listener.decode model json Datum.decode2 f
 
                                                 -- found msg for collector
                                                 ToLocal.Collect toCollector ->

@@ -356,6 +356,7 @@ export async function main(app, json) {
                 await upload(
                     app,
                     pp.provider,
+                    pp.programs.dap,
                     more.collection,
                     more.form
                 );

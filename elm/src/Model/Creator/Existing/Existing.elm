@@ -13,7 +13,6 @@ type Existing
     | CreatingNewCollection NewCollection
     | SelectedCollection Collection Uploaded
     | Uploading Collection UploadForm
-    | UploadSuccessful Collection
 
 
 type alias Uploaded =

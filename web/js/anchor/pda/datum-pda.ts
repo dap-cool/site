@@ -205,6 +205,7 @@ export async function getUploads(
 export async function upload(
     app: any,
     provider: AnchorProvider,
+    program: Program<DapCool>,
     collection: CollectionFromElm,
     formFromElm: FormFromElm
 ): Promise<void> {
@@ -379,13 +380,22 @@ export async function upload(
                 new PublicKey(collection.accounts.mint),
                 shadowAccount
             );
+            // get uploads
+            const datum = await getUploads(
+                provider,
+                program,
+                collection
+            );
             // send success to elm
             app.ports.success.send(
                 JSON.stringify(
                     {
                         listener: "creator-upload-success",
                         more: JSON.stringify(
-                            collection
+                            {
+                                collection: collection,
+                                datum: datum
+                            }
                         )
                     }
                 )
