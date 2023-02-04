@@ -665,12 +665,8 @@ body collector =
                                                                         [ Html.tr
                                                                             []
                                                                             [ Html.th
-                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
-                                                                                ]
-                                                                                [ Html.text
-                                                                                    """almost an official collector \u{1FAE1}
-                                                                                    """
-                                                                                ]
+                                                                                []
+                                                                                []
                                                                             ]
                                                                         ]
                                                                     , Html.tbody
@@ -923,12 +919,8 @@ body collector =
                                                                         [ Html.tr
                                                                             []
                                                                             [ Html.th
-                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
-                                                                                ]
-                                                                                [ Html.text
-                                                                                    """official collector \u{1FAE1}
-                                                                                    """
-                                                                                ]
+                                                                                []
+                                                                                []
                                                                             ]
                                                                         ]
                                                                     , Html.tbody
