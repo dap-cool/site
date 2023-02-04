@@ -40,7 +40,7 @@ select collection =
                     [ class "icon"
                     ]
                     [ Html.i
-                        [ class "fas fa-home"
+                        [ class "fas fa-coins"
                         ]
                         []
                     ]
