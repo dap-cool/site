@@ -7,6 +7,7 @@ import Html.Attributes exposing (accept, class, default, href, id, multiple, pla
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Collector.Collector as Collector
+import Model.Collector.UnlockedModal exposing (Current, Total)
 import Model.Creator.Creator exposing (Creator(..))
 import Model.Creator.Existing.BioForm as BioForm exposing (BioForm)
 import Model.Creator.Existing.Existing as Existing
@@ -14,6 +15,7 @@ import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.Creator.Existing.NewCollection as NewCollection
 import Model.Creator.New.New as New
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
+import Model.Datum exposing (Datum)
 import Model.Handle as Handle
 import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
 import Model.State.Local.Local as Local
@@ -813,18 +815,134 @@ body creator =
                                         ]
 
                         Existing.SelectedCollection collection uploaded ->
-                            Html.div
-                                []
-                                [ header3 fromGlobal
-                                , Html.div
-                                    [ class "mt-3"
-                                    ]
-                                    [ View.Generic.Collection.Creator.Creator.view collection
-                                    ]
-                                , Html.div
-                                    [ class "mt-3"
-                                    ]
-                                    [ Html.div
+                            let
+                                uploaded_ =
+                                    let
+                                        row : Datum -> List (Html Msg)
+                                        row datum =
+                                            let
+                                                total : Total
+                                                total =
+                                                    List.indexedMap
+                                                        (\index file ->
+                                                            { index = index, file = file }
+                                                        )
+                                                        datum.metadata.zip.files
+
+                                                file_ : Current -> Html Msg
+                                                file_ current =
+                                                    Html.tr
+                                                        []
+                                                        [ Html.td
+                                                            []
+                                                            []
+                                                        , Html.td
+                                                            []
+                                                            [ Html.div
+                                                                [ class "is-light-text-container-5 is-size-5"
+                                                                ]
+                                                                [ Html.text <|
+                                                                    current.file.type_
+                                                                ]
+                                                            ]
+                                                        , Html.td
+                                                            []
+                                                            []
+                                                        ]
+
+                                                files : List (Html Msg)
+                                                files =
+                                                    List.map
+                                                        file_
+                                                        total
+                                            in
+                                            Html.tr
+                                                []
+                                                [ Html.td
+                                                    []
+                                                    [ Html.div
+                                                        [ class "is-text-container-4 is-size-4"
+                                                        ]
+                                                        [ Html.text datum.metadata.title
+                                                        ]
+                                                    ]
+                                                , Html.td
+                                                    []
+                                                    [ Html.div
+                                                        [ class "is-light-text-container-5 is-size-5"
+                                                        ]
+                                                        [ Html.text <|
+                                                            String.fromInt datum.metadata.zip.count
+                                                        ]
+                                                    ]
+                                                , Html.td
+                                                    []
+                                                    [ Html.div
+                                                        [ class "is-light-text-container-5 is-size-5"
+                                                        ]
+                                                        [ Html.text <|
+                                                            String.fromInt datum.metadata.timestamp
+                                                        ]
+                                                    ]
+                                                ]
+                                                :: files
+
+                                        rows : Html Msg
+                                        rows =
+                                            Html.tbody
+                                                []
+                                            <|
+                                                List.concatMap
+                                                    row
+                                                    uploaded
+                                    in
+                                    Html.div
+                                        [ class "table-container"
+                                        ]
+                                        [ Html.table
+                                            [ class "table is-fullwidth"
+                                            ]
+                                            [ Html.thead
+                                                []
+                                                [ Html.tr
+                                                    []
+                                                    [ Html.th
+                                                        [ class "is-light-text-container-6 is-size-6 is-family-secondary"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.text <|
+                                                            String.concat
+                                                                [ "Collectables"
+                                                                , " "
+                                                                , "("
+                                                                , String.fromInt <| List.length uploaded
+                                                                , ")"
+                                                                ]
+                                                        ]
+                                                    , Html.th
+                                                        [ class "is-light-text-container-6 is-size-6 is-family-secondary"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.text
+                                                            """Files
+                                                            """
+                                                        ]
+                                                    , Html.th
+                                                        [ class "is-light-text-container-6 is-size-6 is-family-secondary"
+                                                        , style "opacity" "50%"
+                                                        ]
+                                                        [ Html.text
+                                                            """Uploaded
+                                                            """
+                                                        ]
+                                                    ]
+                                                ]
+                                            , rows
+                                            ]
+                                        ]
+
+                                metadata =
+                                    Html.div
                                         [ class "table-container"
                                         ]
                                         [ Html.table
@@ -932,9 +1050,22 @@ body creator =
                                                 ]
                                             ]
                                         ]
+                            in
+                            Html.div
+                                []
+                                [ header3 fromGlobal
+                                , Html.div
+                                    [ class "mt-3"
+                                    ]
+                                    [ View.Generic.Collection.Creator.Creator.view collection
                                     ]
                                 , Html.div
                                     [ class "mt-3"
+                                    ]
+                                    [ metadata
+                                    ]
+                                , Html.div
+                                    [ class "mt-6"
                                     ]
                                     [ Html.div
                                         [ class "mb-3"
@@ -949,37 +1080,11 @@ body creator =
                                             [ Html.text "upload stuff"
                                             ]
                                         ]
-                                    , Html.div
-                                        [ class "columns is-multiline"
-                                        ]
-                                      <|
-                                        List.map
-                                            (\datum ->
-                                                Html.div
-                                                    [ class "column is-one-third"
-                                                    ]
-                                                    [ Html.div
-                                                        [ class "is-upload"
-                                                        ]
-                                                        [ Html.div
-                                                            [ class "is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
-                                                            ]
-                                                            [ Html.text datum.metadata.title
-                                                            ]
-                                                        , Html.div
-                                                            [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
-                                                            ]
-                                                            [ Html.text <|
-                                                                String.concat
-                                                                    [ "# of files"
-                                                                    , "➡️"
-                                                                    , String.fromInt datum.metadata.zip.count
-                                                                    ]
-                                                            ]
-                                                        ]
-                                                    ]
-                                            )
-                                            uploaded
+                                    ]
+                                , Html.div
+                                    [ class "mt-3"
+                                    ]
+                                    [ uploaded_
                                     ]
                                 ]
 
