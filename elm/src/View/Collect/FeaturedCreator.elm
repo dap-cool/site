@@ -78,12 +78,12 @@ view_ featuredCreator =
         ]
         [ img
         , Html.div
-            [ class "my-1-mobile"
+            [ class "mt-2"
             ]
             [ handle
             ]
         , Html.div
-            [ class "my-1-mobile"
+            [ class "mt-1"
             ]
             [ href
             ]
