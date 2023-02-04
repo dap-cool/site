@@ -22,7 +22,7 @@ view collection =
                         String.concat
                             [ "$USDC"
                             , " "
-                            , FormatNumber.format usLocale ((Basics.toFloat collection.math.price / 1000000))
+                            , FormatNumber.format usLocale (Basics.toFloat collection.math.price / 1000000)
                             ]
                     ]
                 ]

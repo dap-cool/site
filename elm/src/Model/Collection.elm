@@ -45,7 +45,7 @@ type alias Accounts =
 
 type alias Ata =
     { balance : Int
-    , address: Mint
+    , address : Mint
     }
 
 

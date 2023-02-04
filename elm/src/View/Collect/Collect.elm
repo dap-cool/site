@@ -525,7 +525,6 @@ body collector =
                                                 [ class "column is-half"
                                                 ]
                                                 [ View.Generic.Collection.Collector.Collector.view selected
-
                                                 , Html.div
                                                     [ class "mt-2 px-3 py-3"
                                                     ]
@@ -553,7 +552,7 @@ body collector =
                                                                         , style "opacity" "50%"
                                                                         ]
                                                                         [ Html.text
-                                                                            """🪙 token
+                                                                            """\u{1FA99} token
                                                                             """
                                                                         ]
                                                                     , Html.td
@@ -589,7 +588,7 @@ body collector =
                                                                         , style "opacity" "50%"
                                                                         ]
                                                                         [ Html.text <|
-                                                                                String.fromInt selected.accounts.ata.balance
+                                                                            String.fromInt selected.accounts.ata.balance
                                                                         ]
                                                                     ]
                                                                 , Html.tr
@@ -623,7 +622,6 @@ body collector =
                                                             ]
                                                         ]
                                                     ]
-
                                                 , Html.div
                                                     [ class "mt-2"
                                                     ]
@@ -684,7 +682,7 @@ body collector =
                                                                                 , style "opacity" "50%"
                                                                                 ]
                                                                                 [ Html.text
-                                                                                    """🪙 token
+                                                                                    """\u{1FA99} token
                                                                                     """
                                                                                 ]
                                                                             , Html.td
@@ -780,8 +778,6 @@ body collector =
                                                         [ class "column is-half"
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
-
-
                                                         , Html.div
                                                             [ class "mt-2 px-3 py-3"
                                                             ]
@@ -809,7 +805,7 @@ body collector =
                                                                                 , style "opacity" "50%"
                                                                                 ]
                                                                                 [ Html.text
-                                                                                    """🪙 token
+                                                                                    """\u{1FA99} token
                                                                                     """
                                                                                 ]
                                                                             , Html.td
@@ -889,8 +885,6 @@ body collector =
                                                                     ]
                                                                 ]
                                                             ]
-
-
                                                         , Html.div
                                                             [ class "mt-2"
                                                             ]
@@ -946,7 +940,7 @@ body collector =
                                                                                 , style "opacity" "50%"
                                                                                 ]
                                                                                 [ Html.text
-                                                                                    """🪙 token
+                                                                                    """\u{1FA99} token
                                                                                     """
                                                                                 ]
                                                                             , Html.td

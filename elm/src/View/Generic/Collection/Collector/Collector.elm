@@ -48,7 +48,7 @@ select collection =
                     []
                     [ Html.text <|
                         String.concat
-                            [ FormatNumber.format usLocale ((Basics.toFloat collection.math.price / 1000000))
+                            [ FormatNumber.format usLocale (Basics.toFloat collection.math.price / 1000000)
                             , " "
                             , "USDC"
                             ]

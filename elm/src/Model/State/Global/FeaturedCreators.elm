@@ -10,8 +10,8 @@ type alias FeaturedCreators =
 
 
 type alias FeaturedCreator =
-    { handle: String
-    , metadata: CreatorMetadata
+    { handle : String
+    , metadata : CreatorMetadata
     }
 
 

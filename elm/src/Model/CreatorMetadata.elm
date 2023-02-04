@@ -24,6 +24,7 @@ decoder =
     Decode.oneOf
         [ Decode.field "metadata" <| Decode.map (\m -> Initialized m) decoder_
         , Decode.succeed UnInitialized
+
         -- Decode.field "metadata" <| Decode.null UnInitialized
         ]
 

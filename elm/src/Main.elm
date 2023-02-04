@@ -1257,8 +1257,9 @@ update msg model =
                                                     ( { model
                                                         | state =
                                                             { local = local
-                                                            , global = Global.NoWalletYet <|
-                                                                Global.getFeaturedCreators model.state.global
+                                                            , global =
+                                                                Global.NoWalletYet <|
+                                                                    Global.getFeaturedCreators model.state.global
                                                             , exception = Exception.Closed
                                                             }
                                                       }
@@ -1270,8 +1271,9 @@ update msg model =
                                                     ( { model
                                                         | state =
                                                             { local = model.state.local
-                                                            , global = Global.WalletMissing <|
-                                                                Global.getFeaturedCreators model.state.global
+                                                            , global =
+                                                                Global.WalletMissing <|
+                                                                    Global.getFeaturedCreators model.state.global
                                                             , exception = Exception.Closed
                                                             }
                                                       }
@@ -1517,15 +1519,12 @@ update msg model =
                                                                 Global.NoWalletYet _ ->
                                                                     Global.NoWalletYet featuredCreators
 
-
                                                                 Global.WalletMissing _ ->
                                                                     Global.WalletMissing featuredCreators
-
 
                                                                 Global.HasWallet hasWallet ->
                                                                     Global.HasWallet
                                                                         { hasWallet | featuredCreators = featuredCreators }
-
 
                                                                 Global.HasWalletAndHandle hasWalletAndHandle ->
                                                                     Global.HasWalletAndHandle
@@ -1539,10 +1538,8 @@ update msg model =
                                                                     , exception = Exception.Closed
                                                                     }
                                                             }
-
                                                     in
                                                     Listener.decode model json FeaturedCreators.decode f
-
 
                                 -- undefined role
                                 Nothing ->
