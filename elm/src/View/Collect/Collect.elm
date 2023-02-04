@@ -623,22 +623,53 @@ body collector =
                                                         ]
                                                         [ View.Generic.Collection.Collector.Collector.view selected
                                                         , Html.div
-                                                            []
-                                                            [ Html.text
-                                                                """Welcome back official collector \u{1FAE1}
-                                                                """
+                                                            [ class "mt-2 px-3 py-3"
                                                             ]
-                                                        , Html.div
-                                                            []
-                                                            [ Html.text <|
-                                                                String.concat
-                                                                    [ "token balance:"
-                                                                    , " "
-                                                                    , String.fromInt collected.accounts.ata.balance
+                                                            [ Html.div
+                                                                [ class "table-container"
+                                                                ]
+                                                                [ Html.table
+                                                                    [ class "table is-fullwidth"
                                                                     ]
+                                                                    [ Html.thead
+                                                                        []
+                                                                        [ Html.tr
+                                                                            []
+                                                                            [ Html.th
+                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                ]
+                                                                                [ Html.text
+                                                                                    """official collector \u{1FAE1}
+                                                                                    """
+                                                                                ]
+                                                                            ]
+                                                                        ]
+                                                                    , Html.tbody
+                                                                        []
+                                                                        [ Html.tr
+                                                                            []
+                                                                            [ Html.th
+                                                                                [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.text
+                                                                                    """💰 token balance
+                                                                                    """
+                                                                                ]
+                                                                            , Html.td
+                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                ]
+                                                                                [ Html.text <|
+                                                                                    String.fromInt collected.accounts.ata.balance
+                                                                                ]
+                                                                            ]
+                                                                        ]
+                                                                    ]
+                                                                ]
                                                             ]
                                                         , Html.div
-                                                            []
+                                                            [ class "mt-2"
+                                                            ]
                                                             [ purchaseAgain
                                                             ]
                                                         ]
