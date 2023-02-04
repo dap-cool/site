@@ -903,9 +903,9 @@ update msg model =
                                                                                     { local =
                                                                                         Local.Create <|
                                                                                             Creator.Existing withCollection.global <|
-                                                                                                ExistingCreator.CreatingNewCollection <|
-                                                                                                    NewCollection.Done
-                                                                                                        withCollection.collection
+                                                                                                ExistingCreator.Top
+                                                                                                    LogoForm.Top
+                                                                                                    BioForm.Empty
                                                                                     , global =
                                                                                         Global.HasWalletAndHandle
                                                                                             withCollection.global

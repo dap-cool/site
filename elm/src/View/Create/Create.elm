@@ -810,48 +810,6 @@ body creator =
                                             ]
                                         ]
 
-                                NewCollection.Done collection ->
-                                    Html.div
-                                        []
-                                        [ header3 fromGlobal
-                                        , Html.div
-                                            [ class "columns is-mobile"
-                                            ]
-                                            [ Html.div
-                                                [ class "column is-half-mobile is-one-third-tablet"
-                                                ]
-                                                [ View.Generic.Collection.Creator.Creator.view collection
-                                                ]
-                                            ]
-                                        , Html.div
-                                            [ class "column is-half-mobile is-two-third-tablet"
-                                            ]
-                                            [ Html.text
-                                                """Your NFT has successfully been created! 😁
-                                                """
-                                            , Html.a
-                                                [ class "has-sky-blue-text"
-                                                , target "_blank"
-                                                , href <|
-                                                    String.concat
-                                                        [ "https://explorer.solana.com/address/"
-                                                        , collection.accounts.mint
-                                                        ]
-                                                ]
-                                                [ Html.text "view it here 👀"
-                                                ]
-                                            , Html.div
-                                                []
-                                                [ Html.a
-                                                    [ Local.href <| Local.Create (New New.Top)
-                                                    , class "has-sky-blue-text"
-                                                    ]
-                                                    [ Html.text "back 2 collections 🔙"
-                                                    ]
-                                                ]
-                                            ]
-                                        ]
-
                         Existing.SelectedCollection collection uploaded ->
                             Html.div
                                 []

@@ -2,7 +2,6 @@ module Model.Creator.Existing.NewCollection exposing (MaybeMetaForm, MetaForm, N
 
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Model.Collection exposing (Collection)
 import Model.Mint exposing (Mint)
 import Model.State.Global.HasWalletAndHandle as HasWalletAndHandle exposing (HasWalletAndHandle)
 import Util.Decode as Util
@@ -10,7 +9,6 @@ import Util.Decode as Util
 
 type NewCollection
     = Input Submitted
-    | Done Collection
 
 
 type Submitted
