@@ -149,7 +149,7 @@ viewGlobal global =
                 [ Html.a
                     [ Local.href <| Local.Create (Creator.New NewCreator.Top)
                     ]
-                    [ Html.text "start uploading 💹"
+                    [ Html.text "start uploading ⬆️"
                     ]
                 ]
 
