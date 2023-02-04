@@ -202,7 +202,8 @@ export async function mintNewCopy(
         const lastCollectedAuthority = authority;
         // add associated-token-account balance
         lastCollectedAuthority.accounts.ata = {
-            balance: authority.accounts.ata.balance + 1
+            balance: authority.accounts.ata.balance + 1,
+            address: authority.accounts.ata.address
         };
         // increment num-minted
         lastCollectedAuthority.math.numMinted = authority.math.numMinted + 1;

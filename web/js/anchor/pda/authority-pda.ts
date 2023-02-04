@@ -31,6 +31,7 @@ export interface CollectionAuthority {
         // associated-token-account
         ata: {
             balance: number
+            address: PublicKey
         }
     }
 }
@@ -69,6 +70,7 @@ export async function getManyAuthorityPdaForCollector(
     );
     // fetch authority array
     const authorityArray: CollectionAuthority[] = await getManyAuthorityPda(
+        provider,
         programs.dap,
         authorityPdaArray
     );
@@ -99,6 +101,7 @@ export async function getManyAuthorityPdaForCreator(
     );
     // fetch collection array
     const authorityArray: CollectionAuthority[] = await getManyAuthorityPda(
+        provider,
         programs.dap,
         authorityPdaArray
     );
@@ -115,6 +118,7 @@ export async function getManyAuthorityPdaForCreator(
 }
 
 async function getManyAuthorityPda(
+    provider: AnchorProvider,
     program: Program<DapCool>,
     authorityPdaArray: AuthorityPda[]
 ): Promise<CollectionAuthority[]> {
@@ -125,7 +129,15 @@ async function getManyAuthorityPda(
     return await Promise.all(
         authorityArray.map(async (obj) => {
                 const raw = obj as RawCollectionAuthority;
-                const pda = await deriveAuthorityPda(program, raw.handle, raw.index);
+                const pda = await deriveAuthorityPda(
+                    program,
+                    raw.handle,
+                    raw.index
+                );
+                const ata = deriveAtaPda(
+                    provider,
+                    raw.mint
+                );
                 return {
                     meta: {
                         handle: raw.handle,
@@ -144,7 +156,10 @@ async function getManyAuthorityPda(
                     accounts: {
                         pda: pda.address,
                         mint: raw.mint,
-                        ata: null // replaced later with on-chain token-balance fetched in bulk
+                        ata: {
+                            balance: 0, // replaced later with on-chain token-balance fetched in bulk
+                            address: ata
+                        }
                     }
                 } as CollectionAuthority
             }
@@ -166,11 +181,8 @@ async function joinAtaWithAuthority(
             const maybeFoundAta = ataArray.find(ata => ata.mint.equals(authority.accounts.mint));
             if (maybeFoundAta) {
                 authority.accounts.ata = {
-                    balance: maybeFoundAta.amount.toNumber()
-                };
-            } else {
-                authority.accounts.ata = {
-                    balance: 0
+                    balance: maybeFoundAta.amount.toNumber(),
+                    address: authority.accounts.ata.address
                 };
             }
             return authority
@@ -225,7 +237,8 @@ export async function getAuthorityPda(
             pda: authorityPda.address,
             mint: raw.mint,
             ata: {
-                balance: balance
+                balance: balance,
+                address: ataPda
             }
         }
     } as CollectionAuthority

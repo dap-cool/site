@@ -45,6 +45,7 @@ type alias Accounts =
 
 type alias Ata =
     { balance : Int
+    , address: Mint
     }
 
 
@@ -90,6 +91,7 @@ encoder collection =
                 , ( "ata"
                   , Encode.object
                         [ ( "balance", Encode.int collection.accounts.ata.balance )
+                        , ( "address", Encode.string collection.accounts.ata.address )
                         ]
                   )
                 ]
@@ -131,8 +133,9 @@ decoder =
                 (Decode.field "pda" Decode.string)
                 (Decode.field "mint" Decode.string)
                 (Decode.field "ata" <|
-                    Decode.map Ata
+                    Decode.map2 Ata
                         (Decode.field "balance" Decode.int)
+                        (Decode.field "address" Decode.string)
                 )
         )
 

@@ -10,6 +10,7 @@ import Model.CreatorMetadata exposing (CreatorMetadata)
 import Model.Datum exposing (Datum)
 import Model.Handle exposing (Handle)
 import Model.State.Local.Local as Local
+import Model.Wallet as Wallet
 import Msg.Collector.Collector as CollectorMsg
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
@@ -653,14 +654,80 @@ body collector =
                                                                                 , style "opacity" "50%"
                                                                                 ]
                                                                                 [ Html.text
+                                                                                    """🪙 token
+                                                                                    """
+                                                                                ]
+                                                                            , Html.td
+                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.a
+                                                                                    [ class "has-sky-blue-text"
+                                                                                    , href <|
+                                                                                        String.concat
+                                                                                            [ "https://solscan.io/token/"
+                                                                                            , collected.accounts.mint
+                                                                                            ]
+                                                                                    , target "_blank"
+                                                                                    ]
+                                                                                    [ Html.text <|
+                                                                                        Wallet.slice collected.accounts.mint
+                                                                                    ]
+                                                                                ]
+                                                                            ]
+                                                                        , Html.tr
+                                                                            []
+                                                                            [ Html.th
+                                                                                [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.text
                                                                                     """💰 token balance
                                                                                     """
                                                                                 ]
                                                                             , Html.td
                                                                                 [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                , style "opacity" "50%"
                                                                                 ]
-                                                                                [ Html.text <|
-                                                                                    String.fromInt collected.accounts.ata.balance
+                                                                                [ Html.a
+                                                                                    [ class "has-sky-blue-text"
+                                                                                    , href <|
+                                                                                        String.concat
+                                                                                            [ "https://solscan.io/account/"
+                                                                                            , collected.accounts.ata.address
+                                                                                            ]
+                                                                                    , target "_blank"
+                                                                                    ]
+                                                                                    [ Html.text <|
+                                                                                        String.fromInt collected.accounts.ata.balance
+                                                                                    ]
+                                                                                ]
+                                                                            ]
+                                                                        , Html.tr
+                                                                            []
+                                                                            [ Html.th
+                                                                                [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.text
+                                                                                    """💳 secondary market
+                                                                                    """
+                                                                                ]
+                                                                            , Html.td
+                                                                                [ class "is-text-container-5 is-size-5 is-text-container-6-mobile is-size-6-mobile"
+                                                                                , style "opacity" "50%"
+                                                                                ]
+                                                                                [ Html.a
+                                                                                    [ class "has-sky-blue-text"
+                                                                                    , href <|
+                                                                                        String.concat
+                                                                                            [ "https://hyperspace.xyz/token/"
+                                                                                            , collected.accounts.mint
+                                                                                            ]
+                                                                                    , target "_blank"
+                                                                                    ]
+                                                                                    [ Html.text "hyperspace.xyz"
+                                                                                    ]
                                                                                 ]
                                                                             ]
                                                                         ]
