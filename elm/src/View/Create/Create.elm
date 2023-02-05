@@ -3,7 +3,7 @@ module View.Create.Create exposing (body)
 import FormatNumber
 import FormatNumber.Locales exposing (usLocale)
 import Html exposing (Html)
-import Html.Attributes exposing (accept, class, default, href, id, multiple, placeholder, src, step, style, target, type_, value, width)
+import Html.Attributes exposing (accept, class, default, disabled, href, id, multiple, placeholder, src, step, style, target, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Model.Collection
 import Model.Collector.Collector as Collector
@@ -24,6 +24,7 @@ import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Creator.Existing.NewCollectionForm as NewCollectionForm
 import Msg.Creator.New.New as NewMsg
+import Msg.Global as FromGlobal
 import Msg.Msg exposing (Msg(..))
 import View.Generic.Collection.Creator.Creator
 import View.Generic.Collection.Header as Header
@@ -185,6 +186,194 @@ body creator =
                 Existing fromGlobal existingCreator ->
                     case existingCreator of
                         Existing.Top logoForm bioForm ->
+                            let
+                                shadowAta =
+                                    case fromGlobal.metadata of
+                                        CreatorMetadata.Initialized metadata ->
+                                            metadata.shadowAta
+
+                                        CreatorMetadata.UnInitialized shadowAta_ ->
+                                            shadowAta_
+
+                                createNewCollection =
+                                    let
+                                        normalized =
+                                            Basics.toFloat shadowAta.balance / 1000000000
+
+                                        formatted =
+                                            FormatNumber.format usLocale normalized
+                                    in
+                                    case ( normalized > 0.25, shadowAta.address ) of
+                                        ( True, Just address ) ->
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    [ class "table-container"
+                                                    ]
+                                                    [ Html.table
+                                                        [ class "table is-fullwidth"
+                                                        ]
+                                                        [ Html.thead
+                                                            []
+                                                            [ Html.tr
+                                                                []
+                                                                [ Html.th
+                                                                    []
+                                                                    []
+                                                                ]
+                                                            ]
+                                                        , Html.tbody
+                                                            []
+                                                            [ Html.tr
+                                                                []
+                                                                [ Html.th
+                                                                    [ class "is-text-container-5 is-size-5"
+                                                                    ]
+                                                                    [ Html.text "storage-token-balance"
+                                                                    ]
+                                                                , Html.td
+                                                                    [ class "is-text-container-5 is-size-5"
+                                                                    ]
+                                                                    [ Html.a
+                                                                        [ class "has-sky-blue-text"
+                                                                        , href <|
+                                                                            String.concat
+                                                                                [ "https://solscan.io/account/"
+                                                                                , address
+                                                                                ]
+                                                                        , target "_blank"
+                                                                        ]
+                                                                        [ Html.text formatted
+                                                                        ]
+                                                                    ]
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                , Html.div
+                                                    []
+                                                    [ Html.button
+                                                        [ class "is-button-1"
+                                                        , onClick <|
+                                                            FromCreator <|
+                                                                CreatorMsg.Existing fromGlobal <|
+                                                                    ExistingMsg.StartCreatingNewCollection
+                                                        ]
+                                                        [ Html.text "create new collection"
+                                                        ]
+                                                    ]
+                                                ]
+
+                                        ( False, Just address ) ->
+                                            Html.div
+                                                []
+                                                [ Html.div
+                                                    [ class "table-container"
+                                                    ]
+                                                    [ Html.table
+                                                        [ class "table is-fullwidth"
+                                                        ]
+                                                        [ Html.thead
+                                                            []
+                                                            [ Html.tr
+                                                                []
+                                                                [ Html.th
+                                                                    []
+                                                                    []
+                                                                ]
+                                                            ]
+                                                        , Html.tbody
+                                                            []
+                                                            [ Html.tr
+                                                                []
+                                                                [ Html.th
+                                                                    [ class "is-text-container-5 is-size-5"
+                                                                    ]
+                                                                    [ Html.text "insufficient storage-token-balance"
+                                                                    ]
+                                                                , Html.td
+                                                                    [ class "is-text-container-5 is-size-5"
+                                                                    ]
+                                                                    [ Html.a
+                                                                        [ class "has-sky-blue-text"
+                                                                        , href <|
+                                                                            String.concat
+                                                                                [ "https://solscan.io/account/"
+                                                                                , address
+                                                                                ]
+                                                                        , target "_blank"
+                                                                        ]
+                                                                        [ Html.text formatted
+                                                                        ]
+                                                                    , Html.b
+                                                                        [ class "is-text-container-5 is-size-5"
+                                                                        ]
+                                                                        [ Html.text <|
+                                                                            String.concat
+                                                                                [ " "
+                                                                                , "<"
+                                                                                , " "
+                                                                                , "0.25"
+                                                                                ]
+                                                                        ]
+                                                                    ]
+                                                                ]
+                                                            , Html.tr
+                                                                []
+                                                                [ Html.td
+                                                                    [ class "is-text-container-5 is-size-5"
+                                                                    ]
+                                                                    [ Html.a
+                                                                        [ class "has-sky-blue-text"
+                                                                        , href "https://jup.ag/swap/SOL-SHDW"
+                                                                        , target "_blank"
+                                                                        ]
+                                                                        [ Html.text "swap sol for storage-token"
+                                                                        ]
+                                                                    ]
+                                                                , Html.td
+                                                                    [ class "is-text-container-5 is-size-5"
+                                                                    ]
+                                                                    [ Html.button
+                                                                        [ onClick <|
+                                                                            Global <|
+                                                                                FromGlobal.Connect
+                                                                        ]
+                                                                        [ Html.text "refresh"
+                                                                        ]
+                                                                    ]
+                                                                ]
+                                                            , Html.tr
+                                                                []
+                                                                [ Html.th
+                                                                    [ class "is-text-container-5 is-size-5"
+                                                                    ]
+                                                                    [ Html.text "new-collection"
+                                                                    ]
+                                                                , Html.td
+                                                                    [ class "is-text-container-5 is-size-5"
+                                                                    ]
+                                                                    [ Html.button
+                                                                        [ onClick <|
+                                                                            FromCreator <|
+                                                                                CreatorMsg.Existing fromGlobal <|
+                                                                                    ExistingMsg.StartCreatingNewCollection
+                                                                        , disabled True
+                                                                        ]
+                                                                        [ Html.text "create"
+                                                                        ]
+                                                                    ]
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+
+                                        _ ->
+                                            Html.div
+                                                []
+                                                []
+                            in
                             Html.div
                                 []
                                 [ Html.div
@@ -193,20 +382,12 @@ body creator =
                                     [ header2 logoForm bioForm fromGlobal
                                     ]
                                 , Html.div
-                                    []
-                                    [ Html.button
-                                        [ class "is-button-1"
-                                        , onClick <|
-                                            FromCreator <|
-                                                CreatorMsg.Existing fromGlobal <|
-                                                    ExistingMsg.StartCreatingNewCollection
-                                        ]
-                                        [ Html.text "create new collection"
-                                        ]
+                                    [ class "mb-6"
+                                    ]
+                                    [ createNewCollection
                                     ]
                                 , Html.div
-                                    [ class "mt-5"
-                                    ]
+                                    []
                                     [ Html.div
                                         [ class "mb-3 is-text-container-3 is-size-3 is-text-container-4-mobile is-size-4-mobile"
                                         ]
