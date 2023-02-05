@@ -3,14 +3,16 @@ module View.Generic.Collection.Header exposing (Role(..), header0, view)
 import FormatNumber
 import FormatNumber.Locales exposing (usLocale)
 import Html exposing (Html)
-import Html.Attributes exposing (class, disabled, href, id, placeholder, src, target, type_)
+import Html.Attributes exposing (class, disabled, href, id, placeholder, src, style, target, type_)
 import Html.Events exposing (onClick, onInput)
+import Model.Collector.Collector as CollectorState
 import Model.Creator.Existing.BioForm as BioForm exposing (BioForm)
 import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.File exposing (File)
 import Model.Handle exposing (Handle)
 import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
+import Model.State.Local.Local as Local
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Global as FromGlobal
@@ -491,7 +493,8 @@ view role handle metadata =
                     [ header0 role handle
                     ]
                 , Html.div
-                    []
+                    [ class "mt-3"
+                    ]
                     [ bio
                     ]
                 ]
@@ -501,6 +504,24 @@ view role handle metadata =
 
 header0 : Role -> Handle -> Html Msg
 header0 role handle =
+    let
+        render =
+            case role of
+                Admin _ _ _ ->
+                    Html.a
+                        [ class "has-sky-blue-text"
+                        , style "opacity" "90%"
+                        , Local.href <|
+                            Local.Collect <|
+                                CollectorState.MaybeExistingCreator
+                                    handle
+                        ]
+                        [ Html.text handle
+                        ]
+
+                Collector ->
+                    Html.text handle
+    in
     Html.div
         []
         [ Html.div
@@ -511,7 +532,7 @@ header0 role handle =
         , Html.div
             [ class "is-text-container-2 is-size-2 is-text-container-3-mobile is-size-3-mobile"
             ]
-            [ Html.text handle
+            [ render
             ]
         ]
 
