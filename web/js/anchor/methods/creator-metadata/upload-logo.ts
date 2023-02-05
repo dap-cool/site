@@ -60,11 +60,13 @@ export async function uploadLogo(
         client,
         oldMetadata.url
     );
-    await client.deleteFile(
-        oldMetadata.url,
-        oldMetadata.logo,
-        version
-    );
+    if (oldMetadata.logo) {
+        await client.deleteFile(
+            oldMetadata.url,
+            oldMetadata.logo,
+            version
+        );
+    }
     await editMetadata(
         newMetadata,
         client
