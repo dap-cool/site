@@ -184,26 +184,26 @@ body creator =
                                 ]
 
                 Existing fromGlobal existingCreator ->
+                    let
+                        shadowAta =
+                            case fromGlobal.metadata of
+                                CreatorMetadata.Initialized metadata ->
+                                    metadata.shadowAta
+
+                                CreatorMetadata.UnInitialized shadowAta_ ->
+                                    shadowAta_
+
+                        shadowAtaNormalizedBalance =
+                            Basics.toFloat shadowAta.balance / 1000000000
+
+                        shadowAtaFormattedBalance =
+                            FormatNumber.format usLocale shadowAtaNormalizedBalance
+                    in
                     case existingCreator of
                         Existing.Top logoForm bioForm ->
                             let
-                                shadowAta =
-                                    case fromGlobal.metadata of
-                                        CreatorMetadata.Initialized metadata ->
-                                            metadata.shadowAta
-
-                                        CreatorMetadata.UnInitialized shadowAta_ ->
-                                            shadowAta_
-
                                 createNewCollection =
-                                    let
-                                        normalized =
-                                            Basics.toFloat shadowAta.balance / 1000000000
-
-                                        formatted =
-                                            FormatNumber.format usLocale normalized
-                                    in
-                                    case ( normalized > 0.25, shadowAta.address ) of
+                                    case ( shadowAtaNormalizedBalance > 0.25, shadowAta.address ) of
                                         ( True, Just address ) ->
                                             Html.div
                                                 []
@@ -243,7 +243,7 @@ body creator =
                                                                                 ]
                                                                         , target "_blank"
                                                                         ]
-                                                                        [ Html.text formatted
+                                                                        [ Html.text shadowAtaFormattedBalance
                                                                         ]
                                                                     ]
                                                                 ]
@@ -303,7 +303,7 @@ body creator =
                                                                                 ]
                                                                         , target "_blank"
                                                                         ]
-                                                                        [ Html.text formatted
+                                                                        [ Html.text shadowAtaFormattedBalance
                                                                         ]
                                                                     , Html.b
                                                                         [ class "is-text-container-5 is-size-5"
@@ -1241,21 +1241,169 @@ body creator =
                                                             ]
                                                         ]
                                                     ]
+                                                , storageTokenBalanceRow
+                                                , swapRpw
+                                                , uploadRow
                                                 ]
                                             ]
                                         ]
+
+                                ( storageTokenBalanceRow, swapRpw, uploadRow ) =
+                                    case ( shadowAtaNormalizedBalance > 0.25, shadowAta.address ) of
+                                        ( True, Just address ) ->
+                                            ( Html.tr
+                                                []
+                                                [ Html.th
+                                                    [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                    , style "opacity" "50%"
+                                                    ]
+                                                    [ Html.text
+                                                        """storage-token-balance
+                                                        """
+                                                    ]
+                                                , Html.td
+                                                    [ class "is-text-container-5 is-size-5"
+                                                    , style "opacity" "50%"
+                                                    ]
+                                                    [ Html.a
+                                                        [ class "has-sky-blue-text"
+                                                        , href <|
+                                                            String.concat
+                                                                [ "https://solscan.io/account/"
+                                                                , address
+                                                                ]
+                                                        , target "_blank"
+                                                        ]
+                                                        [ Html.text shadowAtaFormattedBalance
+                                                        ]
+                                                    ]
+                                                ]
+                                            , Html.div
+                                                []
+                                                []
+                                            , Html.div
+                                                []
+                                                []
+                                            )
+
+                                        ( False, Just address ) ->
+                                            ( Html.tr
+                                                []
+                                                [ Html.th
+                                                    [ class "is-light-text-container-5 is-size-5 is-light-text-container-6-mobile is-size-6-mobile is-family-secondary"
+                                                    , style "opacity" "50%"
+                                                    ]
+                                                    [ Html.text
+                                                        """storage-token-balance
+                                                        """
+                                                    ]
+                                                , Html.td
+                                                    [ class "is-text-container-5 is-size-5"
+                                                    , style "opacity" "50%"
+                                                    ]
+                                                    [ Html.a
+                                                        [ class "has-sky-blue-text"
+                                                        , href <|
+                                                            String.concat
+                                                                [ "https://solscan.io/account/"
+                                                                , address
+                                                                ]
+                                                        , target "_blank"
+                                                        ]
+                                                        [ Html.text shadowAtaFormattedBalance
+                                                        ]
+                                                    , Html.b
+                                                        [ class "is-text-container-5 is-size-5"
+                                                        ]
+                                                        [ Html.text <|
+                                                            String.concat
+                                                                [ " "
+                                                                , "<"
+                                                                , " "
+                                                                , "0.25"
+                                                                ]
+                                                        ]
+                                                    ]
+                                                ]
+                                            , Html.tr
+                                                []
+                                                [ Html.td
+                                                    [ class "is-text-container-5 is-size-5"
+                                                    ]
+                                                    [ Html.a
+                                                        [ class "has-sky-blue-text"
+                                                        , href "https://jup.ag/swap/SOL-SHDW"
+                                                        , target "_blank"
+                                                        ]
+                                                        [ Html.text "swap sol for storage-token"
+                                                        ]
+                                                    ]
+                                                , Html.td
+                                                    [ class "is-text-container-5 is-size-5"
+                                                    ]
+                                                    [ Html.button
+                                                        [ onClick <|
+                                                            Global <|
+                                                                FromGlobal.Connect
+                                                        ]
+                                                        [ Html.text "refresh"
+                                                        ]
+                                                    ]
+                                                ]
+                                            , Html.tr
+                                                []
+                                                [ Html.th
+                                                    [ class "is-text-container-5 is-size-5"
+                                                    ]
+                                                    [ Html.text "new-unlockable"
+                                                    ]
+                                                , Html.td
+                                                    [ class "is-text-container-5 is-size-5"
+                                                    ]
+                                                    [ Html.button
+                                                        [ onClick <|
+                                                            FromCreator <|
+                                                                CreatorMsg.Existing fromGlobal <|
+                                                                    ExistingMsg.StartUploading collection
+                                                        , disabled True
+                                                        ]
+                                                        [ Html.text "upload"
+                                                        ]
+                                                    ]
+                                                ]
+                                            )
+
+                                        _ ->
+                                            ( Html.div
+                                                []
+                                                []
+                                            , Html.div
+                                                []
+                                                []
+                                            , Html.div
+                                                []
+                                                []
+                                            )
+
                                 upload =
                                     let
                                         f title =
-                                            Html.button
-                                                [ class "is-button-1"
-                                                , onClick <|
-                                                    FromCreator <|
-                                                        CreatorMsg.Existing fromGlobal <|
-                                                            ExistingMsg.StartUploading collection
-                                                ]
-                                                [ Html.text title
-                                                ]
+                                            case shadowAtaNormalizedBalance > 0.25 of
+                                                True ->
+                                                    Html.button
+                                                        [ class "is-button-1"
+                                                        , onClick <|
+                                                            FromCreator <|
+                                                                CreatorMsg.Existing fromGlobal <|
+                                                                    ExistingMsg.StartUploading collection
+                                                        ]
+                                                        [ Html.text title
+                                                        ]
+
+                                                False ->
+                                                    Html.div
+                                                        []
+                                                        []
                                     in
                                     case uploaded of
                                         [] ->
@@ -1263,8 +1411,6 @@ body creator =
 
                                         _ ->
                                             f "upload more stuff"
-
-
                             in
                             Html.div
                                 []
