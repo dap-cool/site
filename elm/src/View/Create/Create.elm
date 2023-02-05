@@ -69,7 +69,8 @@ body creator =
 
                                         _ ->
                                             Html.div
-                                                []
+                                                [ class "mt-3"
+                                                ]
                                                 [ Html.button
                                                     [ class "is-button-1"
                                                     , onClick <|
@@ -78,12 +79,20 @@ body creator =
                                                                 NewMsg.HandleForm <|
                                                                     Handle.Confirm string
                                                     ]
-                                                    [ Html.text <|
-                                                        String.concat
-                                                            [ "proceed with handle as:"
-                                                            , " "
-                                                            , string
-                                                            ]
+                                                    [ Html.b
+                                                        [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile"
+                                                        ]
+                                                        [ Html.text <|
+                                                            String.concat
+                                                                [ "mint new handle"
+                                                                , " "
+                                                                ]
+                                                        ]
+                                                    , Html.i
+                                                        [ class "is-text-container-4 is-size-4 is-text-container-5-mobile is-size-5-mobile is-family-secondary"
+                                                        ]
+                                                        [ Html.text string
+                                                        ]
                                                     ]
                                                 ]
                             in
