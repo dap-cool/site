@@ -794,7 +794,11 @@ body creator =
                                     in
                                     Html.div
                                         []
-                                        [ header3 fromGlobal
+                                        [ Html.div
+                                            [ class "mb-3"
+                                            ]
+                                            [ header3 fromGlobal
+                                            ]
                                         , Html.div
                                             [ class "columns"
                                             ]
