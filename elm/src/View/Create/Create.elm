@@ -1244,6 +1244,27 @@ body creator =
                                                 ]
                                             ]
                                         ]
+                                upload =
+                                    let
+                                        f title =
+                                            Html.button
+                                                [ class "is-button-1"
+                                                , onClick <|
+                                                    FromCreator <|
+                                                        CreatorMsg.Existing fromGlobal <|
+                                                            ExistingMsg.StartUploading collection
+                                                ]
+                                                [ Html.text title
+                                                ]
+                                    in
+                                    case uploaded of
+                                        [] ->
+                                            f "upload stuff"
+
+                                        _ ->
+                                            f "upload more stuff"
+
+
                             in
                             Html.div
                                 []
@@ -1261,19 +1282,7 @@ body creator =
                                 , Html.div
                                     [ class "mt-6"
                                     ]
-                                    [ Html.div
-                                        [ class "mb-3"
-                                        ]
-                                        [ Html.button
-                                            [ class "is-button-1"
-                                            , onClick <|
-                                                FromCreator <|
-                                                    CreatorMsg.Existing fromGlobal <|
-                                                        ExistingMsg.StartUploading collection
-                                            ]
-                                            [ Html.text "upload stuff"
-                                            ]
-                                        ]
+                                    [ upload
                                     ]
                                 , Html.div
                                     [ class "mt-3"
@@ -1399,9 +1408,8 @@ body creator =
                                             in
                                             Html.div
                                                 []
-                                                [ selector
-                                                , Html.div
-                                                    [ class "mt-3"
+                                                [ Html.div
+                                                    [ class "mb-3"
                                                     ]
                                                     [ title
                                                     , Html.div
@@ -1420,6 +1428,11 @@ body creator =
                                                             ]
                                                             []
                                                         ]
+                                                    ]
+                                                , Html.div
+                                                    [ class "mb-3"
+                                                    ]
+                                                    [ selector
                                                     ]
                                                 , upload
                                                 ]
@@ -1443,7 +1456,11 @@ body creator =
                             in
                             Html.div
                                 []
-                                [ header3 fromGlobal
+                                [ Html.div
+                                    [ class "mb-3"
+                                    ]
+                                    [ header3 fromGlobal
+                                    ]
                                 , Html.div
                                     [ class "columns is-mobile"
                                     ]
