@@ -1,16 +1,22 @@
 module View.Generic.Collection.Header exposing (Role(..), header0, view)
 
+import FormatNumber
+import FormatNumber.Locales exposing (usLocale)
 import Html exposing (Html)
-import Html.Attributes exposing (class, id, placeholder, src, type_)
+import Html.Attributes exposing (class, disabled, href, id, placeholder, src, target, type_)
 import Html.Events exposing (onClick, onInput)
+import Model.Creator.Creator as Creator
 import Model.Creator.Existing.BioForm as BioForm exposing (BioForm)
+import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.File exposing (File)
 import Model.Handle exposing (Handle)
 import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
+import Model.State.Local.Local as Local
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
+import Msg.Global as FromGlobal
 import Msg.Msg exposing (Msg(..))
 
 
@@ -250,23 +256,200 @@ view role handle metadata =
                     in
                     ( bio_, logo_, banner_ )
 
-                CreatorMetadata.UnInitialized _ ->
+                CreatorMetadata.UnInitialized shdwAta ->
                     ( case role of
                         Admin hasWalletAndHandle _ _ ->
-                            Html.div
-                                []
-                                [ Html.button
-                                    [ onClick <|
-                                        FromCreator <|
-                                            CreatorMsg.Existing
-                                                hasWalletAndHandle
-                                                ExistingMsg.ProvisionMetadata
-                                    ]
-                                    [ Html.text
-                                        """create storage for profile-picture & bio
-                                        """
-                                    ]
-                                ]
+                            let
+                                normalized =
+                                    Basics.toFloat shdwAta.balance / 1000000000
+
+                                formatted =
+                                    FormatNumber.format usLocale normalized
+                            in
+                            case ( normalized > 0.25, shdwAta.address ) of
+                                ( True, Just address ) ->
+                                    Html.div
+                                        []
+                                        [ Html.div
+                                            [ class "table-container"
+                                            ]
+                                            [ Html.table
+                                                [ class "table"
+                                                ]
+                                                [ Html.thead
+                                                    []
+                                                    [ Html.tr
+                                                        []
+                                                        [ Html.th
+                                                            []
+                                                            []
+                                                        ]
+                                                    ]
+                                                , Html.tbody
+                                                    []
+                                                    [ Html.tr
+                                                        []
+                                                        [ Html.th
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.text "storage-token-balance"
+                                                            ]
+                                                        , Html.td
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.a
+                                                                [ class "has-sky-blue-text"
+                                                                , href <|
+                                                                    String.concat
+                                                                        [ "https://solscan.io/account/"
+                                                                        , address
+                                                                        ]
+                                                                , target "_blank"
+                                                                ]
+                                                                [ Html.text formatted
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    , Html.tr
+                                                        []
+                                                        [ Html.th
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.text "storage-space"
+                                                            ]
+                                                        , Html.td
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.button
+                                                                [ onClick <|
+                                                                    FromCreator <|
+                                                                        CreatorMsg.Existing
+                                                                            hasWalletAndHandle
+                                                                            ExistingMsg.ProvisionMetadata
+                                                                ]
+                                                                [ Html.text
+                                                                    """create
+                                                                    """
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+
+                                ( False, Just address ) ->
+                                    Html.div
+                                        []
+                                        [ Html.div
+                                            [ class "table-container"
+                                            ]
+                                            [ Html.table
+                                                [ class "table"
+                                                ]
+                                                [ Html.thead
+                                                    []
+                                                    [ Html.tr
+                                                        []
+                                                        [ Html.th
+                                                            []
+                                                            []
+                                                        ]
+                                                    ]
+                                                , Html.tbody
+                                                    []
+                                                    [ Html.tr
+                                                        []
+                                                        [ Html.th
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.text "insufficient storage-token-balance"
+                                                            ]
+                                                        , Html.td
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.a
+                                                                [ class "has-sky-blue-text"
+                                                                , href <|
+                                                                    String.concat
+                                                                        [ "https://solscan.io/account/"
+                                                                        , address
+                                                                        ]
+                                                                , target "_blank"
+                                                                ]
+                                                                [ Html.text formatted
+                                                                ]
+                                                            , Html.b
+                                                                [ class "is-text-container-5 is-size-5"
+                                                                ]
+                                                                [ Html.text <|
+                                                                    String.concat
+                                                                        [ " "
+                                                                        , "<"
+                                                                        , " "
+                                                                        , "0.25"
+                                                                        ]
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    , Html.tr
+                                                        []
+                                                        [ Html.td
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.a
+                                                                [ class "has-sky-blue-text"
+                                                                , href "https://jup.ag/swap/SOL-SHDW"
+                                                                , target "_blank"
+                                                                ]
+                                                                [ Html.text "swap sol for storage-token"
+                                                                ]
+                                                            ]
+                                                        , Html.td
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.button
+                                                                [ onClick <|
+                                                                    Global <|
+                                                                        FromGlobal.Connect
+                                                                ]
+                                                                [ Html.text "refresh"
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    , Html.tr
+                                                        []
+                                                        [ Html.th
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.text "storage-space"
+                                                            ]
+                                                        , Html.td
+                                                            [ class "is-text-container-5 is-size-5"
+                                                            ]
+                                                            [ Html.button
+                                                                [ onClick <|
+                                                                    FromCreator <|
+                                                                        CreatorMsg.Existing
+                                                                            hasWalletAndHandle
+                                                                            ExistingMsg.ProvisionMetadata
+                                                                , disabled True
+                                                                ]
+                                                                [ Html.text
+                                                                    """create
+                                                                    """
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+
+                                _ ->
+                                    Html.div
+                                        []
+                                        []
 
                         Collector ->
                             Html.div

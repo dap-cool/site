@@ -13,16 +13,17 @@ type alias Metadata =
     { bio : Maybe String
     , logo : Maybe Url
     , banner : Maybe Url
-    , shadowAta: ShadowAta
+    , shadowAta : ShadowAta
     }
 
 
 type alias Url =
     String
 
+
 type alias ShadowAta =
-    { balance: Int
-    , address: Maybe Mint
+    { balance : Int
+    , address : Maybe Mint
     }
 
 
@@ -31,8 +32,8 @@ decoder =
     Decode.oneOf
         [ Decode.field "metadata" <| Decode.map (\m -> Initialized m) metadataDecoder
         , Decode.field "metadata" <| Decode.map (\s -> UnInitialized s) shadowAtaDecoder
-        , Decode.field "metadata" <| Decode.null (UnInitialized { balance = 0, address = Nothing } )
-        , Decode.succeed (UnInitialized { balance = 0, address = Nothing } )
+        , Decode.field "metadata" <| Decode.null (UnInitialized { balance = 0, address = Nothing })
+        , Decode.succeed (UnInitialized { balance = 0, address = Nothing })
         ]
 
 
