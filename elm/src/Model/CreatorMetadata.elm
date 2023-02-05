@@ -23,9 +23,8 @@ decoder : Decode.Decoder CreatorMetadata
 decoder =
     Decode.oneOf
         [ Decode.field "metadata" <| Decode.map (\m -> Initialized m) decoder_
+        , Decode.field "metadata" <| Decode.null UnInitialized
         , Decode.succeed UnInitialized
-
-        -- Decode.field "metadata" <| Decode.null UnInitialized
         ]
 
 
