@@ -5,15 +5,12 @@ import FormatNumber.Locales exposing (usLocale)
 import Html exposing (Html)
 import Html.Attributes exposing (class, disabled, href, id, placeholder, src, target, type_)
 import Html.Events exposing (onClick, onInput)
-import Model.Creator.Creator as Creator
 import Model.Creator.Existing.BioForm as BioForm exposing (BioForm)
-import Model.Creator.Existing.Existing as ExistingCreator
 import Model.Creator.Existing.LogoForm as LogoForm exposing (LogoForm)
 import Model.CreatorMetadata as CreatorMetadata exposing (CreatorMetadata)
 import Model.File exposing (File)
 import Model.Handle exposing (Handle)
 import Model.State.Global.HasWalletAndHandle exposing (HasWalletAndHandle)
-import Model.State.Local.Local as Local
 import Msg.Creator.Creator as CreatorMsg
 import Msg.Creator.Existing.Existing as ExistingMsg
 import Msg.Global as FromGlobal
@@ -95,7 +92,11 @@ view role handle metadata =
                                                     ]
                                                     [ Html.text string
                                                     ]
-                                                , textarea bioForm global
+                                                , Html.div
+                                                    [ class "mt-2"
+                                                    ]
+                                                    [ textarea bioForm global
+                                                    ]
                                                 ]
 
                                         Collector ->
@@ -115,7 +116,11 @@ view role handle metadata =
                                             Html.div
                                                 []
                                                 [ header_
-                                                , textarea bioForm global
+                                                , Html.div
+                                                    [ class "mt-2"
+                                                    ]
+                                                    [ textarea bioForm global
+                                                    ]
                                                 ]
 
                                         Collector ->
