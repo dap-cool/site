@@ -28,21 +28,24 @@ export async function uploadBio(
         creatorPda
     );
     let handle = await getHandlePda(
-        programs.dap,
+        provider,
+        programs,
         creator.handle
     );
     const client = await DapSdk.buildClient(
         provider.connection,
         provider.wallet
     );
-    const metadata = {
-        url: handle.metadata.url,
+    const oldMetadata = handle.metadata as CreatorMetadata;
+    const newMetadata = {
+        url: oldMetadata.url,
         bio: bio.bio,
-        logo: handle.metadata.logo,
-        banner: handle.metadata.banner
+        logo: oldMetadata.logo,
+        banner: oldMetadata.banner,
+        shadowAta: oldMetadata.shadowAta
     } as CreatorMetadata;
     await editMetadata(
-        metadata,
+        newMetadata,
         client
     );
     await getGlobal(

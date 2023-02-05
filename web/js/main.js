@@ -66,7 +66,8 @@ export async function main(app, json) {
             // invoke method
             await FeaturedCreators.init(
                 app,
-                pp.programs.dap
+                pp.provider,
+                pp.programs
             );
             // or new creator confirm handle
         } else if (sender === "new-creator-confirm-handle") {
@@ -83,7 +84,8 @@ export async function main(app, json) {
                 // assert handle pda does-not-exist
                 const handle = await assertHandlePdaDoesNotExistAlready(
                     app,
-                    ephemeralPP.programs.dap,
+                    ephemeralPP.provider,
+                    ephemeralPP.programs,
                     validated
                 );
                 // initialize handle
@@ -233,10 +235,20 @@ export async function main(app, json) {
             // parse more json
             const more = JSON.parse(parsed.more);
             // derive & fetch creator pda
-            const creatorPda = await deriveCreatorPda(pp.provider, pp.programs.dap);
-            const creator = await getCreatorPda(pp.programs.dap, creatorPda);
+            const creatorPda = await deriveCreatorPda(
+                pp.provider,
+                pp.programs.dap
+            );
+            const creator = await getCreatorPda(
+                pp.programs.dap,
+                creatorPda
+            );
             // fetch handle
-            const handle = await getHandlePda(pp.programs.dap, creator.handle);
+            const handle = await getHandlePda(
+                pp.provider,
+                pp.programs,
+                creator.handle
+            );
             // invoke create-nft
             await creatNft(
                 app,
@@ -260,7 +272,8 @@ export async function main(app, json) {
                 // asert handle pda exists
                 const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                     app,
-                    ephemeralPP.programs.dap,
+                    ephemeralPP.provider,
+                    ephemeralPP.programs,
                     validated
                 );
                 if (handle) {
@@ -356,7 +369,7 @@ export async function main(app, json) {
                 await upload(
                     app,
                     pp.provider,
-                    pp.programs.dap,
+                    pp.programs,
                     more.collection,
                     more.form
                 );
@@ -370,7 +383,7 @@ export async function main(app, json) {
             // get uploads
             const uploads = await getUploads(
                 pp.provider,
-                pp.programs.dap,
+                pp.programs,
                 more
             );
             app.ports.success.send(
@@ -408,7 +421,8 @@ export async function main(app, json) {
                     // asert handle pda exists
                     const handle = await assertHandlePdaDoesExistAlreadyForCollector(
                         app,
-                        pp.programs.dap,
+                        pp.provider,
+                        pp.programs,
                         validated
                     );
                     if (handle) {
@@ -426,7 +440,7 @@ export async function main(app, json) {
                         // get uploads
                         const uploads = await getUploads(
                             pp.provider,
-                            pp.programs.dap,
+                            pp.programs,
                             {
                                 meta: {
                                     handle: collection.meta.handle

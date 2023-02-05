@@ -1,7 +1,8 @@
 import {PublicKey} from "@solana/web3.js";
-import {Program} from "@project-serum/anchor";
+import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import * as CreatorMetadata from "../../shdw/creator/creator-metadata";
 import {DapCool} from "../idl/dap";
+import {getShadowAta} from "../../shdw/creator/creator-metadata";
 
 export interface HandlePda {
     address: PublicKey
@@ -12,7 +13,7 @@ export interface Handle {
     handle: string
     authority: PublicKey
     numCollections: number
-    metadata: CreatorMetadata.CreatorMetadata | null
+    metadata: CreatorMetadata.CreatorMetadata | CreatorMetadata.ShadowAta | null
     pinned: Pinned
 }
 
@@ -45,14 +46,28 @@ export async function deriveHandlePda(program: Program<DapCool>, handle: string)
 
 const SEED = "handle";
 
-export async function getHandlePda(program: Program<DapCool>, pda: PublicKey): Promise<Handle> {
-    const fetched = await program.account.handle.fetch(
+export async function getHandlePda(
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    },
+    pda: PublicKey
+): Promise<Handle> {
+    const fetched = await programs.dap.account.handle.fetch(
         pda
     ) as RawHandle;
     let metadata;
     if (fetched.metadata) {
         metadata = await CreatorMetadata.getMetadata(
+            provider,
+            programs.token,
             fetched.metadata
+        );
+    } else {
+        metadata = await getShadowAta(
+            provider,
+            programs.token
         );
     }
     return {
@@ -66,15 +81,26 @@ export async function getHandlePda(program: Program<DapCool>, pda: PublicKey): P
 
 export async function assertHandlePdaDoesNotExistAlready(
     app,
-    program: Program<DapCool>,
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    },
     handle: string
 ): Promise<PublicKey | null> {
     // derive pda
-    const pda = await deriveHandlePda(program, handle);
+    const pda = await deriveHandlePda(
+        programs.dap,
+        handle
+    );
     // fetch pda
     let handlePda: PublicKey | null;
     try {
-        await getHandlePda(program, pda.address);
+        await getHandlePda(
+            provider,
+            programs,
+            pda.address
+        );
         const msg = "handle exists already: " + handle;
         console.log(msg);
         app.ports.success.send(
@@ -96,24 +122,39 @@ export async function assertHandlePdaDoesNotExistAlready(
 
 export async function assertHandlePdaDoesExistAlreadyForCollector(
     app,
-    program: Program<DapCool>,
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    },
     handle: string
 ): Promise<Handle | null> {
-    return await assertHandlePdaDoesExistAlready(app, program, handle, "collector-handle-dne")
+    return await assertHandlePdaDoesExistAlready(app, provider, programs, handle, "collector-handle-dne")
 }
 
 async function assertHandlePdaDoesExistAlready(
     app,
-    program: Program<DapCool>,
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    },
     handle: string,
     listener: string
 ): Promise<Handle | null> {
     // derive pda
-    const pda = await deriveHandlePda(program, handle);
+    const pda = await deriveHandlePda(
+        programs.dap,
+        handle
+    );
     // fetch pda
     let handlePda: Handle | null;
     try {
-        handlePda = await getHandlePda(program, pda.address);
+        handlePda = await getHandlePda(
+            provider,
+            programs,
+            pda.address
+        );
         const msg = "found handle: " + handle;
         console.log(msg);
     } catch (error) {

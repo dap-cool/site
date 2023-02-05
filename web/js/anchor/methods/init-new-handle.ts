@@ -47,7 +47,8 @@ export async function initNewHandle(
     }
     // fetch featured creators
     const featuredCreators = await FeaturedCreators.fetch(
-        programs.dap
+        provider,
+        programs
     );
     // send success
     app.ports.success.send(

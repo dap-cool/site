@@ -1,5 +1,5 @@
 import {PublicKey} from "@solana/web3.js";
-import {AnchorProvider, Program} from "@project-serum/anchor";
+import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import JSZip from "jszip";
 import * as DapSdk from "@dap-cool/sdk";
 import {deriveHandlePda, getHandlePda} from "./handle-pda";
@@ -144,7 +144,10 @@ export async function unlockUpload(fromElm: DatumFromElm): Promise<ToElm> {
 
 export async function getUploads(
     provider: AnchorProvider,
-    dapCoolProgram: Program<DapCool>,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    },
     fromElm: CollectionFromElm
 ): Promise<ToElm[]> {
     // get program
@@ -153,11 +156,12 @@ export async function getUploads(
     );
     // derive & get handle pda
     const handlePda = await deriveHandlePda(
-        dapCoolProgram,
+        programs.dap,
         fromElm.meta.handle
     );
     const handle = await getHandlePda(
-        dapCoolProgram,
+        provider,
+        programs,
         handlePda.address
     );
     // derive & get increment pda
@@ -205,7 +209,10 @@ export async function getUploads(
 export async function upload(
     app: any,
     provider: AnchorProvider,
-    program: Program<DapCool>,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    },
     collection: CollectionFromElm,
     formFromElm: FormFromElm
 ): Promise<void> {
@@ -383,7 +390,7 @@ export async function upload(
             // get uploads
             const datum = await getUploads(
                 provider,
-                program,
+                programs,
                 collection
             );
             // send success to elm

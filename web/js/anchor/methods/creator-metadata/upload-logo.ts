@@ -1,7 +1,7 @@
 import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import * as DapSdk from "@dap-cool/sdk";
 import {DapCool} from "../../idl/dap";
-import {Logo, editMetadata} from "../../../shdw/creator/creator-metadata";
+import {Logo, editMetadata, CreatorMetadata} from "../../../shdw/creator/creator-metadata";
 import {deriveCreatorPda, getCreatorPda} from "../../pda/creator-pda";
 import {getHandlePda} from "../../pda/handle-pda";
 import {compressImage, dataUrlToBlob} from "../../../util/blob-util";
@@ -26,7 +26,8 @@ export async function uploadLogo(
         creatorPda
     );
     let handle = await getHandlePda(
-        programs.dap,
+        provider,
+        programs,
         creator.handle
     );
     const client = await DapSdk.buildClient(
@@ -46,24 +47,26 @@ export async function uploadLogo(
             type: blob.type
         }
     );
-    const metadata = {
-        url: handle.metadata.url,
-        bio: handle.metadata.bio,
+    const oldMetadata = handle.metadata as CreatorMetadata;
+    const newMetadata = {
+        url: oldMetadata.url,
+        bio: oldMetadata.bio,
         logo: file.name,
-        banner: handle.metadata.banner
+        banner: oldMetadata.banner,
+        shadowAta: oldMetadata.shadowAta
     };
     await DapSdk.uploadFile(
         file,
         client,
-        handle.metadata.url
+        oldMetadata.url
     );
     await client.deleteFile(
-        handle.metadata.url,
-        handle.metadata.logo,
+        oldMetadata.url,
+        oldMetadata.logo,
         version
     );
     await editMetadata(
-        metadata,
+        newMetadata,
         client
     );
     await getGlobal(

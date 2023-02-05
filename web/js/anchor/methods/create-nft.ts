@@ -87,7 +87,8 @@ export async function creatNft(
     const authorityIndex: number = handle.numCollections + 1;
     // fetch featured creators
     const featuredCreators = await FeaturedCreators.fetch(
-      programs.dap
+        provider,
+      programs
     );
     // kick off upload steps
     if (form.step === 1) {

@@ -87,7 +87,8 @@ export async function mintNewCopy(
             handle
         );
         const fetchedHandle = await getHandlePda(
-            programs.dap,
+            provider,
+            programs,
             handlePda.address
         );
         // derive authority pda with bump
@@ -188,7 +189,7 @@ export async function mintNewCopy(
         // get uploads
         const uploads = await getUploads(
             provider,
-            programs.dap,
+            programs,
             {
                 meta: {
                     handle: authority.meta.handle
@@ -228,7 +229,8 @@ export async function mintNewCopy(
         }
         // fetch featured creators
         const featuredCreators = await FeaturedCreators.fetch(
-            programs.dap
+            provider,
+            programs
         );
         // fetch collections & set global
         let global;
@@ -242,7 +244,8 @@ export async function mintNewCopy(
                 creatorPda
             );
             const fetchedHandle = await getHandlePda(
-                programs.dap,
+                provider,
+                programs,
                 creator.handle
             );
             const collections = await getManyAuthorityPdaForCreator(

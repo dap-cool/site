@@ -26,7 +26,8 @@ export async function getGlobal(
     );
     // get featured creators
     const featuredCreators = await FeaturedCreators.fetch(
-        programs.dap
+        provider,
+        programs
     );
     // get all collections collected by collector
     let collected: CollectionAuthority[];
@@ -56,7 +57,8 @@ export async function getGlobal(
             creatorPda
         );
         const handle = await getHandlePda(
-            programs.dap,
+            provider,
+            programs,
             creator.handle
         );
         // fetch collections

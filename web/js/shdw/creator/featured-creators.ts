@@ -1,5 +1,5 @@
 import {CreatorMetadata} from "./creator-metadata";
-import {Program} from "@project-serum/anchor";
+import {AnchorProvider, Program, SplToken} from "@project-serum/anchor";
 import {DapCool} from "../../anchor/idl/dap";
 import {deriveHandlePda, getHandlePda} from "../../anchor/pda/handle-pda";
 import {FEATURED_CREATORS} from "../../anchor/config";
@@ -9,9 +9,17 @@ export interface FeaturedCreator {
     metadata: CreatorMetadata
 }
 
-export async function init(app, program: Program<DapCool>): Promise<void> {
+export async function init(
+    app,
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    }
+): Promise<void> {
     const fetched = await fetch(
-        program
+        provider,
+        programs
     );
     app.ports.success.send(
         JSON.stringify(
@@ -25,24 +33,39 @@ export async function init(app, program: Program<DapCool>): Promise<void> {
     );
 }
 
-export async function fetch(program: Program<DapCool>): Promise<FeaturedCreator[]> {
+export async function fetch(
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    }
+): Promise<FeaturedCreator[]> {
     return await Promise.all(
         FEATURED_CREATORS.map(async (handle) =>
             await _fetch(
-                program,
+                provider,
+                programs,
                 handle
             )
         )
     );
 }
 
-async function _fetch(program: Program<DapCool>, handle: string): Promise<FeaturedCreator> {
+async function _fetch(
+    provider: AnchorProvider,
+    programs: {
+        dap: Program<DapCool>;
+        token: Program<SplToken>
+    },
+    handle: string
+): Promise<FeaturedCreator> {
     const handlePda = await deriveHandlePda(
-        program,
+        programs.dap,
         handle
     );
     const handleObj = await getHandlePda(
-        program,
+        provider,
+        programs,
         handlePda.address
     );
     return {

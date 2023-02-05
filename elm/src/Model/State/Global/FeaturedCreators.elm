@@ -29,4 +29,4 @@ decoder_ : Decode.Decoder FeaturedCreator
 decoder_ =
     Decode.map2 FeaturedCreator
         (Decode.field "handle" Decode.string)
-        (Decode.field "metadata" CreatorMetadata.decoder_)
+        (Decode.field "metadata" CreatorMetadata.metadataDecoder)

@@ -250,7 +250,7 @@ view role handle metadata =
                     in
                     ( bio_, logo_, banner_ )
 
-                CreatorMetadata.UnInitialized ->
+                CreatorMetadata.UnInitialized _ ->
                     ( case role of
                         Admin hasWalletAndHandle _ _ ->
                             Html.div
